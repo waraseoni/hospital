@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-    if (!profile || profile.role !== "admin") {
+    if (!profile || (profile.role !== "admin" && profile.role !== "super_admin")) {
       return NextResponse.json({ error: "Only admins can create staff" }, { status: 403 });
     }
 
@@ -17,6 +17,11 @@ export async function POST(request: NextRequest) {
 
     if (!full_name || !email || !password || !role) {
       return NextResponse.json({ error: "Name, email, password and role are required" }, { status: 400 });
+    }
+
+    // Only super_admin can create admin/super_admin accounts
+    if ((role === "admin" || role === "super_admin") && profile.role !== "super_admin") {
+      return NextResponse.json({ error: "Only super admin can create admin accounts" }, { status: 403 });
     }
 
     const admin = createAdminClient();

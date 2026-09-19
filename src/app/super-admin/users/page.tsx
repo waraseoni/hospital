@@ -7,26 +7,29 @@ import { Badge } from "@/components/ui/badge";
 import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { SearchBar } from "@/components/ui/search-bar";
-import { PageHeader } from "@/components/ui/page";
-import { PageContainer } from "@/components/ui/page";
+import { PageHeader, PageContainer } from "@/components/ui/page";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Profile, UserRole } from "@/types/database";
-import { Shield, UserRound, Mail, Phone, Key, Power, Trash2, Edit3, Search } from "lucide-react";
+import { Shield, UserRound, Mail, Phone, Key, Power, Trash2, Search } from "lucide-react";
 
-const allRoles: UserRole[] = ["admin", "doctor", "nurse", "lab", "staff", "patient"];
-const roleColors: Record<string, "info" | "success" | "warning" | "destructive"> = { doctor: "info", nurse: "success", lab: "warning", staff: "destructive", admin: "destructive", super_admin: "destructive", patient: "success" };
+const allRoles: UserRole[] = ["super_admin", "admin", "doctor", "nurse", "lab", "staff", "patient"];
+const roleColors: Record<string, "info" | "success" | "warning" | "destructive"> = {
+  super_admin: "destructive", admin: "destructive", doctor: "info", nurse: "success", lab: "warning", staff: "destructive", patient: "success",
+};
 
-export default function AdminUsersPage() {
+export default function SuperAdminUsersPage() {
   const { t } = useI18n();
   const [users, setUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-  const [filterRole, setFilterRole] = useState<UserRole>("admin");
+  const [filterRole, setFilterRole] = useState<UserRole | "all">("all");
   const [showResetModal, setShowResetModal] = useState<string | null>(null);
   const [resetPassword, setResetPassword] = useState("");
   const [resetting, setResetting] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [editingUser, setEditingUser] = useState<Profile | null>(null);
+  const [editRole, setEditRole] = useState<UserRole>("doctor");
   const { addToast } = useToast();
 
   useEffect(() => { loadUsers(); }, []);
@@ -35,8 +38,7 @@ export default function AdminUsersPage() {
     try {
       const res = await fetch("/api/admin/users");
       if (!res.ok) throw new Error("Failed to load");
-      const data = await res.json();
-      setUsers(data);
+      setUsers(await res.json());
     } catch { addToast("error", "Failed to load users"); }
     setLoading(false);
   }
@@ -56,20 +58,20 @@ export default function AdminUsersPage() {
     finally { setResetting(false); }
   }
 
-  async function handleToggleRole(id: string, currentRole: UserRole) {
-    const nextRole = allRoles[(allRoles.indexOf(currentRole) + 1) % allRoles.length];
+  async function handleUpdateRole() {
+    if (!editingUser) return;
     try {
-      const res = await fetch(`/api/admin/users`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, role: nextRole }) });
+      const res = await fetch("/api/admin/users", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: editingUser.id, role: editRole }) });
       if (!res.ok) throw new Error("Failed to update role");
-      addToast("success", `Role updated to ${nextRole}`);
+      addToast("success", `Role updated to ${editRole}`);
+      setEditingUser(null);
       loadUsers();
     } catch { addToast("error", "Failed to update role"); }
   }
 
   async function handleDelete(id: string) {
-    if (!deleting) return;
     try {
-      const res = await fetch(`/api/admin/users/${deleting}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
       addToast("success", "User deleted");
       setDeleting(null);
@@ -79,18 +81,19 @@ export default function AdminUsersPage() {
 
   const filtered = users.filter(u => {
     const matchSearch = !search || u.full_name.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase()) || u.role.toLowerCase().includes(search.toLowerCase());
-    const matchRole = filterRole === "admin" || u.role === filterRole;
+    const matchRole = filterRole === "all" || u.role === filterRole;
     return matchSearch && matchRole;
   });
 
   return (
     <PageContainer>
-      <PageHeader title="User Management" subtitle="View, manage, and reset passwords for all users" actions={<Button onClick={loadUsers} variant="ghost"><Power size={16} className="mr-1" />Refresh</Button>} />
+      <PageHeader title={t("superAdmin.allUsers")} subtitle="Manage all users across all roles" actions={<Button onClick={loadUsers} variant="ghost"><Power size={16} className="mr-1" />Refresh</Button>} />
 
       <div className="mb-4 flex flex-wrap gap-3 items-center">
         <SearchBar value={search} onChange={setSearch} placeholder="Search by name, email, or role..." />
-        <select value={filterRole} onChange={(e) => setFilterRole(e.target.value as UserRole)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-          {allRoles.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+        <select value={filterRole} onChange={(e) => setFilterRole(e.target.value as UserRole | "all")} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
+          <option value="all">All Roles</option>
+          {allRoles.map(r => <option key={r} value={r}>{r.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}</option>)}
         </select>
       </div>
 
@@ -101,8 +104,8 @@ export default function AdminUsersPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium flex items-center gap-1"><UserRound size={14} />Name</th>
-                <th className="px-4 py-3 text-left font-medium flex items-center gap-1"><Mail size={14} />Email</th>
+                <th className="px-4 py-3 text-left font-medium"><UserRound size={14} className="inline mr-1" />Name</th>
+                <th className="px-4 py-3 text-left font-medium"><Mail size={14} className="inline mr-1" />Email</th>
                 <th className="px-4 py-3 text-left font-medium">Phone</th>
                 <th className="px-4 py-3 text-left font-medium">Role</th>
                 <th className="px-4 py-3 text-left font-medium">Created</th>
@@ -115,11 +118,11 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3 font-medium">{u.full_name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{u.email || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{u.phone || "—"}</td>
-                  <td className="px-4 py-3"><Badge variant={roleColors[u.role] || "default"}>{u.role}</Badge></td>
+                  <td className="px-4 py-3"><Badge variant={roleColors[u.role] || "default"}>{u.role.replace("_", " ")}</Badge></td>
                   <td className="px-4 py-3 text-muted-foreground text-xs">{u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
-                      <button onClick={() => handleToggleRole(u.id, u.role)} title="Cycle role" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted" disabled={u.role === "admin" || u.role === "super_admin"}><Shield size={14} /></button>
+                      <button onClick={() => { setEditingUser(u); setEditRole(u.role); }} title="Edit role" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Shield size={14} /></button>
                       <button onClick={() => { setShowResetModal(u.id); setResetPassword(""); }} title="Reset password" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Key size={14} /></button>
                       <button onClick={() => setDeleting(u.id)} title="Delete" className="rounded-lg border border-destructive/50 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"><Trash2 size={14} /></button>
                     </div>
@@ -131,6 +134,22 @@ export default function AdminUsersPage() {
         </div>
       )}
 
+      {/* Role Edit Modal */}
+      <Modal open={!!editingUser} onOpenChange={() => setEditingUser(null)} title="Change Role" footer={
+        <>
+          <Button variant="ghost" onClick={() => setEditingUser(null)}>{t("common.cancel")}</Button>
+          <Button onClick={handleUpdateRole}>{t("common.save")}</Button>
+        </>
+      }>
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">Change role for <strong>{editingUser?.full_name}</strong></p>
+          <select value={editRole} onChange={(e) => setEditRole(e.target.value as UserRole)} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm">
+            {allRoles.map(r => <option key={r} value={r}>{r.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}</option>)}
+          </select>
+        </div>
+      </Modal>
+
+      {/* Password Reset Modal */}
       <Modal open={!!showResetModal} onOpenChange={() => setShowResetModal(null)} title="Reset Password" footer={
         <>
           <Button variant="ghost" onClick={() => setShowResetModal(null)}>{t("common.cancel")}</Button>
@@ -138,11 +157,12 @@ export default function AdminUsersPage() {
         </>
       }>
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Enter a new password (min 6 characters) for this user.</p>
+          <p className="text-sm text-muted-foreground">Enter a new password (min 6 characters).</p>
           <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="New password" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" minLength={6} autoFocus />
         </div>
       </Modal>
 
+      {/* Delete Modal */}
       <Modal open={!!deleting} onOpenChange={() => setDeleting(null)} title="Delete User" footer={
         <>
           <Button variant="ghost" onClick={() => setDeleting(null)}>{t("common.cancel")}</Button>

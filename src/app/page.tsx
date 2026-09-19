@@ -4,10 +4,11 @@ import Link from "next/link";
 import { useI18n } from "@/i18n/provider";
 import { LanguageSwitcher, ThemeSwitcher } from "@/components/theme/theme-controls";
 import {
-  Shield, Stethoscope, HeartPulse, FlaskConical, User, Building2,
+  Shield, Stethoscope, HeartPulse, FlaskConical, User, Building2, Crown,
 } from "lucide-react";
 
 const cards = [
+  { icon: Crown, titleKey: "landing.superAdminCard" as const },
   { icon: Shield, titleKey: "landing.adminCard" as const },
   { icon: Stethoscope, titleKey: "landing.doctorCard" as const },
   { icon: HeartPulse, titleKey: "landing.nurseCard" as const },

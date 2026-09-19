@@ -6,11 +6,11 @@ import { useI18n } from "@/i18n/provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
-import { PageHeader } from "@/components/ui/page";
-import { PageContainer } from "@/components/ui/page";
+import { PageHeader, PageContainer } from "@/components/ui/page";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Activity, UserRound, Phone, Mail, MapPin, Stethoscope } from "lucide-react";
+import { Activity, UserRound, Phone, Mail, MapPin, Stethoscope, Key, Shield } from "lucide-react";
 
 export default function ProfilePage() {
   const { t } = useI18n();
@@ -18,6 +18,9 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ full_name: "", phone: "", email: "", specialization: "", qualification: "", address: "" });
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwords, setPasswords] = useState({ new_password: "", confirm_password: "" });
+  const [changingPassword, setChangingPassword] = useState(false);
   const { addToast } = useToast();
 
   useEffect(() => { loadProfile(); }, []);
@@ -27,7 +30,10 @@ export default function ProfilePage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setLoading(false); return; }
     const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-    if (data) { setProfile(data); setForm({ full_name: data.full_name || "", phone: data.phone || "", email: data.email || "", specialization: data.specialization || "", qualification: data.qualification || "", address: data.address || "" }); }
+    if (data) {
+      setProfile(data);
+      setForm({ full_name: data.full_name || "", phone: data.phone || "", email: data.email || "", specialization: data.specialization || "", qualification: data.qualification || "", address: data.address || "" });
+    }
     setLoading(false);
   }
 
@@ -40,26 +46,74 @@ export default function ProfilePage() {
     else addToast("error", "Failed to save");
   }
 
-  const roleColors: Record<string, "info" | "success" | "warning" | "destructive"> = { doctor: "info", nurse: "success", lab: "warning", staff: "destructive", admin: "info", patient: "success" };
+  async function handlePasswordChange() {
+    if (passwords.new_password !== passwords.confirm_password) {
+      addToast("error", t("profile.passwordMismatch") || "Passwords do not match");
+      return;
+    }
+    if (passwords.new_password.length < 6) {
+      addToast("error", t("profile.passwordMinLength") || "Password must be at least 6 characters");
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      const res = await fetch("/api/profile/password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newPassword: passwords.new_password }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      addToast("success", t("profile.passwordChanged") || "Password changed successfully");
+      setShowPasswordModal(false);
+      setPasswords({ new_password: "", confirm_password: "" });
+    } catch (err: unknown) {
+      addToast("error", (err as Error).message || "Failed to change password");
+    } finally {
+      setChangingPassword(false);
+    }
+  }
+
+  const roleColors: Record<string, "info" | "success" | "warning" | "destructive" | "default"> = {
+    super_admin: "destructive",
+    admin: "destructive",
+    doctor: "info",
+    nurse: "success",
+    lab: "warning",
+    staff: "destructive",
+    patient: "success",
+  };
 
   if (loading) return <PageContainer><Skeleton lines={5} /></PageContainer>;
   if (!profile) return <PageContainer><p>{t("common.notFound")}</p></PageContainer>;
 
   return (
     <PageContainer>
-      <PageHeader title={t("profile.title")} actions={<Button variant="ghost" onClick={() => setEditing(!editing)}>{editing ? t("common.cancel") : t("profile.edit")}</Button>} />
+      <PageHeader title={t("profile.title")} actions={
+        <div className="flex gap-2">
+          <Button variant="ghost" onClick={() => setShowPasswordModal(true)}><Key size={16} className="mr-1" />{t("profile.changePassword")}</Button>
+          <Button variant="ghost" onClick={() => setEditing(!editing)}>{editing ? t("common.cancel") : t("profile.edit")}</Button>
+        </div>
+      } />
       <div className="max-w-2xl space-y-6">
+        {/* Profile Card */}
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary"><UserRound size={32} /></div>
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <UserRound size={32} />
+            </div>
             <div>
               <h2 className="text-xl font-bold">{profile.full_name}</h2>
-              <Badge variant={roleColors[profile.role] || "default"} className="mt-1">{profile.role}</Badge>
+              <Badge variant={roleColors[profile.role] || "default"} className="mt-1">
+                <Shield size={12} className="mr-1" />
+                {profile.role === "super_admin" ? "Super Admin" : profile.role}
+              </Badge>
               {profile.specialization && <p className="mt-1 text-sm text-muted-foreground">{profile.specialization}</p>}
             </div>
           </div>
         </div>
 
+        {/* Edit Form */}
         {editing ? (
           <div className="rounded-xl border border-border bg-card p-6 space-y-4">
             <h2 className="font-semibold">{t("profile.editProfile")}</h2>
@@ -86,15 +140,39 @@ export default function ProfilePage() {
                 </div>
               ))}
               {profile.specialization && (
-                <div className="flex items-center gap-3"><Stethoscope size={18} className="text-muted-foreground" /><span className="text-sm text-muted-foreground">{t("profile.specialization")}:</span><span className="font-medium">{profile.specialization}</span></div>
+                <div className="flex items-center gap-3">
+                  <Stethoscope size={18} className="text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("profile.specialization")}:</span>
+                  <span className="font-medium">{profile.specialization}</span>
+                </div>
               )}
               {profile.qualification && (
-                <div className="flex items-center gap-3"><Activity size={18} className="text-muted-foreground" /><span className="text-sm text-muted-foreground">{t("profile.qualification")}:</span><span className="font-medium">{profile.qualification}</span></div>
+                <div className="flex items-center gap-3">
+                  <Activity size={18} className="text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{t("profile.qualification")}:</span>
+                  <span className="font-medium">{profile.qualification}</span>
+                </div>
               )}
             </div>
           </div>
         )}
       </div>
+
+      {/* Password Change Modal */}
+      <Modal open={showPasswordModal} onOpenChange={setShowPasswordModal} title={t("profile.changePassword")} footer={
+        <>
+          <Button variant="ghost" onClick={() => setShowPasswordModal(false)}>{t("common.cancel")}</Button>
+          <Button onClick={handlePasswordChange} disabled={changingPassword}>
+            {changingPassword ? t("profile.changingPassword") : t("profile.changePassword")}
+          </Button>
+        </>
+      }>
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">{t("profile.passwordHint") || "Enter your new password below."}</p>
+          <Input label={t("profile.newPassword")} type="password" value={passwords.new_password} onChange={(e) => setPasswords({ ...passwords, new_password: e.target.value })} placeholder="Min 6 characters" />
+          <Input label={t("profile.confirmPassword")} type="password" value={passwords.confirm_password} onChange={(e) => setPasswords({ ...passwords, confirm_password: e.target.value })} placeholder="Re-enter password" />
+        </div>
+      </Modal>
     </PageContainer>
   );
 }
