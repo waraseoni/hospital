@@ -4,18 +4,52 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return localStorage.getItem("hms_remembered_email") || "";
+  });
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("hms_remember_email") === "1";
+  });
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSent, setForgotSent] = useState(false);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  async function handleForgotPassword() {
+    if (!email) return;
+    setForgotLoading(true);
+    setForgotSent(false);
+    const supabase = createClient();
+    const { error: resetError } = await supabase.auth.resetPasswordForEmail(email);
+    setForgotLoading(false);
+    if (resetError) {
+      setError(resetError.message);
+      return;
+    }
+    setError("");
+    setForgotSent(true);
+  }
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (remember) {
+      localStorage.setItem("hms_remembered_email", email);
+      localStorage.setItem("hms_remember_email", "1");
+    } else {
+      localStorage.removeItem("hms_remembered_email");
+      localStorage.removeItem("hms_remember_email");
+    }
 
     const supabase = createClient();
 
@@ -67,7 +101,9 @@ export default function LoginPage() {
             </label>
             <input
               id="email"
+              name="email"
               type="email"
+              autoComplete="email"
               placeholder="you@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -80,16 +116,54 @@ export default function LoginPage() {
             <label htmlFor="password" className="block text-sm font-medium mb-1">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="Your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-              required
-            />
+            <div className="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-10 text-sm outline-none focus:ring-2 focus:ring-ring"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
+            </div>
           </div>
+
+          <div className="flex items-center justify-between">
+            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+                className="h-4 w-4 rounded border-input accent-primary"
+              />
+              Remember me
+            </label>
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              disabled={forgotLoading || !email}
+              className="text-sm text-primary hover:underline disabled:opacity-50"
+            >
+              {forgotLoading ? "Sending..." : "Forgot password?"}
+            </button>
+          </div>
+
+          {forgotSent && (
+            <p className="text-xs text-green-600">
+              Reset link sent to {email}. Check your inbox.
+            </p>
+          )}
 
           {error && (
             <p className="text-sm text-destructive">{error}</p>
