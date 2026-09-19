@@ -265,6 +265,11 @@ export const en = {
   doctorPrescriptions: {
     title: "New Prescription",
     patient: "Patient",
+    selectPatient: "Select Patient for Prescription",
+    searchPatient: "Search by name, UHID, or phone...",
+    noPatients: "No patients found",
+    selectPatientFirst: "Please select a patient first",
+    changePatient: "Change Patient",
     clinicalDetails: "Clinical Details",
     diagnosis: "Diagnosis *",
     diagnosisPlaceholder: "Primary diagnosis...",

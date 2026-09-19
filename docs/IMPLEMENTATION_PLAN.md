@@ -29,8 +29,8 @@ Rules:
 |---|---|---|---|
 | 0 | Foundation & Core Fixes | `0.2.0.0` | [x] — i18n + theming [DONE] |
 | 0.3 | Shared Components + Bug Fixes | `0.3.0.0` | [x] — UI library, bug fixes [DONE] |
-| 0.4 | Core Workflow Integration | `0.4.0.0` | [ ] |
-| 0.5 | Enhanced Pages | `0.5.0.0` | [ ] |
+| 0.4 | Core Workflow Integration | `0.4.0.0` | [x] — PDF/WhatsApp, Profile page, User Management [DONE] |
+| 0.5 | Enhanced Pages | `0.5.0.0` | [x] — Admin user mgmt, Profile, all navs fixed [DONE] |
 | 0.6 | Settings + Polish | `0.6.0.0` | [ ] |
 | 1 | Clinical Workflows | `0.7.0.0` | [ ] |
 | 2 | Pharmacy & Inventory | `0.8.0.0` | [ ] |

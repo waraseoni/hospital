@@ -254,6 +254,11 @@ export const hi: Dictionary = {
   doctorPrescriptions: {
     title: "नई पर्ची",
     patient: "मरीज़",
+    selectPatient: "पर्ची के लिए मरीज़ चुनें",
+    searchPatient: "नाम, UHID या फ़ोन से खोजें...",
+    noPatients: "कोई मरीज़ नहीं मिला",
+    selectPatientFirst: "कृपया पहले मरीज़ चुनें",
+    changePatient: "मरीज़ बदलें",
     clinicalDetails: "क्लिनिकल विवरण",
     diagnosis: "निदान *",
     diagnosisPlaceholder: "प्राथमिक निदान...",
