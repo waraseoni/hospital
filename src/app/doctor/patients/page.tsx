@@ -3,14 +3,24 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Patient } from "@/types/database";
-import Link from "next/link";
 import { useI18n } from "@/i18n/provider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { SearchBar } from "@/components/ui/search-bar";
+import { useToast } from "@/components/ui/toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page";
+import Link from "next/link";
 
 export default function DoctorPatientsListPage() {
   const { t } = useI18n();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const { addToast } = useToast();
+
+  useEffect(() => { loadPatients(); }, []);
 
   async function loadPatients() {
     const supabase = createClient();
@@ -18,8 +28,6 @@ export default function DoctorPatientsListPage() {
     setPatients(data || []);
     setLoading(false);
   }
-
-  useEffect(() => { loadPatients(); }, []);
 
   const filtered = patients.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -29,15 +37,10 @@ export default function DoctorPatientsListPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">{t("doctorPatients.title")}</h1>
-      <input
-        placeholder={t("doctorPatients.searchPlaceholder")}
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="mb-4 w-full max-w-md rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
-      />
-      {loading ? (
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+      <PageHeader title={t("doctorPatients.title")} />
+      <div className="mb-4 max-w-md"><SearchBar value={search} onChange={setSearch} placeholder={t("doctorPatients.searchPlaceholder")} /></div>
+      {loading ? <Skeleton lines={5} /> : filtered.length === 0 ? (
+        <EmptyState title={t("doctorPatients.noPatients")} description={t("ui.noData")} />
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
@@ -55,11 +58,7 @@ export default function DoctorPatientsListPage() {
                   <td className="px-4 py-3 font-mono text-xs">{p.uhid}</td>
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.phone}</td>
-                  <td className="px-4 py-3">
-                    <Link href={`/doctor/patients/${p.id}`} className="text-primary text-xs hover:underline">
-                      {t("doctorPatients.viewHistory")}
-                    </Link>
-                  </td>
+                  <td className="px-4 py-3"><Link href={`/doctor/patients/${p.id}`} className="text-primary text-xs hover:underline">{t("doctorPatients.viewHistory")}</Link></td>
                 </tr>
               ))}
             </tbody>
