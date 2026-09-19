@@ -4,6 +4,23 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
 import { useI18n } from "@/i18n/provider";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Modal } from "@/components/ui/modal";
+import { Badge } from "@/components/ui/badge";
+import { useToast } from "@/components/ui/toast";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
+import { SearchBar } from "@/components/ui/search-bar";
+import { PageHeader } from "@/components/ui/page";
+
+const roleMap: Record<string, "info" | "success" | "warning" | "destructive"> = {
+  doctor: "info",
+  nurse: "success",
+  lab: "warning",
+  staff: "destructive",
+};
 
 export default function AdminStaffPage() {
   const { t } = useI18n();
@@ -12,9 +29,10 @@ export default function AdminStaffPage() {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ full_name: "", phone: "", role: "doctor" as Profile["role"], email: "", password: "", specialization: "" });
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const { addToast } = useToast();
 
   useEffect(() => { loadStaff(); }, []);
 
@@ -29,152 +47,79 @@ export default function AdminStaffPage() {
     setForm({ full_name: "", phone: "", role: "doctor", email: "", password: "", specialization: "" });
     setEditingId(null);
     setShowForm(false);
-    setError("");
   }
 
   function startEdit(s: Profile) {
-    setForm({
-      full_name: s.full_name,
-      phone: s.phone || "",
-      role: s.role,
-      email: s.email || "",
-      password: "",
-      specialization: s.specialization || "",
-    });
+    setForm({ full_name: s.full_name, phone: s.phone || "", role: s.role, email: s.email || "", password: "", specialization: s.specialization || "" });
     setEditingId(s.id);
     setShowForm(true);
-    setError("");
-    setSuccess("");
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSubmitting(true);
-    setError("");
-    setSuccess("");
-
-    if (editingId) {
-      const body: Record<string, unknown> = {
-        full_name: form.full_name,
-        phone: form.phone,
-        role: form.role,
-        email: form.email,
-        specialization: form.specialization,
-      };
-
-      const res = await fetch(`/api/staff/${editingId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
+    try {
+      const body: Record<string, unknown> = { full_name: form.full_name, phone: form.phone, role: form.role, email: form.email, specialization: form.specialization };
+      const url = editingId ? `/api/staff/${editingId}` : "/api/staff";
+      const method = editingId ? "PUT" : "POST";
+      const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || t("staff.updateFailed"));
-        setSubmitting(false);
-        return;
-      }
-
-      setSuccess(t("staff.updatedSuccess"));
+      if (!res.ok) throw new Error(data.error || t("staff.createFailed"));
+      addToast("success", editingId ? t("staff.updatedSuccess") : t("staff.createdSuccess"));
       resetForm();
       loadStaff();
-      setSubmitting(false);
-    } else {
-      const res = await fetch("/api/staff", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error || t("staff.createFailed"));
-        setSubmitting(false);
-        return;
-      }
-
-      setSuccess(t("staff.createdSuccess"));
-      resetForm();
-      loadStaff();
+    } catch (err: unknown) {
+      addToast("error", (err as Error).message);
+    } finally {
       setSubmitting(false);
     }
   }
 
-  async function handleDelete(s: Profile) {
-    if (!window.confirm(t("staff.deleteConfirm") + " " + s.full_name + "?")) return;
-
-    setError("");
-    setSuccess("");
-
-    const res = await fetch(`/api/staff/${s.id}`, {
-      method: "DELETE",
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      setError(data.error || t("staff.deleteFailed"));
-      return;
-    }
-
-    setSuccess(t("staff.deletedSuccess"));
-    loadStaff();
+  async function handleDelete() {
+    if (!deleteId) return;
+    try {
+      const res = await fetch(`/api/staff/${deleteId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete failed");
+      addToast("success", t("staff.deletedSuccess"));
+      loadStaff();
+    } catch { addToast("error", t("staff.deleteFailed")); }
+    setDeleteId(null);
   }
 
-  const roleColors: Record<string, string> = {
-    doctor: "bg-blue-100 text-blue-800",
-    nurse: "bg-green-100 text-green-800",
-    lab: "bg-purple-100 text-purple-800",
-    staff: "bg-orange-100 text-orange-800",
-  };
+  const filtered = staff.filter(s =>
+    s.full_name.toLowerCase().includes(search.toLowerCase()) ||
+    s.email?.toLowerCase().includes(search.toLowerCase()) ||
+    s.role.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">{t("staff.title")}</h1>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90">
-          {t("staff.addStaff")}
-        </button>
-      </div>
-
-      {error && <p className="mb-4 text-sm text-destructive">{error}</p>}
-      {success && <p className="mb-4 text-sm text-green-600">{success}</p>}
+      <PageHeader title={t("staff.title")} actions={<Button onClick={() => { resetForm(); setShowForm(true); }}>{t("staff.addStaff")}</Button>} />
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
           <h2 className="text-lg font-semibold">{editingId ? t("staff.editStaff") : t("staff.addNewStaff")}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <input placeholder={t("staff.fullName")} value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-            <input placeholder={t("staff.email")} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-            {!editingId && (
-              <input placeholder={t("staff.password")} type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required minLength={6} />
-            )}
-            <input placeholder={t("staff.phone")} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-            <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Profile["role"] })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-              <option value="doctor">{t("staff.doctor")}</option>
-              <option value="nurse">{t("staff.nurse")}</option>
-              <option value="lab">{t("staff.labTech")}</option>
-              <option value="staff">{t("staff.staffRole")}</option>
-            </select>
-            {form.role === "doctor" && (
-              <input placeholder={t("staff.specialization")} value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-            )}
+            <Input placeholder={t("staff.fullName")} value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
+            <Input placeholder={t("staff.email")} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+            {!editingId && <Input placeholder={t("staff.password")} type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />}
+            <Input placeholder={t("staff.phone")} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Profile["role"] })} options={[{ value: "doctor", label: t("staff.doctor") }, { value: "nurse", label: t("staff.nurse") }, { value: "lab", label: t("staff.labTech") }, { value: "staff", label: t("staff.staffRole") }]} />
+            {form.role === "doctor" && <Input placeholder={t("staff.specialization")} value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} />}
           </div>
           <div className="flex gap-2">
-            <button type="submit" disabled={submitting} className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-              {submitting ? (editingId ? t("staff.updating") : t("staff.creating")) : (editingId ? t("staff.updateStaff") : t("staff.createAccount"))}
-            </button>
-            <button type="button" onClick={resetForm} className="rounded-lg border border-border px-4 py-2 text-sm hover:bg-muted">
-              {t("common.cancel")}
-            </button>
+            <Button type="submit" disabled={submitting}>{submitting ? (editingId ? t("staff.updating") : t("staff.creating")) : (editingId ? t("staff.updateStaff") : t("staff.createAccount"))}</Button>
+            <Button type="button" variant="ghost" onClick={resetForm}>{t("common.cancel")}</Button>
           </div>
         </form>
       )}
 
-      {loading ? (
-        <div className="animate-pulse text-muted-foreground">{t("staff.loading")}</div>
+      <div className="mb-4">
+        <SearchBar value={search} onChange={setSearch} placeholder={t("staff.searchPlaceholder") || t("ui.search")} />
+      </div>
+
+      {loading ? <Skeleton lines={5} /> : filtered.length === 0 ? (
+        <EmptyState title={t("staff.noStaff")} description={t("ui.noData")} />
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
@@ -188,35 +133,33 @@ export default function AdminStaffPage() {
               </tr>
             </thead>
             <tbody>
-              {staff.map((s) => (
+              {filtered.map((s) => (
                 <tr key={s.id} className="border-b border-border last:border-0">
                   <td className="px-4 py-3 font-medium">{s.full_name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{s.email || "—"}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${roleColors[s.role] || "bg-gray-100"}`}>
-                      {s.role}
-                    </span>
-                  </td>
+                  <td className="px-4 py-3"><Badge variant={roleMap[s.role] || "default"}>{s.role}</Badge></td>
                   <td className="px-4 py-3 text-muted-foreground">{s.specialization || "—"}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
-                      <button onClick={() => startEdit(s)} className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted">
-                        {t("common.edit")}
-                      </button>
-                      <button onClick={() => handleDelete(s)} className="rounded-lg border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">
-                        {t("common.delete")}
-                      </button>
+                      <button onClick={() => startEdit(s)} className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted">{t("common.edit")}</button>
+                      <button onClick={() => setDeleteId(s.id)} className="rounded-lg border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">{t("common.delete")}</button>
                     </div>
                   </td>
                 </tr>
               ))}
-              {staff.length === 0 && (
-                <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">{t("staff.noStaff")}</td></tr>
-              )}
             </tbody>
           </table>
         </div>
       )}
+
+      <Modal open={!!deleteId} onOpenChange={() => setDeleteId(null)} title={t("common.confirmDelete")} footer={
+        <>
+          <Button variant="ghost" onClick={() => setDeleteId(null)}>{t("common.cancel")}</Button>
+          <Button variant="destructive" onClick={handleDelete}>{t("common.delete")}</Button>
+        </>
+      }>
+        <p>{t("staff.deleteConfirm")}</p>
+      </Modal>
     </div>
   );
 }
