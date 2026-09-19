@@ -57,6 +57,7 @@ export async function updateSession(request: NextRequest) {
       const pathname = request.nextUrl.pathname;
 
       const roleRoutes: Record<string, string[]> = {
+        super_admin: ["/super-admin"],
         admin: ["/admin"],
         doctor: ["/doctor"],
         nurse: ["/nurse"],
@@ -66,9 +67,9 @@ export async function updateSession(request: NextRequest) {
       };
 
       const allowedPrefixes = roleRoutes[role] || [];
-      const isAllowed = allowedPrefixes.some((prefix) =>
-        pathname.startsWith(prefix)
-      );
+      const isAllowed =
+        allowedPrefixes.some((prefix) => pathname.startsWith(prefix)) ||
+        pathname.startsWith("/profile");
 
       if (!isAllowed && pathname !== "/login" && !pathname.startsWith("/api")) {
         const url = request.nextUrl.clone();
