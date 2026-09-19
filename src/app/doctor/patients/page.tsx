@@ -58,7 +58,12 @@ export default function DoctorPatientsListPage() {
                   <td className="px-4 py-3 font-mono text-xs">{p.uhid}</td>
                   <td className="px-4 py-3 font-medium">{p.name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{p.phone}</td>
-                  <td className="px-4 py-3"><Link href={`/doctor/patients/${p.id}`} className="text-primary text-xs hover:underline">{t("doctorPatients.viewHistory")}</Link></td>
+                  <td className="px-4 py-3">
+                    <div className="flex gap-2">
+                      <Link href={`/doctor/prescriptions/new?patient=${p.id}`} className="rounded-lg bg-primary/10 px-3 py-1 text-xs text-primary hover:bg-primary/20">{t("doctorPatients.writePrescription")}</Link>
+                      <Link href={`/doctor/patients/${p.id}`} className="text-primary text-xs hover:underline">{t("doctorPatients.viewHistory")}</Link>
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

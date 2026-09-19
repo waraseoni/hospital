@@ -250,6 +250,7 @@ export const hi: Dictionary = {
     phone: "फ़ोन",
     action: "क्रिया",
     viewHistory: "इतिहास देखें",
+    writePrescription: "पर्ची लिखें",
   },
   doctorPrescriptions: {
     title: "नई पर्ची",

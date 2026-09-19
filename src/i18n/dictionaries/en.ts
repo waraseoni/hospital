@@ -261,6 +261,7 @@ export const en = {
     phone: "Phone",
     action: "Action",
     viewHistory: "View History",
+    writePrescription: "Write Prescription",
   },
   doctorPrescriptions: {
     title: "New Prescription",
