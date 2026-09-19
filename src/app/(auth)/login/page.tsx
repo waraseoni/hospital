@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
@@ -12,15 +12,16 @@ export default function LoginPage() {
   const { t } = useI18n();
   const router = useRouter();
 
-  const [email, setEmail] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return localStorage.getItem("hms_remembered_email") || "";
-  });
+  const [email, setEmail] = useState("");
+  const [remember, setRemember] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setEmail(localStorage.getItem("hms_remembered_email") || "");
+    setRemember(localStorage.getItem("hms_remember") === "1");
+    setMounted(true);
+  }, []);
   const [password, setPassword] = useState("");
-  const [remember, setRemember] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("hms_remember") === "1";
-  });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
@@ -165,7 +166,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleForgotPassword}
-              disabled={forgotLoading || !email}
+              disabled={!mounted || forgotLoading || !email}
               className="text-sm text-primary hover:underline disabled:opacity-50"
             >
               {forgotLoading ? t("auth.sending") : t("auth.forgotPassword")}
