@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import { cn } from "@/lib/utils/cn";
 import { CheckCircle, AlertCircle, Info, X } from "lucide-react";
 
@@ -10,31 +10,51 @@ export interface ToastData {
   message: string;
 }
 
-interface ToastProps {
-  toast: ToastData;
-  onDismiss: (id: string) => void;
+interface ToastContextType {
+  toasts: ToastData[];
+  addToast: (type: ToastData["type"], message: string) => void;
+  dismissToast: (id: string) => void;
 }
 
-const typeIcons = {
-  success: CheckCircle,
-  error: AlertCircle,
-  info: Info,
-};
+const ToastContext = createContext<ToastContextType | null>(null);
 
-const typeStyles = {
-  success: "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-900/20",
-  error: "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-900/20",
-  info: "border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20",
-};
+export function useToast() {
+  const ctx = useContext(ToastContext);
+  if (!ctx) throw new Error("useToast must be used within ToastProvider");
+  return ctx;
+}
 
-const iconStyles = {
-  success: "text-green-600",
-  error: "text-red-600",
-  info: "text-blue-600",
-};
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [toasts, setToasts] = useState<ToastData[]>([]);
 
-export function Toast({ toast, onDismiss }: ToastProps) {
-  const Icon = typeIcons[toast.type];
+  const addToast = useCallback((type: ToastData["type"], message: string) => {
+    const id = Math.random().toString(36).slice(2);
+    setToasts((prev) => [...prev, { id, type, message }]);
+    setTimeout(() => {
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 4000);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  return (
+    <ToastContext.Provider value={{ toasts, addToast, dismissToast }}>
+      {children}
+      <ToastContainer toasts={toasts} onDismiss={dismissToast} />
+    </ToastContext.Provider>
+  );
+}
+
+export function Toast({ toast, onDismiss }: { toast: ToastData; onDismiss: (id: string) => void }) {
+  const Icon = { success: CheckCircle, error: AlertCircle, info: Info }[toast.type];
+  const typeStyles = {
+    success: "border-green-200 bg-green-50 dark:border-green-900 dark:bg-green-900/20",
+    error: "border-red-200 bg-red-50 dark:border-red-900 dark:bg-red-900/20",
+    info: "border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-900/20",
+  };
+  const iconStyles = { success: "text-green-600", error: "text-red-600", info: "text-blue-600" };
 
   return (
     <div className={cn("flex items-start gap-3 rounded-lg border p-4 shadow-lg", typeStyles[toast.type])}>
@@ -45,24 +65,6 @@ export function Toast({ toast, onDismiss }: ToastProps) {
       </button>
     </div>
   );
-}
-
-export function useToast() {
-  const [toasts, setToasts] = useState<ToastData[]>([]);
-
-  const addToast = (type: ToastData["type"], message: string) => {
-    const id = Math.random().toString(36).slice(2);
-    setToasts((prev) => [...prev, { id, type, message }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
-  };
-
-  const dismissToast = (id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
-  };
-
-  return { toasts, addToast, dismissToast };
 }
 
 export function ToastContainer({ toasts, onDismiss }: { toasts: ToastData[]; onDismiss: (id: string) => void }) {

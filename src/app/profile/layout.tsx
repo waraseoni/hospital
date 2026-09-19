@@ -4,29 +4,22 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
-import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, TestTube, UserCog } from "lucide-react";
+import { AppShell } from "@/components/layout/app-shell";
 
-const navItems: NavItem[] = [
-  { href: "/lab", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
-  { href: "/lab/queue", labelKey: "nav.testQueue", icon: TestTube },
-  { href: "/profile", labelKey: "nav.profile", icon: UserCog },
-];
-
-export default function LabLayout({ children }: { children: React.ReactNode }) {
+export default function ProfileLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     const supabase = createClient();
-    async function loadProfile() {
+    async function load() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
       const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-      if (!data || data.role !== "lab") { router.push("/login"); return; }
+      if (!data) { router.push("/login"); return; }
       setProfile(data);
     }
-    loadProfile();
+    load();
   }, [router]);
 
   async function handleLogout() {
@@ -35,14 +28,10 @@ export default function LabLayout({ children }: { children: React.ReactNode }) {
     router.push("/login");
   }
 
+  if (!profile) return null;
+
   return (
-    <AppShell
-      titleKey="roles.lab"
-      subtitle={profile?.full_name}
-      navItems={navItems}
-      user={profile}
-      onLogout={handleLogout}
-    >
+    <AppShell titleKey="nav.profile" subtitle={profile.full_name} navItems={[]} user={profile} onLogout={handleLogout}>
       {children}
     </AppShell>
   );

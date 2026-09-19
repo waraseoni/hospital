@@ -50,6 +50,9 @@ export const en = {
     billing: "Billing",
     roomStatus: "Room Status",
     home: "Home",
+    myPatients: "My Patients",
+    profile: "Profile",
+    myProfile: "My Profile",
   },
   roles: {
     admin: "Admin Panel",
@@ -398,20 +401,37 @@ export const en = {
     previous: "Previous",
     next: "Next",
   },
-  rooms: {
-    title: "Room & Bed Status",
-    loading: "Loading...",
-    ward: "Ward",
-    bed: "Bed",
-    status: "Status",
-    action: "Action",
-    ready: "Ready",
-    needsCleaning: "Needs Cleaning",
-    occupied: "Occupied",
-    markDirty: "Mark Dirty",
-    markClean: "Mark Clean",
-  },
-} as const satisfies Record<string, Record<string, string>>;
+   adminUsers: {
+     title: "User Management",
+   },
+   rooms: {
+     title: "Room & Bed Status",
+     loading: "Loading...",
+     ward: "Ward",
+     bed: "Bed",
+     status: "Status",
+     action: "Action",
+     ready: "Ready",
+     needsCleaning: "Needs Cleaning",
+     occupied: "Occupied",
+     markDirty: "Mark Dirty",
+     markClean: "Mark Clean",
+   },
+   profile: {
+     title: "My Profile",
+     edit: "Edit Profile",
+     editProfile: "Edit Profile",
+     details: "Profile Details",
+     fullName: "Full Name",
+     phone: "Phone",
+     email: "Email",
+     address: "Address",
+     specialization: "Specialization",
+     qualification: "Qualification",
+     save: "Save",
+     savedSuccess: "Profile updated successfully",
+   },
+ } as const satisfies Record<string, Record<string, string>>;
 
 export type Dictionary = Record<string, Record<string, string>>;
 export type DictionaryKey = (typeof en)[keyof typeof en];

@@ -10,7 +10,6 @@ import { LayoutDashboard, Folder, Users2 } from "lucide-react";
 const navItems: NavItem[] = [
   { href: "/staff", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
   { href: "/staff/rooms", labelKey: "nav.roomStatus", icon: Folder },
-  { href: "/staff/dashboard", labelKey: "nav.roomStatus", icon: Users2 },
 ];
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {
