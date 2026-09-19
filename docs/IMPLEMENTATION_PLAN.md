@@ -27,8 +27,8 @@ Rules:
 
 | # | Phase | Target Version | Status |
 |---|---|---|---|
-| 0 | Foundation & Core Fixes | `0.2.0.0` | [ ] — i18n + theming [DONE] |
-| 0.3 | Shared Components + Bug Fixes | `0.3.0.0` | [ ] |
+| 0 | Foundation & Core Fixes | `0.2.0.0` | [x] — i18n + theming [DONE] |
+| 0.3 | Shared Components + Bug Fixes | `0.3.0.0` | [x] — UI library, bug fixes [DONE] |
 | 0.4 | Core Workflow Integration | `0.4.0.0` | [ ] |
 | 0.5 | Enhanced Pages | `0.5.0.0` | [ ] |
 | 0.6 | Settings + Polish | `0.6.0.0` | [ ] |
