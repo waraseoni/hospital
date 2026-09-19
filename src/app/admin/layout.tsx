@@ -1,23 +1,22 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
-import { cn } from "@/lib/utils/cn";
+import { AppShell, type NavItem } from "@/components/layout/app-shell";
+import { LayoutDashboard, Users, UserRound, BedDouble, Package, ScrollText } from "lucide-react";
 
-const navItems = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/staff", label: "Staff" },
-  { href: "/admin/patients", label: "Patients" },
-  { href: "/admin/beds", label: "Beds" },
-  { href: "/admin/inventory", label: "Inventory" },
-  { href: "/admin/audit", label: "Audit Logs" },
+const navItems: NavItem[] = [
+  { href: "/admin", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/admin/staff", labelKey: "nav.staff", icon: Users },
+  { href: "/admin/patients", labelKey: "nav.patients", icon: UserRound },
+  { href: "/admin/beds", labelKey: "nav.beds", icon: BedDouble },
+  { href: "/admin/inventory", labelKey: "nav.inventory", icon: Package },
+  { href: "/admin/audit", labelKey: "nav.auditLogs", icon: ScrollText },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
   const router = useRouter();
   const [profile, setProfile] = useState<Profile | null>(null);
 
@@ -40,36 +39,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 border-r border-border bg-card p-4">
-        <div className="mb-6">
-          <h2 className="text-lg font-bold text-primary">HMS Admin</h2>
-          {profile && <p className="text-xs text-muted-foreground">{profile.full_name}</p>}
-        </div>
-        <nav className="space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                "block rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                pathname === item.href
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <button
-          onClick={handleLogout}
-          className="mt-6 w-full rounded-lg border border-border px-3 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
-        >
-          Logout
-        </button>
-      </aside>
-      <main className="flex-1 overflow-auto p-6">{children}</main>
-    </div>
+    <AppShell
+      titleKey="roles.admin"
+      subtitle={profile?.full_name}
+      navItems={navItems}
+      user={profile}
+      onLogout={handleLogout}
+    >
+      {children}
+    </AppShell>
   );
 }

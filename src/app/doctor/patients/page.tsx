@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Patient } from "@/types/database";
 import Link from "next/link";
+import { useI18n } from "@/i18n/provider";
 
 export default function DoctorPatientsListPage() {
+  const { t } = useI18n();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
-
-  useEffect(() => { loadPatients(); }, []);
 
   async function loadPatients() {
     const supabase = createClient();
@@ -18,6 +18,8 @@ export default function DoctorPatientsListPage() {
     setPatients(data || []);
     setLoading(false);
   }
+
+  useEffect(() => { loadPatients(); }, []);
 
   const filtered = patients.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -27,9 +29,9 @@ export default function DoctorPatientsListPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">My Patients</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("doctorPatients.title")}</h1>
       <input
-        placeholder="Search by name, UHID, or phone..."
+        placeholder={t("doctorPatients.searchPlaceholder")}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="mb-4 w-full max-w-md rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
@@ -41,10 +43,10 @@ export default function DoctorPatientsListPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">UHID</th>
-                <th className="px-4 py-3 text-left font-medium">Name</th>
-                <th className="px-4 py-3 text-left font-medium">Phone</th>
-                <th className="px-4 py-3 text-left font-medium">Action</th>
+                <th className="px-4 py-3 text-left font-medium">{t("doctorPatients.uhid")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("doctorPatients.name")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("doctorPatients.phone")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("doctorPatients.action")}</th>
               </tr>
             </thead>
             <tbody>
@@ -55,7 +57,7 @@ export default function DoctorPatientsListPage() {
                   <td className="px-4 py-3 text-muted-foreground">{p.phone}</td>
                   <td className="px-4 py-3">
                     <Link href={`/doctor/patients/${p.id}`} className="text-primary text-xs hover:underline">
-                      View History
+                      {t("doctorPatients.viewHistory")}
                     </Link>
                   </td>
                 </tr>

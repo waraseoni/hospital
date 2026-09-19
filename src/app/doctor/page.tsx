@@ -3,8 +3,11 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
+import { useI18n } from "@/i18n/provider";
+import { Calendar, FlaskConical, ClipboardList } from "lucide-react";
 
 export default function DoctorDashboardPage() {
+  const { t } = useI18n();
   const [todayAppointments, setTodayAppointments] = useState(0);
   const [pendingLabOrders, setPendingLabOrders] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -30,23 +33,38 @@ export default function DoctorDashboardPage() {
     load();
   }, []);
 
-  if (loading) return <div className="animate-pulse text-muted-foreground">Loading...</div>;
+  if (loading) return <div className="animate-pulse text-muted-foreground">{t("common.loading")}</div>;
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Doctor Dashboard</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("dash.welcomeDoctor")}</h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <p className="text-sm text-muted-foreground">Today&apos;s Appointments</p>
-          <p className="text-3xl font-bold mt-1 text-blue-600">{todayAppointments}</p>
+        <div className="flex items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm">
+          <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+            <Calendar size={20} />
+          </span>
+          <div>
+            <p className="text-sm text-muted-foreground">{t("dash.todayAppointments")}</p>
+            <p className="text-3xl font-bold mt-1 text-blue-600">{todayAppointments}</p>
+          </div>
         </div>
-        <div className="rounded-xl border border-border bg-card p-6">
-          <p className="text-sm text-muted-foreground">Pending Lab Orders</p>
-          <p className="text-3xl font-bold mt-1 text-orange-600">{pendingLabOrders}</p>
+        <div className="flex items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm">
+          <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-600">
+            <FlaskConical size={20} />
+          </span>
+          <div>
+            <p className="text-sm text-muted-foreground">{t("dash.pendingLabOrders")}</p>
+            <p className="text-3xl font-bold mt-1 text-orange-600">{pendingLabOrders}</p>
+          </div>
         </div>
-        <Link href="/doctor/opd" className="rounded-xl border border-border bg-card p-6 hover:shadow-md transition-shadow">
-          <p className="text-sm text-muted-foreground">Quick Action</p>
-          <p className="text-lg font-semibold mt-1 text-primary">Open OPD Queue &rarr;</p>
+        <Link href="/doctor/opd" className="flex items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm transition-shadow hover:shadow-md">
+          <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <ClipboardList size={20} />
+          </span>
+          <div>
+            <p className="text-sm text-muted-foreground">{t("common.actions")}</p>
+            <p className="text-lg font-semibold mt-1 text-primary">{t("nav.opdQueue")} →</p>
+          </div>
         </Link>
       </div>
     </div>

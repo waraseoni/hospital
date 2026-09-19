@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
+import { useI18n } from "@/i18n/provider";
 
 export default function AdminStaffPage() {
+  const { t } = useI18n();
   const [staff, setStaff] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -69,12 +71,12 @@ export default function AdminStaffPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to update staff");
+        setError(data.error || t("staff.updateFailed"));
         setSubmitting(false);
         return;
       }
 
-      setSuccess("Staff member updated successfully");
+      setSuccess(t("staff.updatedSuccess"));
       resetForm();
       loadStaff();
       setSubmitting(false);
@@ -88,12 +90,12 @@ export default function AdminStaffPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.error || "Failed to create staff");
+        setError(data.error || t("staff.createFailed"));
         setSubmitting(false);
         return;
       }
 
-      setSuccess("Staff member created successfully");
+      setSuccess(t("staff.createdSuccess"));
       resetForm();
       loadStaff();
       setSubmitting(false);
@@ -101,7 +103,7 @@ export default function AdminStaffPage() {
   }
 
   async function handleDelete(s: Profile) {
-    if (!window.confirm(`Are you sure you want to delete ${s.full_name}?`)) return;
+    if (!window.confirm(t("staff.deleteConfirm") + " " + s.full_name + "?")) return;
 
     setError("");
     setSuccess("");
@@ -113,11 +115,11 @@ export default function AdminStaffPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      setError(data.error || "Failed to delete staff");
+      setError(data.error || t("staff.deleteFailed"));
       return;
     }
 
-    setSuccess("Staff member deleted successfully");
+    setSuccess(t("staff.deletedSuccess"));
     loadStaff();
   }
 
@@ -131,9 +133,9 @@ export default function AdminStaffPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Staff Management</h1>
+        <h1 className="text-2xl font-bold">{t("staff.title")}</h1>
         <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90">
-          + Add Staff
+          {t("staff.addStaff")}
         </button>
       </div>
 
@@ -142,47 +144,47 @@ export default function AdminStaffPage() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
-          <h2 className="text-lg font-semibold">{editingId ? "Edit Staff" : "Add New Staff"}</h2>
+          <h2 className="text-lg font-semibold">{editingId ? t("staff.editStaff") : t("staff.addNewStaff")}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <input placeholder="Full Name" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-            <input placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
+            <input placeholder={t("staff.fullName")} value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
+            <input placeholder={t("staff.email")} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
             {!editingId && (
-              <input placeholder="Password (min 6 chars)" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required minLength={6} />
+              <input placeholder={t("staff.password")} type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required minLength={6} />
             )}
-            <input placeholder="Phone (optional)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+            <input placeholder={t("staff.phone")} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
             <select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Profile["role"] })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-              <option value="doctor">Doctor</option>
-              <option value="nurse">Nurse</option>
-              <option value="lab">Lab Technician</option>
-              <option value="staff">Staff</option>
+              <option value="doctor">{t("staff.doctor")}</option>
+              <option value="nurse">{t("staff.nurse")}</option>
+              <option value="lab">{t("staff.labTech")}</option>
+              <option value="staff">{t("staff.staffRole")}</option>
             </select>
             {form.role === "doctor" && (
-              <input placeholder="Specialization" value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+              <input placeholder={t("staff.specialization")} value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
             )}
           </div>
           <div className="flex gap-2">
             <button type="submit" disabled={submitting} className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-              {submitting ? (editingId ? "Updating..." : "Creating...") : (editingId ? "Update Staff" : "Create Account")}
+              {submitting ? (editingId ? t("staff.updating") : t("staff.creating")) : (editingId ? t("staff.updateStaff") : t("staff.createAccount"))}
             </button>
             <button type="button" onClick={resetForm} className="rounded-lg border border-border px-4 py-2 text-sm hover:bg-muted">
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </form>
       )}
 
       {loading ? (
-        <div className="animate-pulse text-muted-foreground">Loading staff...</div>
+        <div className="animate-pulse text-muted-foreground">{t("staff.loading")}</div>
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">Name</th>
-                <th className="px-4 py-3 text-left font-medium">Email</th>
-                <th className="px-4 py-3 text-left font-medium">Role</th>
-                <th className="px-4 py-3 text-left font-medium">Specialization</th>
-                <th className="px-4 py-3 text-right font-medium">Actions</th>
+                <th className="px-4 py-3 text-left font-medium">{t("staff.fullName")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("staff.email")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("staff.role")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("staff.specialization")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("staff.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -199,17 +201,17 @@ export default function AdminStaffPage() {
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
                       <button onClick={() => startEdit(s)} className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted">
-                        Edit
+                        {t("common.edit")}
                       </button>
                       <button onClick={() => handleDelete(s)} className="rounded-lg border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">
-                        Delete
+                        {t("common.delete")}
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
               {staff.length === 0 && (
-                <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">No staff members found</td></tr>
+                <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">{t("staff.noStaff")}</td></tr>
               )}
             </tbody>
           </table>

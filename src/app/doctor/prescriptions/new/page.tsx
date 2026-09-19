@@ -4,8 +4,10 @@ import { Suspense, useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 import type { Patient, MedicineItem } from "@/types/database";
+import { useI18n } from "@/i18n/provider";
 
 function PrescriptionForm() {
+  const { t } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const patientId = searchParams.get("patient");
@@ -73,41 +75,41 @@ function PrescriptionForm() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold mb-2">New Prescription</h1>
+      <h1 className="text-2xl font-bold mb-2">{t("doctorPrescriptions.title")}</h1>
       {patient && (
         <p className="text-sm text-muted-foreground mb-6">
-          Patient: {patient.name} (UHID: {patient.uhid})
+          {t("doctorPrescriptions.patient")}: {patient.name} (UHID: {patient.uhid})
         </p>
       )}
 
       <form onSubmit={handleSave} className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6 space-y-4">
-          <h2 className="font-semibold">Clinical Details</h2>
+          <h2 className="font-semibold">{t("doctorPrescriptions.clinicalDetails")}</h2>
           <div>
-            <label className="block text-sm font-medium mb-1">Diagnosis *</label>
-            <textarea value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} rows={2} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" required placeholder="Primary diagnosis..." />
+            <label className="block text-sm font-medium mb-1">{t("doctorPrescriptions.diagnosis")} *</label>
+            <textarea value={diagnosis} onChange={(e) => setDiagnosis(e.target.value)} rows={2} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" required placeholder={t("doctorPrescriptions.diagnosisPlaceholder")} />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Symptoms</label>
-            <textarea value={symptoms} onChange={(e) => setSymptoms(e.target.value)} rows={2} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" placeholder="Patient symptoms..." />
+            <label className="block text-sm font-medium mb-1">{t("doctorPrescriptions.symptoms")}</label>
+            <textarea value={symptoms} onChange={(e) => setSymptoms(e.target.value)} rows={2} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" placeholder={t("doctorPrescriptions.symptomsPlaceholder")} />
           </div>
         </div>
 
         <div className="rounded-xl border border-border bg-card p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-semibold">Medicines</h2>
+            <h2 className="font-semibold">{t("doctorPrescriptions.medicines")}</h2>
             <button type="button" onClick={addMedicine} className="rounded-lg bg-primary/10 px-3 py-1.5 text-xs text-primary hover:bg-primary/20">
-              + Add Medicine
+              + {t("doctorPrescriptions.addMedicine")}
             </button>
           </div>
           {medicines.map((med, i) => (
             <div key={i} className="grid gap-3 sm:grid-cols-5 items-end">
-              <input placeholder="Medicine name" value={med.name} onChange={(e) => updateMedicine(i, "name", e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-              <input placeholder="Dosage (500mg)" value={med.dosage} onChange={(e) => updateMedicine(i, "dosage", e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-              <input placeholder="Frequency (TDS)" value={med.frequency} onChange={(e) => updateMedicine(i, "frequency", e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
-              <input placeholder="Duration (5 days)" value={med.duration} onChange={(e) => updateMedicine(i, "duration", e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+              <input placeholder={t("doctorPrescriptions.medicineName")} value={med.name} onChange={(e) => updateMedicine(i, "name", e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+              <input placeholder={t("doctorPrescriptions.dosage")} value={med.dosage} onChange={(e) => updateMedicine(i, "dosage", e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+              <input placeholder={t("doctorPrescriptions.frequency")} value={med.frequency} onChange={(e) => updateMedicine(i, "frequency", e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+              <input placeholder={t("doctorPrescriptions.duration")} value={med.duration} onChange={(e) => updateMedicine(i, "duration", e.target.value)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" />
               <div className="flex gap-1">
-                <input placeholder="Instructions" value={med.instructions} onChange={(e) => updateMedicine(i, "instructions", e.target.value)} className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm" />
+                <input placeholder={t("doctorPrescriptions.instructions")} value={med.instructions} onChange={(e) => updateMedicine(i, "instructions", e.target.value)} className="flex-1 rounded-lg border border-input bg-background px-3 py-2 text-sm" />
                 {medicines.length > 1 && (
                   <button type="button" onClick={() => removeMedicine(i)} className="rounded-lg border border-border px-2 text-destructive hover:bg-destructive/10 text-sm">&times;</button>
                 )}
@@ -117,13 +119,13 @@ function PrescriptionForm() {
         </div>
 
         <div className="rounded-xl border border-border bg-card p-6">
-          <label className="block text-sm font-medium mb-1">Doctor Notes</label>
-          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" placeholder="Additional notes for patient..." />
+          <label className="block text-sm font-medium mb-1">{t("doctorPrescriptions.doctorNotes")}</label>
+          <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={2} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" placeholder={t("doctorPrescriptions.notesPlaceholder")} />
         </div>
 
         <div className="flex gap-3">
           <button type="submit" disabled={saving} className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-            {saving ? "Saving..." : "Save & Send to Pharmacy"}
+            {saving ? t("doctorPrescriptions.saving") : t("doctorPrescriptions.saveAndSend")}
           </button>
           <button type="button" onClick={() => router.back()} className="rounded-lg border border-border px-6 py-2 text-sm hover:bg-muted">
             Cancel

@@ -1,9 +1,10 @@
 import { createClient } from "@/lib/supabase/admin";
 import { whatsappTemplates } from "./templates";
 
-const TWILIO_SID = process.env.TWILIO_ACCOUNT_SID;
-const TWILIO_AUTH = process.env.TWILIO_AUTH_TOKEN;
-const TWILIO_FROM = process.env.TWILIO_WHATSAPP_FROM;
+const WHATSAPP_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID;
+const WHATSAPP_ACCESS_TOKEN = process.env.WHATSAPP_ACCESS_TOKEN;
+
+const GRAPH_VERSION = "v21.0";
 
 interface SendWhatsAppParams {
   to: string;
@@ -11,6 +12,13 @@ interface SendWhatsAppParams {
   messageType: string;
   messageBody: string;
   pdfLink?: string;
+}
+
+function toE164(to: string): string {
+  const digits = to.replace(/\D/g, "");
+  if (digits.startsWith("91") && digits.length === 12) return digits;
+  if (digits.length === 10) return `91${digits}`;
+  return digits;
 }
 
 export async function sendWhatsAppMessage({
@@ -32,38 +40,40 @@ export async function sendWhatsAppMessage({
     .single();
 
   try {
-    const formattedTo = to.startsWith("+") ? `whatsapp:${to}` : `whatsapp:+91${to}`;
-
     const response = await fetch(
-      `https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json`,
+      `https://graph.facebook.com/${GRAPH_VERSION}/${WHATSAPP_NUMBER_ID}/messages`,
       {
         method: "POST",
         headers: {
-          Authorization: `Basic ${Buffer.from(`${TWILIO_SID}:${TWILIO_AUTH}`).toString("base64")}`,
-          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${WHATSAPP_ACCESS_TOKEN}`,
+          "Content-Type": "application/json",
         },
-        body: new URLSearchParams({
-          From: TWILIO_FROM!,
-          To: formattedTo,
-          Body: messageBody,
-        }).toString(),
+        body: JSON.stringify({
+          messaging_product: "whatsapp",
+          to: toE164(to),
+          type: "text",
+          text: {
+            body: messageBody,
+            preview_url: true,
+          },
+        }),
       }
     );
 
     const result = await response.json();
 
-    if (response.ok) {
+    if (response.ok && result.messages?.[0]?.id) {
       await supabase
         .from("whatsapp_logs")
         .update({
           status: "sent",
-          external_message_id: result.sid,
+          external_message_id: result.messages[0].id,
           sent_at: new Date().toISOString(),
         })
         .eq("id", logEntry?.id);
-      return { success: true, sid: result.sid };
+      return { success: true, sid: result.messages[0].id };
     } else {
-      throw new Error(result.message || "Failed to send WhatsApp message");
+      throw new Error(result.error?.message || "Failed to send WhatsApp message");
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : "Unknown error";

@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Profile } from "@/types/database";
+import { useI18n } from "@/i18n/provider";
 
 export default function PatientAppointmentsPage() {
+  const { t } = useI18n();
   const [doctors, setDoctors] = useState<Profile[]>([]);
   const [appointments, setAppointments] = useState<Array<{ id: string; date_slot: string; token_no: number; status: string; doctor: { full_name: string } | null }>>([]);
   const [loading, setLoading] = useState(true);
@@ -60,7 +62,7 @@ export default function PatientAppointmentsPage() {
   }
 
   async function handleCancel(id: string) {
-    if (!window.confirm("Cancel this appointment?")) return;
+    if (!window.confirm(t("appointments.deleteConfirm"))) return;
     const supabase = createClient();
     await supabase.from("appointments").update({ status: "cancelled" }).eq("id", id);
     load();
@@ -68,36 +70,36 @@ export default function PatientAppointmentsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Book Appointment</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("appointments.title")}</h1>
 
       <form onSubmit={handleBook} className="mb-8 rounded-xl border border-border bg-card p-6 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium mb-1">Doctor</label>
+            <label className="block text-sm font-medium mb-1">{t("appointments.doctor")}</label>
             <select value={form.doctor_id} onChange={(e) => setForm({ ...form, doctor_id: e.target.value })} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" required>
-              <option value="">-- Select Doctor --</option>
+              <option value="">{t("appointments.selectDoctor")}</option>
               {doctors.map(d => (
                 <option key={d.id} value={d.id}>Dr. {d.full_name} {d.specialization ? `(${d.specialization})` : ""}</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Date & Time</label>
+            <label className="block text-sm font-medium mb-1">{t("appointments.dateTime")}</label>
             <input type="datetime-local" value={form.date_slot} onChange={(e) => setForm({ ...form, date_slot: e.target.value })} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
           </div>
         </div>
         <button type="submit" disabled={submitting} className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-          {submitting ? "Booking..." : "Book Appointment"}
+          {submitting ? t("appointments.booking") : t("appointments.bookNow")}
         </button>
       </form>
 
-      <h2 className="text-lg font-semibold mb-3">My Appointments</h2>
+      <h2 className="text-lg font-semibold mb-3">{t("appointments.myAppointments")}</h2>
       <div className="space-y-2">
         {appointments.map(apt => (
           <div key={apt.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
             <div>
               <p className="font-medium">Dr. {apt.doctor?.full_name}</p>
-              <p className="text-xs text-muted-foreground">{new Date(apt.date_slot).toLocaleDateString("en-IN")} | Token #{apt.token_no}</p>
+              <p className="text-xs text-muted-foreground">{new Date(apt.date_slot).toLocaleDateString("en-IN")} | {t("appointments.token")} #{apt.token_no}</p>
             </div>
             <div className="flex items-center gap-2">
               <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${apt.status === "completed" ? "bg-green-100 text-green-800" : apt.status === "cancelled" ? "bg-red-100 text-red-800" : "bg-blue-100 text-blue-800"}`}>
@@ -105,13 +107,13 @@ export default function PatientAppointmentsPage() {
               </span>
               {(apt.status === "scheduled" || apt.status === "in_progress") && (
                 <button onClick={() => handleCancel(apt.id)} className="rounded-lg border border-border px-2 py-0.5 text-xs text-destructive hover:bg-destructive/10">
-                  Cancel
+                  {t("appointments.cancel")}
                 </button>
               )}
             </div>
           </div>
         ))}
-        {appointments.length === 0 && <p className="text-sm text-muted-foreground">No appointments yet</p>}
+        {appointments.length === 0 && <p className="text-sm text-muted-foreground">{t("appointments.noAppointments")}</p>}
       </div>
     </div>
   );

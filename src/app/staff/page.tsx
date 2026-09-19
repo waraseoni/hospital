@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Invoice, InvoiceLineItem, Patient } from "@/types/database";
+import { useI18n } from "@/i18n/provider";
+import { BedDouble, Trash2 } from "lucide-react";
 
 interface LineItemDraft {
   description: string;
@@ -12,6 +14,7 @@ interface LineItemDraft {
 }
 
 export default function StaffDashboardPage() {
+  const { t } = useI18n();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [stats, setStats] = useState({ dirtyBeds: 0, totalBeds: 0 });
@@ -118,7 +121,7 @@ export default function StaffDashboardPage() {
   }
 
   async function markPaid(id: string) {
-    if (!window.confirm("Mark this invoice as paid?")) return;
+    if (!window.confirm(t("common.confirmDelete"))) return;
     const supabase = createClient();
     await supabase.from("invoices").update({ payment_status: "paid", paid_at: new Date().toISOString() }).eq("id", id);
     loadAll();
@@ -131,28 +134,38 @@ export default function StaffDashboardPage() {
     cancelled: "text-muted-foreground",
   };
 
-  if (loading) return <div className="animate-pulse text-muted-foreground">Loading...</div>;
+  if (loading) return <div className="animate-pulse text-muted-foreground">{t("common.loading")}</div>;
 
   return (
     <div className="space-y-8">
-      <h1 className="text-2xl font-bold">Staff Dashboard</h1>
+      <h1 className="text-2xl font-bold">{t("roles.staff")}</h1>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <p className="text-sm text-muted-foreground">Beds Need Cleaning</p>
-          <p className="text-3xl font-bold mt-1 text-red-600">{stats.dirtyBeds}</p>
+        <div className="flex items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm">
+          <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-500/10 text-red-600">
+            <Trash2 size={20} />
+          </span>
+          <div>
+            <p className="text-sm text-muted-foreground">{t("dash.dirtyRooms")}</p>
+            <p className="text-3xl font-bold mt-1 text-red-600">{stats.dirtyBeds}</p>
+          </div>
         </div>
-        <div className="rounded-xl border border-border bg-card p-6">
-          <p className="text-sm text-muted-foreground">Total Beds</p>
-          <p className="text-3xl font-bold mt-1 text-blue-600">{stats.totalBeds}</p>
+        <div className="flex items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm">
+          <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
+            <BedDouble size={20} />
+          </span>
+          <div>
+            <p className="text-sm text-muted-foreground">{t("nav.beds")}</p>
+            <p className="text-3xl font-bold mt-1 text-blue-600">{stats.totalBeds}</p>
+          </div>
         </div>
       </div>
 
       <div className="rounded-xl border border-border bg-card p-6 space-y-4">
-        <h2 className="font-semibold">Create Invoice</h2>
+        <h2 className="font-semibold">{t("dash.adminStats")}</h2>
         <form onSubmit={handleCreateInvoice} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Patient *</label>
+            <label className="block text-sm font-medium mb-1">{t("nav.patients")} *</label>
             <select value={selectedPatientId} onChange={(e) => setSelectedPatientId(e.target.value)} required className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
               <option value="">Select patient...</option>
               {patients.map(p => (
@@ -195,7 +208,7 @@ export default function StaffDashboardPage() {
           </div>
 
           <button type="submit" disabled={creating || !selectedPatientId || subtotal <= 0} className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-            {creating ? "Creating..." : "Create Invoice"}
+            {creating ? t("common.saving") : t("common.add")}
           </button>
         </form>
       </div>
@@ -207,10 +220,10 @@ export default function StaffDashboardPage() {
             <thead>
               <tr className="border-b border-border text-left text-muted-foreground">
                 <th className="pb-2 font-medium">Invoice #</th>
-                <th className="pb-2 font-medium">Patient</th>
+                <th className="pb-2 font-medium">{t("nav.patients")}</th>
                 <th className="pb-2 font-medium">Amount</th>
-                <th className="pb-2 font-medium">Status</th>
-                <th className="pb-2 font-medium">Actions</th>
+                <th className="pb-2 font-medium">{t("common.status")}</th>
+                <th className="pb-2 font-medium">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -230,7 +243,7 @@ export default function StaffDashboardPage() {
                 </tr>
               ))}
               {invoices.length === 0 && (
-                <tr><td colSpan={5} className="py-4 text-center text-muted-foreground">No invoices yet</td></tr>
+                <tr><td colSpan={5} className="py-4 text-center text-muted-foreground">{t("dash.noData")}</td></tr>
               )}
             </tbody>
           </table>

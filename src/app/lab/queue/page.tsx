@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { LabReport, Patient } from "@/types/database";
 import Link from "next/link";
+import { useI18n } from "@/i18n/provider";
 
 export default function LabQueuePage() {
+  const { t } = useI18n();
   const [reports, setReports] = useState<LabReport[]>([]);
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,7 +59,7 @@ export default function LabQueuePage() {
   }
 
   async function handleDelete(id: string) {
-    if (!window.confirm("Delete this pending lab report?")) return;
+    if (!window.confirm(t("labQueue.deleteConfirm"))) return;
     const supabase = createClient();
     await supabase.from("lab_reports").delete().eq("id", id);
     loadReports();
@@ -70,54 +72,54 @@ export default function LabQueuePage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Lab Test Queue</h1>
+        <h1 className="text-2xl font-bold">{t("labQueue.title")}</h1>
         <button onClick={() => setShowForm(!showForm)} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90">
-          {showForm ? "Cancel" : "+ New Lab Report"}
+          {showForm ? t("labQueue.cancel") : t("labQueue.newReport")}
         </button>
       </div>
 
       {showForm && (
         <form onSubmit={handleCreate} className="rounded-xl border border-border bg-card p-6 mb-6 space-y-4">
-          <h2 className="font-semibold">Create Lab Report</h2>
+          <h2 className="font-semibold">{t("labQueue.createReport")}</h2>
           <div>
-            <label className="block text-sm font-medium mb-1">Patient *</label>
+            <label className="block text-sm font-medium mb-1">{t("labQueue.patient")} *</label>
             <select value={newPatientId} onChange={(e) => setNewPatientId(e.target.value)} required className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
-              <option value="">Select patient...</option>
+              <option value="">{t("labQueue.selectPatient")}</option>
               {patients.map(p => (
                 <option key={p.id} value={p.id}>{p.name} ({p.uhid})</option>
               ))}
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Test Name *</label>
-            <input value={newTestName} onChange={(e) => setNewTestName(e.target.value)} required placeholder="e.g. CBC, Blood Sugar..." className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+            <label className="block text-sm font-medium mb-1">{t("labQueue.testName")} *</label>
+            <input value={newTestName} onChange={(e) => setNewTestName(e.target.value)} required placeholder={t("labQueue.testNamePlaceholder")} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Notes</label>
-            <textarea value={newNotes} onChange={(e) => setNewNotes(e.target.value)} rows={2} placeholder="Additional notes..." className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+            <label className="block text-sm font-medium mb-1">{t("labQueue.notes")}</label>
+            <textarea value={newNotes} onChange={(e) => setNewNotes(e.target.value)} rows={2} placeholder={t("labQueue.notesPlaceholder")} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
           </div>
           <button type="submit" disabled={creating} className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-            {creating ? "Creating..." : "Create Report"}
+            {creating ? t("labQueue.creating") : t("labQueue.createReportBtn")}
           </button>
         </form>
       )}
 
       {loading ? (
-        <div className="animate-pulse text-muted-foreground">Loading queue...</div>
+        <div className="animate-pulse text-muted-foreground">{t("labQueue.loading")}</div>
       ) : (
         <div className="space-y-6">
           <section>
-            <h2 className="text-lg font-semibold mb-3 text-orange-600">Pending ({pending.length})</h2>
+            <h2 className="text-lg font-semibold mb-3 text-orange-600">{t("labQueue.pending").replace("{count}", String(pending.length))}</h2>
             <div className="space-y-2">
               {pending.map((r) => (
                 <div key={r.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
                   <div>
                     <p className="font-medium">{r.test_name}</p>
-                    <p className="text-xs text-muted-foreground">Patient: {r.patient?.name} | UHID: {r.patient?.uhid}</p>
+                    <p className="text-xs text-muted-foreground">{t("labQueue.patient")}: {r.patient?.name} | UHID: {r.patient?.uhid}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Link href={`/lab/reports/${r.id}`} className="rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:bg-primary/90">
-                      Enter Results
+                      {t("labQueue.enterResults")}
                     </Link>
                     <button onClick={() => handleDelete(r.id)} className="rounded-lg border border-border px-3 py-1.5 text-xs text-destructive hover:bg-destructive/10">
                       Delete
@@ -125,30 +127,30 @@ export default function LabQueuePage() {
                   </div>
                 </div>
               ))}
-              {pending.length === 0 && <p className="text-sm text-muted-foreground">No pending tests</p>}
+              {pending.length === 0 && <p className="text-sm text-muted-foreground">{t("labQueue.noPending")}</p>}
             </div>
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold mb-3 text-blue-600">In Progress ({inProgress.length})</h2>
+            <h2 className="text-lg font-semibold mb-3 text-blue-600">{t("labQueue.inProgress").replace("{count}", String(inProgress.length))}</h2>
             <div className="space-y-2">
               {inProgress.map((r) => (
                 <div key={r.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
                   <div>
                     <p className="font-medium">{r.test_name}</p>
-                    <p className="text-xs text-muted-foreground">Patient: {r.patient?.name}</p>
+                    <p className="text-xs text-muted-foreground">{t("labQueue.patient")}: {r.patient?.name}</p>
                   </div>
                   <Link href={`/lab/reports/${r.id}`} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-700">
-                    Complete Report
+                    {t("labQueue.completeReport")}
                   </Link>
                 </div>
               ))}
-              {inProgress.length === 0 && <p className="text-sm text-muted-foreground">No tests in progress</p>}
+              {inProgress.length === 0 && <p className="text-sm text-muted-foreground">{t("labQueue.noInProgress")}</p>}
             </div>
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold mb-3 text-green-600">Finalized ({finalized.length})</h2>
+            <h2 className="text-lg font-semibold mb-3 text-green-600">{t("labQueue.finalized").replace("{count}", String(finalized.length))}</h2>
             <div className="space-y-2">
               {finalized.slice(0, 10).map((r) => (
                 <div key={r.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-4">
@@ -157,7 +159,7 @@ export default function LabQueuePage() {
                     <p className="text-xs text-muted-foreground">{new Date(r.created_at).toLocaleDateString()}</p>
                   </div>
                   {r.pdf_url && (
-                    <a href={r.pdf_url} target="_blank" rel="noopener" className="text-xs text-primary hover:underline">View PDF</a>
+                    <a href={r.pdf_url} target="_blank" rel="noopener" className="text-xs text-primary hover:underline">{t("labQueue.viewPdf")}</a>
                   )}
                 </div>
               ))}

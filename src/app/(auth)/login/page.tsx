@@ -4,9 +4,14 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Activity } from "lucide-react";
+import { useI18n } from "@/i18n/provider";
+import { LanguageSwitcher, ThemeSwitcher } from "@/components/theme/theme-controls";
 
 export default function LoginPage() {
+  const { t } = useI18n();
+  const router = useRouter();
+
   const [email, setEmail] = useState(() => {
     if (typeof window === "undefined") return "";
     return localStorage.getItem("hms_remembered_email") || "";
@@ -14,14 +19,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(() => {
     if (typeof window === "undefined") return false;
-    return localStorage.getItem("hms_remember_email") === "1";
+    return localStorage.getItem("hms_remember") === "1";
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [forgotLoading, setForgotLoading] = useState(false);
   const [forgotSent, setForgotSent] = useState(false);
   const [error, setError] = useState("");
-  const router = useRouter();
 
   async function handleForgotPassword() {
     if (!email) return;
@@ -45,14 +49,13 @@ export default function LoginPage() {
 
     if (remember) {
       localStorage.setItem("hms_remembered_email", email);
-      localStorage.setItem("hms_remember_email", "1");
+      localStorage.setItem("hms_remember", "1");
     } else {
       localStorage.removeItem("hms_remembered_email");
-      localStorage.removeItem("hms_remember_email");
+      localStorage.removeItem("hms_remember");
     }
 
     const supabase = createClient();
-
     const { data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -86,35 +89,45 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8 shadow-lg">
+      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg sm:p-8">
+        <div className="fixed right-4 top-4 z-50 flex items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeSwitcher compact />
+        </div>
+
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-primary">Hospital HMS</h1>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Activity size={24} />
+          </div>
+          <h1 className="text-xl font-bold text-primary sm:text-2xl">
+            {t("app.name")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Sign in to your account
+            {t("auth.signInTitle")}
           </p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium mb-1">
-              Email
+              {t("auth.email")}
             </label>
             <input
               id="email"
               name="email"
               type="email"
               autoComplete="email"
-              placeholder="you@example.com"
+              placeholder={t("auth.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring"
+              className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring"
               required
             />
           </div>
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium mb-1">
-              Password
+              {t("auth.password")}
             </label>
             <div className="relative">
               <input
@@ -122,16 +135,15 @@ export default function LoginPage() {
                 name="password"
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
-                placeholder="Your password"
+                placeholder={t("auth.passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 pr-10 text-sm outline-none focus:ring-2 focus:ring-ring"
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 pr-10 text-sm outline-none focus:ring-2 focus:ring-ring"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label={showPassword ? "Hide password" : "Show password"}
                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted-foreground hover:text-foreground"
               >
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
@@ -147,7 +159,7 @@ export default function LoginPage() {
                 onChange={(e) => setRemember(e.target.checked)}
                 className="h-4 w-4 rounded border-input accent-primary"
               />
-              Remember me
+              {t("auth.rememberMe")}
             </label>
             <button
               type="button"
@@ -155,32 +167,30 @@ export default function LoginPage() {
               disabled={forgotLoading || !email}
               className="text-sm text-primary hover:underline disabled:opacity-50"
             >
-              {forgotLoading ? "Sending..." : "Forgot password?"}
+              {forgotLoading ? t("auth.sending") : t("auth.forgotPassword")}
             </button>
           </div>
 
           {forgotSent && (
-            <p className="text-xs text-green-600">
-              Reset link sent to {email}. Check your inbox.
+            <p className="text-xs text-success">
+              {t("auth.resetSent").replace("{email}", email)}
             </p>
           )}
 
-          {error && (
-            <p className="text-sm text-destructive">{error}</p>
-          )}
+          {error && <p className="text-sm text-destructive">{error}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
+            className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? t("auth.signingIn") : t("auth.signIn")}
           </button>
         </form>
 
         <div className="mt-4 text-center">
           <Link href="/signup" className="text-sm text-primary hover:underline">
-            Don&apos;t have an account? Sign up
+            {t("auth.noAccount")}
           </Link>
         </div>
       </div>

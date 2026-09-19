@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Invoice } from "@/types/database";
 import { formatDate, formatCurrency } from "@/lib/utils/formatters";
+import { useI18n } from "@/i18n/provider";
 
 export default function PatientBillingPage() {
+  const { t } = useI18n();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -28,11 +30,11 @@ export default function PatientBillingPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Billing History</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("billing.title")}</h1>
       {loading ? (
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">{t("billing.loading")}</div>
       ) : invoices.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">No invoices found</div>
+        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">{t("billing.noInvoices")}</div>
       ) : (
         <div className="space-y-3">
           {invoices.map(inv => (
@@ -47,7 +49,7 @@ export default function PatientBillingPage() {
                   {inv.payment_status}
                 </span>
                 {inv.pdf_url && (
-                  <a href={inv.pdf_url} target="_blank" rel="noopener" className="text-xs text-primary hover:underline">PDF</a>
+                  <a href={inv.pdf_url} target="_blank" rel="noopener" className="text-xs text-primary hover:underline">{t("billing.pdf")}</a>
                 )}
               </div>
             </div>

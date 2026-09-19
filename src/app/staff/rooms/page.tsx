@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Bed } from "@/types/database";
+import { useI18n } from "@/i18n/provider";
 
 export default function StaffRoomsPage() {
+  const { t } = useI18n();
   const [beds, setBeds] = useState<Bed[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,9 +35,9 @@ export default function StaffRoomsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Room & Bed Status</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("rooms.title")}</h1>
       {loading ? (
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">{t("rooms.loading")}</div>
       ) : (
         <div className="space-y-6">
           {wards.map(ward => (
@@ -45,19 +47,19 @@ export default function StaffRoomsPage() {
                 {beds.filter(b => b.ward_name === ward).map(bed => (
                   <div key={bed.id} className={`rounded-xl border p-4 ${bed.is_ready ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}>
                     <div className="flex items-center justify-between mb-2">
-                      <span className="font-medium">Bed {bed.bed_number}</span>
+                      <span className="font-medium">{t("rooms.bed")} {bed.bed_number}</span>
                       <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${bed.is_ready ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"}`}>
-                        {bed.is_ready ? "Ready" : "Needs Cleaning"}
+                        {bed.is_ready ? t("rooms.ready") : t("rooms.needsCleaning")}
                       </span>
                     </div>
-                    {bed.is_occupied && <p className="text-xs text-muted-foreground mb-2">Occupied</p>}
+                    {bed.is_occupied && <p className="text-xs text-muted-foreground mb-2">{t("rooms.occupied")}</p>}
                     {bed.is_ready ? (
                       <button onClick={() => markDirty(bed.id)} className="w-full rounded-lg bg-red-600 px-3 py-1.5 text-xs text-white hover:bg-red-700">
-                        Mark Dirty
+                        {t("rooms.markDirty")}
                       </button>
                     ) : (
                       <button onClick={() => markReady(bed.id)} className="w-full rounded-lg bg-green-600 px-3 py-1.5 text-xs text-white hover:bg-green-700">
-                        Mark Clean
+                        {t("rooms.markClean")}
                       </button>
                     )}
                   </div>

@@ -3,12 +3,12 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Bed } from "@/types/database";
+import { useI18n } from "@/i18n/provider";
 
 export default function NurseBedsPage() {
+  const { t } = useI18n();
   const [beds, setBeds] = useState<Bed[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => { loadBeds(); }, []);
 
   async function loadBeds() {
     const supabase = createClient();
@@ -16,6 +16,8 @@ export default function NurseBedsPage() {
     setBeds((data as Bed[]) || []);
     setLoading(false);
   }
+
+  useEffect(() => { loadBeds(); }, []);
 
   async function toggleOccupancy(bed: Bed) {
     const supabase = createClient();
@@ -25,7 +27,7 @@ export default function NurseBedsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Bed Management</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("nurseBeds.title")}</h1>
       {loading ? (
         <div className="animate-pulse text-muted-foreground">Loading...</div>
       ) : (
@@ -35,12 +37,12 @@ export default function NurseBedsPage() {
               <div className="flex items-center justify-between mb-2">
                 <span className="font-semibold">{bed.ward_name} - {bed.bed_number}</span>
                 <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${bed.is_occupied ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"}`}>
-                  {bed.is_occupied ? "Occupied" : "Available"}
+                  {bed.is_occupied ? t("nurseBeds.occupied") : t("nurseBeds.available")}
                 </span>
               </div>
-              <p className="text-sm text-muted-foreground capitalize mb-1">Type: {bed.bed_type.replace("_", " ")}</p>
+              <p className="text-sm text-muted-foreground capitalize mb-1">{t("nurseBeds.type")}: {bed.bed_type.replace("_", " ")}</p>
               <button onClick={() => toggleOccupancy(bed)} className={`mt-2 w-full rounded-lg px-3 py-1.5 text-xs font-medium ${bed.is_occupied ? "bg-green-600 text-white hover:bg-green-700" : "bg-red-600 text-white hover:bg-red-700"}`}>
-                {bed.is_occupied ? "Mark Clean / Free" : "Allot Bed"}
+                {bed.is_occupied ? t("nurseBeds.markClean") : t("nurseBeds.allotBed")}
               </button>
             </div>
           ))}

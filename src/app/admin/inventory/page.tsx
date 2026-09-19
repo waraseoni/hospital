@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { InventoryItem } from "@/types/database";
+import { useI18n } from "@/i18n/provider";
 
 type FormData = {
   name: string;
@@ -23,6 +24,7 @@ const emptyForm: FormData = {
 };
 
 export default function AdminInventoryPage() {
+  const { t } = useI18n();
   const [items, setItems] = useState<InventoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -91,7 +93,7 @@ export default function AdminInventoryPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      setError(data.error || "Failed to save item");
+      setError(data.error || t("inventory.saveFailed"));
       setSubmitting(false);
       return;
     }
@@ -102,13 +104,13 @@ export default function AdminInventoryPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!window.confirm("Are you sure you want to delete this item?")) return;
+    if (!window.confirm(t("inventory.deleteConfirm"))) return;
 
     const res = await fetch(`/api/inventory/${id}`, { method: "DELETE" });
 
     if (!res.ok) {
       const data = await res.json();
-      alert(data.error || "Failed to delete item");
+      alert(data.error || t("inventory.deleteFailed"));
       return;
     }
 
@@ -118,12 +120,12 @@ export default function AdminInventoryPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Inventory Control</h1>
+        <h1 className="text-2xl font-bold">{t("inventory.title")}</h1>
         <button
           onClick={openCreate}
           className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90"
         >
-          + Add Item
+          {t("inventory.addItem")}
         </button>
       </div>
 
@@ -135,14 +137,14 @@ export default function AdminInventoryPage() {
           {error && <p className="text-sm text-destructive">{error}</p>}
           <div className="grid gap-4 sm:grid-cols-2">
             <input
-              placeholder="Item Name"
+              placeholder={t("inventory.itemName")}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
               required
             />
             <input
-              placeholder="Category"
+              placeholder={t("inventory.category")}
               value={form.category}
               onChange={(e) =>
                 setForm({ ...form, category: e.target.value })
@@ -151,7 +153,7 @@ export default function AdminInventoryPage() {
               required
             />
             <input
-              placeholder="Quantity"
+              placeholder={t("inventory.qty")}
               type="number"
               min={0}
               value={form.quantity}
@@ -162,14 +164,14 @@ export default function AdminInventoryPage() {
               required
             />
             <input
-              placeholder="Unit (e.g. pcs, bottles, boxes)"
+              placeholder={t("inventory.unit")}
               value={form.unit}
               onChange={(e) => setForm({ ...form, unit: e.target.value })}
               className="rounded-lg border border-input bg-background px-3 py-2 text-sm"
               required
             />
             <input
-              placeholder="Price per Unit (₹)"
+              placeholder={t("inventory.pricePerUnit")}
               type="number"
               min={0}
               step="0.01"
@@ -184,7 +186,7 @@ export default function AdminInventoryPage() {
               required
             />
             <input
-              placeholder="Minimum Stock Level"
+              placeholder={t("inventory.minimumStock")}
               type="number"
               min={0}
               value={form.minimum_stock}
@@ -205,17 +207,17 @@ export default function AdminInventoryPage() {
               className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
             >
               {submitting
-                ? "Saving..."
+                ? t("inventory.saving")
                 : editId
-                  ? "Update Item"
-                  : "Create Item"}
+                  ? t("inventory.updateItem")
+                  : t("inventory.createItem")}
             </button>
             <button
               type="button"
               onClick={cancelForm}
               className="rounded-lg border border-border px-4 py-2 text-sm hover:bg-muted"
             >
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </form>
@@ -223,21 +225,21 @@ export default function AdminInventoryPage() {
 
       {loading ? (
         <div className="animate-pulse text-muted-foreground">
-          Loading inventory...
+          {t("inventory.loading")}
         </div>
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">Item</th>
-                <th className="px-4 py-3 text-left font-medium">Category</th>
-                <th className="px-4 py-3 text-left font-medium">Qty</th>
+                <th className="px-4 py-3 text-left font-medium">{t("inventory.itemName")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("inventory.category")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("inventory.qty")}</th>
                 <th className="px-4 py-3 text-left font-medium">
-                  Unit Price
+                  {t("inventory.unitPrice")}
                 </th>
-                <th className="px-4 py-3 text-left font-medium">Status</th>
-                <th className="px-4 py-3 text-left font-medium">Actions</th>
+                <th className="px-4 py-3 text-left font-medium">{t("inventory.status")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("inventory.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -263,8 +265,8 @@ export default function AdminInventoryPage() {
                       }`}
                     >
                       {item.quantity <= item.minimum_stock
-                        ? "Low Stock"
-                        : "In Stock"}
+                        ? t("inventory.lowStock")
+                        : t("inventory.inStock")}
                     </span>
                   </td>
                   <td className="px-4 py-3">
@@ -273,13 +275,13 @@ export default function AdminInventoryPage() {
                         onClick={() => openEdit(item)}
                         className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted"
                       >
-                        Edit
+                        {t("common.edit")}
                       </button>
                       <button
                         onClick={() => handleDelete(item.id)}
                         className="rounded-lg border border-red-200 px-3 py-1 text-xs text-red-600 hover:bg-red-50"
                       >
-                        Delete
+                        {t("common.delete")}
                       </button>
                     </div>
                   </td>
@@ -291,7 +293,7 @@ export default function AdminInventoryPage() {
                     colSpan={6}
                     className="px-4 py-8 text-center text-muted-foreground"
                   >
-                    No inventory items
+                    {t("inventory.noItems")}
                   </td>
                 </tr>
               )}

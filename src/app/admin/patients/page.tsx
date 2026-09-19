@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Patient } from "@/types/database";
+import { useI18n } from "@/i18n/provider";
 
 export default function AdminPatientsPage() {
+  const { t } = useI18n();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -55,7 +57,7 @@ export default function AdminPatientsPage() {
         return;
       }
 
-      setSuccess("Patient updated successfully");
+      setSuccess(t("patients.updatedSuccess"));
     } else {
       const { error: insertError } = await supabase.from("patients").insert({ name: form.name, dob: form.dob, gender: form.gender, phone: form.phone, address: form.address });
 
@@ -65,7 +67,7 @@ export default function AdminPatientsPage() {
         return;
       }
 
-      setSuccess("Patient created successfully");
+      setSuccess(t("patients.createdSuccess"));
     }
 
     resetForm();
@@ -74,7 +76,7 @@ export default function AdminPatientsPage() {
   }
 
   async function handleDelete(p: Patient) {
-    if (!window.confirm(`Are you sure you want to delete ${p.name}?`)) return;
+    if (!window.confirm(t("patients.deleteConfirm") + " " + p.name + "?")) return;
 
     setError("");
     setSuccess("");
@@ -87,7 +89,7 @@ export default function AdminPatientsPage() {
       return;
     }
 
-    setSuccess("Patient deleted successfully");
+    setSuccess(t("patients.deletedSuccess"));
     loadPatients();
   }
 
@@ -100,9 +102,9 @@ export default function AdminPatientsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Patient Management</h1>
+        <h1 className="text-2xl font-bold">{t("patients.title")}</h1>
         <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90">
-          + Add Patient
+          {t("patients.addPatient")}
         </button>
       </div>
 
@@ -111,42 +113,42 @@ export default function AdminPatientsPage() {
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
-          <h2 className="text-lg font-semibold">{editingId ? "Edit Patient" : "Add New Patient"}</h2>
+          <h2 className="text-lg font-semibold">{editingId ? t("patients.editPatient") : t("patients.addNewPatient")}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <input placeholder="Full Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-            <input type="date" placeholder="Date of Birth" value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
+            <input placeholder={t("patients.fullName")} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
+            <input type="date" placeholder={t("patients.dob")} value={form.dob} onChange={(e) => setForm({ ...form, dob: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
             <select value={form.gender} onChange={(e) => setForm({ ...form, gender: e.target.value as Patient["gender"] })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
+              <option value="male">{t("patients.male")}</option>
+              <option value="female">{t("patients.female")}</option>
+              <option value="other">{t("patients.other")}</option>
             </select>
-            <input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
-            <input placeholder="Address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm sm:col-span-2" required />
+            <input placeholder={t("patients.phone")} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm" required />
+            <input placeholder={t("patients.address")} value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="rounded-lg border border-input bg-background px-3 py-2 text-sm sm:col-span-2" required />
           </div>
           <div className="flex gap-2">
             <button type="submit" disabled={submitting} className="rounded-lg bg-primary px-4 py-2 text-sm text-primary-foreground hover:bg-primary/90 disabled:opacity-50">
-              {submitting ? (editingId ? "Updating..." : "Creating...") : (editingId ? "Update Patient" : "Create Patient")}
+              {submitting ? (editingId ? t("patients.updating") : t("patients.creating")) : (editingId ? t("patients.updatePatient") : t("patients.createPatient"))}
             </button>
             <button type="button" onClick={resetForm} className="rounded-lg border border-border px-4 py-2 text-sm hover:bg-muted">
-              Cancel
+              {t("common.cancel")}
             </button>
           </div>
         </form>
       )}
 
       {loading ? (
-        <div className="animate-pulse text-muted-foreground">Loading patients...</div>
+        <div className="animate-pulse text-muted-foreground">{t("patients.loading")}</div>
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">UHID</th>
-                <th className="px-4 py-3 text-left font-medium">Name</th>
-                <th className="px-4 py-3 text-left font-medium">DOB</th>
-                <th className="px-4 py-3 text-left font-medium">Gender</th>
-                <th className="px-4 py-3 text-left font-medium">Phone</th>
-                <th className="px-4 py-3 text-right font-medium">Actions</th>
+                <th className="px-4 py-3 text-left font-medium">{t("patients.uhid")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("patients.name")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("patients.dob")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("patients.gender")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("patients.phone")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("patients.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -164,17 +166,17 @@ export default function AdminPatientsPage() {
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
                       <button onClick={() => startEdit(p)} className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted">
-                        Edit
+                        {t("common.edit")}
                       </button>
                       <button onClick={() => handleDelete(p)} className="rounded-lg border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">
-                        Delete
+                        {t("common.delete")}
                       </button>
                     </div>
                   </td>
                 </tr>
               ))}
               {patients.length === 0 && (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No patients found</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">{t("patients.noPatients")}</td></tr>
               )}
             </tbody>
           </table>

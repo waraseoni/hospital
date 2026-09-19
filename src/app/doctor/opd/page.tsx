@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Appointment } from "@/types/database";
 import Link from "next/link";
+import { useI18n } from "@/i18n/provider";
 
 export default function DoctorOPDPage() {
+  const { t } = useI18n();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => { loadAppointments(); }, []);
 
   async function loadAppointments() {
     const supabase = createClient();
@@ -30,6 +30,8 @@ export default function DoctorOPDPage() {
     setLoading(false);
   }
 
+  useEffect(() => { loadAppointments(); }, []);
+
   async function updateStatus(id: string, status: Appointment["status"]) {
     const supabase = createClient();
     await supabase.from("appointments").update({ status }).eq("id", id);
@@ -38,11 +40,11 @@ export default function DoctorOPDPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Today&apos;s OPD Queue</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("opd.title")}</h1>
       {loading ? (
-        <div className="animate-pulse text-muted-foreground">Loading queue...</div>
+        <div className="animate-pulse text-muted-foreground">{t("opd.loading")}</div>
       ) : appointments.length === 0 ? (
-        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">No appointments today</div>
+        <div className="rounded-xl border border-border bg-card p-8 text-center text-muted-foreground">{t("opd.noAppointments")}</div>
       ) : (
         <div className="space-y-3">
           {appointments.map((apt) => (
@@ -59,19 +61,19 @@ export default function DoctorOPDPage() {
               <div className="flex items-center gap-2">
                 {apt.status === "scheduled" && (
                   <button onClick={() => updateStatus(apt.id, "in_progress")} className="rounded-lg bg-blue-600 px-3 py-1.5 text-xs text-white hover:bg-blue-700">
-                    Start Consultation
+                    {t("opd.startConsultation")}
                   </button>
                 )}
                 {apt.status === "in_progress" && (
                   <div className="flex gap-2">
                     <Link href={`/doctor/prescriptions/new?patient=${apt.patient_id}&appointment=${apt.id}`} className="rounded-lg bg-primary px-3 py-1.5 text-xs text-primary-foreground hover:bg-primary/90">
-                      Write Prescription
+                      {t("opd.writePrescription")}
                     </Link>
                     <button onClick={() => updateStatus(apt.id, "completed")} className="rounded-lg bg-green-600 px-3 py-1.5 text-xs text-white hover:bg-green-700">
-                      Complete
+                      {t("opd.complete")}
                     </button>
                     <button onClick={() => updateStatus(apt.id, "cancelled")} className="rounded-lg border border-border px-3 py-1.5 text-xs hover:bg-muted">
-                      Cancel
+                      {t("opd.cancel")}
                     </button>
                   </div>
                 )}

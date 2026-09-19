@@ -3,13 +3,17 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { Activity } from "lucide-react";
+import { useI18n } from "@/i18n/provider";
+import { LanguageSwitcher, ThemeSwitcher } from "@/components/theme/theme-controls";
 
 export default function SignupPage() {
+  const { t } = useI18n();
+  const router = useRouter();
   const [form, setForm] = useState({ full_name: "", email: "", password: "", phone: "", role: "patient" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
-  const router = useRouter();
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -37,74 +41,84 @@ export default function SignupPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
-      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-8 shadow-lg">
+      <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg sm:p-8">
+        <div className="fixed right-4 top-4 z-50 flex items-center gap-2">
+          <LanguageSwitcher />
+          <ThemeSwitcher compact />
+        </div>
+
         <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-primary">Hospital HMS</h1>
+          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+            <Activity size={24} />
+          </div>
+          <h1 className="text-xl font-bold text-primary sm:text-2xl">
+            {t("app.name")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Create your account
+            {t("auth.signUpTitle")}
           </p>
         </div>
 
         {success ? (
           <div className="text-center space-y-2">
-            <p className="text-sm text-green-600 font-medium">Account created successfully!</p>
+            <p className="text-sm text-success font-medium">Account created successfully!</p>
             <p className="text-xs text-muted-foreground">Redirecting to login...</p>
           </div>
         ) : (
           <form onSubmit={handleSignup} className="space-y-4">
             <div>
-              <label htmlFor="full_name" className="block text-sm font-medium mb-1">Full Name</label>
-              <input id="full_name" type="text" placeholder="John Doe" value={form.full_name}
+              <label htmlFor="full_name" className="block text-sm font-medium mb-1">{t("auth.fullName")}</label>
+              <input id="full_name" type="text" placeholder={t("auth.fullNamePlaceholder")} value={form.full_name}
                 onChange={(e) => setForm({ ...form, full_name: e.target.value })}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" required />
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" required />
             </div>
 
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1">Email</label>
-              <input id="email" type="email" placeholder="you@example.com" value={form.email}
+              <label htmlFor="email" className="block text-sm font-medium mb-1">{t("auth.email")}</label>
+              <input id="email" type="email" placeholder={t("auth.emailPlaceholder")} value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" required />
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" required />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1">Password</label>
+              <label htmlFor="password" className="block text-sm font-medium mb-1">{t("auth.password")}</label>
               <input id="password" type="password" placeholder="Min 6 characters" value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" required minLength={6} />
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" required minLength={6} />
             </div>
 
             <div>
-              <label htmlFor="phone" className="block text-sm font-medium mb-1">Phone (optional)</label>
-              <input id="phone" type="tel" placeholder="+91 98765 43210" value={form.phone}
+              <label htmlFor="phone" className="block text-sm font-medium mb-1">{t("common.phone")} (optional)</label>
+              <input id="phone" type="tel" placeholder={t("auth.phonePlaceholder")} value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
             </div>
 
             <div>
-              <label htmlFor="role" className="block text-sm font-medium mb-1">I am a</label>
+              <label htmlFor="role" className="block text-sm font-medium mb-1">{t("auth.role")}</label>
               <select id="role" value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
-                className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring">
-                <option value="patient">Patient</option>
-                <option value="doctor">Doctor</option>
-                <option value="nurse">Nurse</option>
-                <option value="lab">Lab Technician</option>
-                <option value="staff">Staff</option>
+                className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring">
+                <option value="patient">{t("roles.patient")}</option>
+                <option value="doctor">{t("roles.doctor")}</option>
+                <option value="nurse">{t("roles.nurse")}</option>
+                <option value="lab">{t("roles.lab")}</option>
+                <option value="staff">{t("roles.staff")}</option>
               </select>
             </div>
 
             {error && <p className="text-sm text-destructive">{error}</p>}
 
             <button type="submit" disabled={loading}
-              className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors">
-              {loading ? "Creating account..." : "Create Account"}
+              className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors">
+              {loading ? t("auth.signingUp") : t("auth.submit")}
             </button>
           </form>
         )}
 
         <div className="mt-4 text-center">
           <Link href="/login" className="text-sm text-primary hover:underline">
-            Already have an account? Sign in
+            {t("auth.haveAccount")}
           </Link>
         </div>
       </div>
