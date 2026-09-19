@@ -75,6 +75,7 @@ export default function LoginPage() {
         .single();
 
       const roleRoutes: Record<string, string> = {
+        super_admin: "/super-admin",
         admin: "/admin",
         doctor: "/doctor",
         nurse: "/nurse",

@@ -15,14 +15,14 @@ export async function POST(request: NextRequest) {
 
     const admin = createAdminClient();
 
-    // Create user with admin role
+    // Create user with super_admin role
     const { data, error: createError } = await admin.auth.admin.createUser({
       email,
       password,
       email_confirm: true,
       user_metadata: {
         full_name,
-        role: "admin",
+        role: "super_admin",
         phone: "",
       },
     });
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       .upsert({
         id: data.user.id,
         full_name,
-        role: "admin",
+        role: "super_admin",
         phone: null,
         email,
       }, { onConflict: "id" });

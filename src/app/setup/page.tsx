@@ -40,13 +40,13 @@ export default function SetupPage() {
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-primary">Hospital HMS</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            First-time Setup — Create Admin Account
+            First-time Setup — Create Super Admin Account
           </p>
         </div>
 
         {success ? (
           <div className="text-center space-y-2">
-            <p className="text-sm text-green-600 font-medium">Admin account created!</p>
+            <p className="text-sm text-green-600 font-medium">Super Admin account created!</p>
             <p className="text-xs text-muted-foreground">You can now login. Redirecting...</p>
           </div>
         ) : (
@@ -76,7 +76,7 @@ export default function SetupPage() {
 
             <button type="submit" disabled={loading}
               className="w-full rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50 transition-colors">
-              {loading ? "Creating Admin..." : "Create Admin Account"}
+              {loading ? "Creating Super Admin..." : "Create Super Admin Account"}
             </button>
           </form>
         )}

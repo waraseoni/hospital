@@ -13,6 +13,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Password must be at least 6 characters" }, { status: 400 });
     }
 
+    // Only allow patient self-registration. Admin/super_admin must be created by existing admin/super_admin.
+    const allowedRole = role || "patient";
+    if (["admin", "super_admin"].includes(allowedRole)) {
+      return NextResponse.json({ error: "Self-registration for admin roles is not allowed" }, { status: 403 });
+    }
+
     const admin = createAdminClient();
 
     const { data, error: createError } = await admin.auth.admin.createUser({
@@ -29,6 +35,15 @@ export async function POST(request: NextRequest) {
     if (createError) {
       return NextResponse.json({ error: createError.message }, { status: 400 });
     }
+
+    // Create profile record for patient
+    await admin.from("profiles").upsert({
+      id: data.user.id,
+      full_name,
+      role: allowedRole,
+      phone: phone || null,
+      email,
+    }, { onConflict: "id" });
 
     return NextResponse.json({
       success: true,
