@@ -13,7 +13,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 
     const admin = createAdminClient();
 
-    const { error } = await admin.from("inventory").update({
+    const { error } = await admin.from("inventory_items").update({
       name,
       category,
       quantity,
@@ -42,7 +42,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 
     const admin = createAdminClient();
 
-    const { error } = await admin.from("inventory").delete().eq("id", id);
+    const { error } = await admin.from("inventory_items").delete().eq("id", id);
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });

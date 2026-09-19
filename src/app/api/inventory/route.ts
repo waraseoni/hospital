@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     const admin = createAdminClient();
 
-    const { data, error } = await admin.from("inventory").insert({
+    const { data, error } = await admin.from("inventory_items").insert({
       name,
       category,
       quantity,

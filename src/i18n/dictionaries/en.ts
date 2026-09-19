@@ -98,6 +98,9 @@ export const en = {
   },
   dash: {
     welcomeDoctor: "Welcome, Doctor",
+    welcomeNurse: "Welcome, Nurse",
+    welcomePatient: "Welcome, Patient",
+    welcomeStaff: "Welcome, Staff",
     todayAppointments: "Today's Appointments",
     pendingLabOrders: "Pending Lab Orders",
     occupiedBeds: "Occupied Beds",
@@ -124,7 +127,7 @@ export const en = {
     noLogs: "No audit logs",
     system: "System",
   },
-  beds: {
+   beds: {
     title: "Bed Management",
     loading: "Loading beds...",
     addBed: "Add Bed",
@@ -299,8 +302,9 @@ export const en = {
     dateTime: "Date / Time",
     deleteConfirm: "Delete this vitals record?",
   },
-  nurseBeds: {
+   nurseBeds: {
     title: "Bed Management",
+    loading: "Loading beds...",
     ward: "Ward",
     bed: "Bed",
     type: "Type",
@@ -309,7 +313,12 @@ export const en = {
     occupied: "Occupied",
     available: "Available",
     markClean: "Mark Clean",
-    allotBed: "Allot Bed",
+    allotBed: "Assign Bed",
+    assign: "Assign",
+    selectPatient: "Select Patient",
+    bedAssigned: "Bed assigned successfully",
+    assignFailed: "Failed to assign bed",
+    noBeds: "No beds configured",
   },
   labQueue: {
     title: "Lab Test Queue",

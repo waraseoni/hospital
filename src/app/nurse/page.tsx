@@ -27,7 +27,7 @@ export default function NurseDashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">{t("dash.welcomeDoctor")}</h1>
+      <h1 className="text-2xl font-bold mb-6">{t("dash.welcomeNurse")}</h1>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <div className="flex items-start gap-4 rounded-xl border border-border bg-card p-6 shadow-sm">
           <span className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-600">
