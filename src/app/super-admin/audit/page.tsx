@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useI18n } from "@/i18n/provider";
 import { PageHeader } from "@/components/ui/page";
+import { formatDateTime } from "@/lib/utils/formatters";
 
 export default function SuperAdminAuditPage() {
   const { t } = useI18n();
@@ -22,25 +23,25 @@ export default function SuperAdminAuditPage() {
 
   return (
     <div>
-      <PageHeader title="Audit Logs" />
+      <PageHeader title={t("audit.title")} />
 
       {loading ? (
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
+        <div className="animate-pulse text-muted-foreground">{t("audit.loading")}</div>
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead><tr className="border-b border-border bg-muted/50">
-              <th className="px-4 py-3 text-left font-medium">Time</th>
-              <th className="px-4 py-3 text-left font-medium">User</th>
-              <th className="px-4 py-3 text-left font-medium">Action</th>
-              <th className="px-4 py-3 text-left font-medium">Table</th>
-              <th className="px-4 py-3 text-left font-medium">Record ID</th>
+              <th className="px-4 py-3 text-left font-medium">{t("audit.time")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("audit.user")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("audit.action")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("audit.table")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("audit.recordId")}</th>
             </tr></thead>
             <tbody>
               {logs.map((log) => (
                 <tr key={log.id as string} className="border-b border-border last:border-0">
-                  <td className="px-4 py-3 text-muted-foreground">{new Date(log.created_at as string).toLocaleString()}</td>
-                  <td className="px-4 py-3">{(log.user as Record<string, unknown>)?.full_name as string || "System"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{formatDateTime(log.created_at as string)}</td>
+                  <td className="px-4 py-3">{(log.user as Record<string, unknown>)?.full_name as string || t("audit.system")}</td>
                   <td className="px-4 py-3">
                     <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${log.action === "DELETE" ? "bg-red-100 text-red-800" : log.action === "INSERT" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}>
                       {log.action as string}
@@ -50,7 +51,7 @@ export default function SuperAdminAuditPage() {
                   <td className="px-4 py-3 text-muted-foreground font-mono text-xs">{(log.record_id as string)?.slice(0, 8)}...</td>
                 </tr>
               ))}
-              {logs.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">No logs</td></tr>}
+              {logs.length === 0 && <tr><td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">{t("audit.noLogs")}</td></tr>}
             </tbody>
           </table>
         </div>

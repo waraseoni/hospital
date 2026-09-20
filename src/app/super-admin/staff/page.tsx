@@ -67,8 +67,8 @@ export default function SuperAdminStaffPage() {
       const method = editingId ? "PUT" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed");
-      addToast("success", editingId ? "Updated" : "Created");
+      if (!res.ok) throw new Error(data.error || t("staff.createFailed"));
+      addToast("success", editingId ? t("staff.updatedSuccess") : t("staff.createdSuccess"));
       resetForm();
       loadStaff();
     } catch (err: unknown) {
@@ -82,10 +82,10 @@ export default function SuperAdminStaffPage() {
     if (!deleteId) return;
     try {
       const res = await fetch(`/api/staff/${deleteId}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Delete failed");
-      addToast("success", "Deleted");
+      if (!res.ok) throw new Error(t("staff.deleteFailed"));
+      addToast("success", t("staff.deletedSuccess"));
       loadStaff();
-    } catch { addToast("error", "Delete failed"); }
+    } catch { addToast("error", t("staff.deleteFailed")); }
     setDeleteId(null);
   }
 
@@ -97,42 +97,42 @@ export default function SuperAdminStaffPage() {
 
   return (
     <div>
-      <PageHeader title="Staff Management" actions={<Button onClick={() => { resetForm(); setShowForm(true); }}><Plus size={16} className="mr-1" />Add Staff</Button>} />
+      <PageHeader title={t("staff.title")} actions={<Button onClick={() => { resetForm(); setShowForm(true); }}><Plus size={16} className="mr-1" />{t("staff.addStaff")}</Button>} />
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
-          <h2 className="text-lg font-semibold">{editingId ? "Edit Staff" : "Add New Staff"}</h2>
+          <h2 className="text-lg font-semibold">{editingId ? t("staff.editStaff") : t("staff.addNewStaff")}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
-            <Input placeholder="Full Name" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
-            <Input placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
-            {!editingId && <Input placeholder="Password" type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />}
-            <Input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-            <Select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Profile["role"] })} options={[{ value: "doctor", label: "Doctor" }, { value: "nurse", label: "Nurse" }, { value: "lab", label: "Lab Tech" }, { value: "staff", label: "Staff" }]} />
-            {form.role === "doctor" && <Input placeholder="Specialization" value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} />}
+            <Input placeholder={t("staff.fullName")} value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required />
+            <Input placeholder={t("staff.email")} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+            {!editingId && <Input placeholder={t("staff.password")} type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />}
+            <Input placeholder={t("staff.phone")} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+            <Select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Profile["role"] })} options={[{ value: "doctor", label: t("staff.doctor") }, { value: "nurse", label: t("staff.nurse") }, { value: "lab", label: t("staff.labTech") }, { value: "staff", label: t("staff.staffRole") }]} />
+            {form.role === "doctor" && <Input placeholder={t("staff.specialization")} value={form.specialization} onChange={(e) => setForm({ ...form, specialization: e.target.value })} />}
           </div>
           <div className="flex gap-2">
-            <Button type="submit" disabled={submitting}>{submitting ? (editingId ? "Updating..." : "Creating...") : (editingId ? "Update" : "Create")}</Button>
-            <Button type="button" variant="ghost" onClick={resetForm}>Cancel</Button>
+            <Button type="submit" disabled={submitting}>{submitting ? (editingId ? t("staff.updating") : t("staff.creating")) : (editingId ? t("staff.updateStaff") : t("staff.createAccount"))}</Button>
+            <Button type="button" variant="ghost" onClick={resetForm}>{t("common.cancel")}</Button>
           </div>
         </form>
       )}
 
       <div className="mb-4">
-        <SearchBar value={search} onChange={setSearch} placeholder="Search by name, email, or role..." />
+        <SearchBar value={search} onChange={setSearch} placeholder={t("staff.searchPlaceholder")} />
       </div>
 
       {loading ? <Skeleton lines={5} /> : filtered.length === 0 ? (
-        <EmptyState title="No staff found" description="No staff match the current filters" />
+        <EmptyState title={t("staff.noStaff")} description={t("ui.noData")} />
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">Name</th>
-                <th className="px-4 py-3 text-left font-medium">Email</th>
-                <th className="px-4 py-3 text-left font-medium">Role</th>
-                <th className="px-4 py-3 text-left font-medium">Specialization</th>
-                <th className="px-4 py-3 text-right font-medium">Actions</th>
+                <th className="px-4 py-3 text-left font-medium">{t("staff.fullName")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("staff.email")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("staff.role")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("staff.specialization")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("staff.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -144,8 +144,8 @@ export default function SuperAdminStaffPage() {
                   <td className="px-4 py-3 text-muted-foreground">{s.specialization || "—"}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
-                      <button onClick={() => startEdit(s)} className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted">Edit</button>
-                      <button onClick={() => setDeleteId(s.id)} className="rounded-lg border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">Delete</button>
+                      <button onClick={() => startEdit(s)} className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted">{t("common.edit")}</button>
+                      <button onClick={() => setDeleteId(s.id)} className="rounded-lg border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">{t("common.delete")}</button>
                     </div>
                   </td>
                 </tr>
@@ -155,13 +155,13 @@ export default function SuperAdminStaffPage() {
         </div>
       )}
 
-      <Modal open={!!deleteId} onOpenChange={() => setDeleteId(null)} title="Delete Staff" footer={
+      <Modal open={!!deleteId} onOpenChange={() => setDeleteId(null)} title={t("staff.deleteConfirm")} footer={
         <>
-          <Button variant="ghost" onClick={() => setDeleteId(null)}>Cancel</Button>
-          <Button variant="destructive" onClick={handleDelete}>Delete</Button>
+          <Button variant="ghost" onClick={() => setDeleteId(null)}>{t("common.cancel")}</Button>
+          <Button variant="destructive" onClick={handleDelete}>{t("common.delete")}</Button>
         </>
       }>
-        <p>Are you sure you want to delete this staff member?</p>
+        <p>{t("staff.deleteConfirmMsg")}</p>
       </Modal>
     </div>
   );
