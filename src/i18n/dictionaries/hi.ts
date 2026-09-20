@@ -62,6 +62,7 @@ export const hi: Dictionary = {
   },
   roles: {
     superAdmin: "सुपर एडमिन पैनल",
+    super_admin: "सुपर एडमिन पैनल",
     admin: "एडमिन पैनल",
     doctor: "डॉक्टर पोर्टल",
     nurse: "नर्सिंग स्टेशन",

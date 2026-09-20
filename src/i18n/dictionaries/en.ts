@@ -60,6 +60,7 @@ export const en = {
   },
   roles: {
     superAdmin: "Super Admin Panel",
+    super_admin: "Super Admin Panel",
     admin: "Admin Panel",
     doctor: "Doctor Portal",
     nurse: "Nursing Station",

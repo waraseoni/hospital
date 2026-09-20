@@ -115,7 +115,7 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3 font-medium">{u.full_name}</td>
                   <td className="px-4 py-3 text-muted-foreground">{u.email || "—"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{u.phone || "—"}</td>
-                  <td className="px-4 py-3"><Badge variant={roleColors[u.role] || "default"}>{u.role}</Badge></td>
+                  <td className="px-4 py-3"><Badge variant={roleColors[u.role] || "default"}>{t(`roles.${u.role}`)}</Badge></td>
                   <td className="px-4 py-3 text-muted-foreground text-xs">{u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
