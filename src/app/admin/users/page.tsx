@@ -12,7 +12,7 @@ import { PageContainer } from "@/components/ui/page";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Profile, UserRole } from "@/types/database";
-import { Shield, UserRound, Mail, Phone, Key, Power, Trash2, Edit3 } from "lucide-react";
+import { Shield, Key, Power, Trash2 } from "lucide-react";
 
 const allRoles: UserRole[] = ["admin", "doctor", "nurse", "lab", "staff", "patient"];
 const roleColors: Record<string, "info" | "success" | "warning" | "destructive"> = { doctor: "info", nurse: "success", lab: "warning", staff: "destructive", admin: "destructive", super_admin: "destructive", patient: "success" };
@@ -101,8 +101,8 @@ export default function AdminUsersPage() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium flex items-center gap-1"><UserRound size={14} />{t("common.name")}</th>
-                <th className="px-4 py-3 text-left font-medium flex items-center gap-1"><Mail size={14} />{t("common.email")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("common.name")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("common.email")}</th>
                 <th className="px-4 py-3 text-left font-medium">{t("common.phone")}</th>
                 <th className="px-4 py-3 text-left font-medium">{t("common.role")}</th>
                 <th className="px-4 py-3 text-left font-medium">{t("common.created")}</th>
