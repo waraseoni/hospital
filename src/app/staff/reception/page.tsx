@@ -133,6 +133,38 @@ export default function ReceptionPage() {
     } catch { addToast("error", "Delete failed"); }
   }
 
+  function printTokenSlip(apt: { token_no: number; patient: { name: string; uhid: string }; doctor: { full_name: string }; date_slot: string; consultation_type: string }) {
+    const printWindow = window.open("", "_blank", "width=300,height=400");
+    if (!printWindow) return;
+    printWindow.document.write(`
+      <html><head><title>Token Slip</title>
+      <style>
+        body { font-family: Arial, sans-serif; padding: 20px; text-align: center; }
+        .hospital-name { font-size: 14px; font-weight: bold; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; }
+        .token-number { font-size: 48px; font-weight: bold; margin: 10px 0; }
+        .details { text-align: left; font-size: 12px; margin-top: 10px; }
+        .details div { margin: 3px 0; }
+        .footer { font-size: 10px; margin-top: 15px; border-top: 1px dashed #000; padding-top: 5px; }
+      </style></head><body>
+        <div class="hospital-name">HOSPITAL MANAGEMENT SYSTEM</div>
+        <div style="font-size:12px;color:#666;">OPD Token Slip</div>
+        <div class="token-number">#${apt.token_no}</div>
+        <div class="details">
+          <div><strong>Patient:</strong> ${apt.patient?.name}</div>
+          <div><strong>UHID:</strong> ${apt.patient?.uhid}</div>
+          <div><strong>Doctor:</strong> Dr. ${apt.doctor?.full_name}</div>
+          <div><strong>Type:</strong> ${apt.consultation_type.toUpperCase()}</div>
+          <div><strong>Date:</strong> ${new Date(apt.date_slot).toLocaleDateString()}</div>
+          <div><strong>Time:</strong> ${new Date(apt.date_slot).toLocaleTimeString()}</div>
+          <div><strong>Counter:</strong> ${counterNumber}</div>
+        </div>
+        <div class="footer">Please wait for your token number to be called.<br>Issued at: ${new Date().toLocaleTimeString()}</div>
+      </body></html>
+    `);
+    printWindow.document.close();
+    printWindow.print();
+  }
+
   const filteredPatients = patients.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase()) ||
     p.phone.includes(search) ||
@@ -260,6 +292,14 @@ export default function ReceptionPage() {
                       <Badge variant={apt.status === "scheduled" ? "info" : apt.status === "in_progress" ? "warning" : apt.status === "completed" ? "success" : "destructive"}>{apt.status}</Badge>
                       {apt.consultation_type === "emergency" && <Badge variant="destructive" className="ml-1">EMG</Badge>}
                       <p className="text-xs text-muted-foreground">Dr. {apt.doctor?.full_name}</p>
+                      {apt.status === "scheduled" && (
+                        <button
+                          onClick={() => printTokenSlip(apt)}
+                          className="mt-1 text-xs text-blue-600 hover:underline flex items-center gap-1"
+                        >
+                          <Printer size={12} /> Print Token
+                        </button>
+                      )}
                     </div>
                   </div>
                 ))}

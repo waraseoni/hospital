@@ -128,7 +128,21 @@ export default function DoctorOPDPage() {
               )}
               <div className="space-y-3">
                 {appointments.map((apt) => (
-                  <div key={apt.id} className={`rounded-xl border bg-card p-4 ${apt.status === "in_progress" ? "border-yellow-400 dark:border-yellow-600" : "border-border"}`}>
+                  <div key={apt.id} className={`group relative rounded-xl border bg-card p-4 ${apt.status === "in_progress" ? "border-yellow-400 dark:border-yellow-600" : "border-border"}`}>
+                    {/* Hover Preview Tooltip */}
+                    <div className="absolute left-0 top-full z-50 mt-1 hidden w-72 rounded-xl border border-border bg-card p-4 shadow-lg group-hover:block">
+                      <div className="space-y-2 text-sm">
+                        <p className="font-bold">{apt.patient?.name}</p>
+                        <div className="grid grid-cols-2 gap-1 text-xs">
+                          <span className="text-muted-foreground">UHID:</span><span>{apt.patient?.uhid}</span>
+                          <span className="text-muted-foreground">Phone:</span><span>{apt.patient?.phone}</span>
+                          <span className="text-muted-foreground">Token:</span><span>#{apt.token_no}</span>
+                          <span className="text-muted-foreground">Status:</span><span>{apt.status}</span>
+                          <span className="text-muted-foreground">Time:</span><span>{new Date(apt.date_slot).toLocaleTimeString()}</span>
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${apt.status === "in_progress" ? "bg-yellow-500 text-white" : "bg-primary text-primary-foreground"}`}>#{apt.token_no}</div>

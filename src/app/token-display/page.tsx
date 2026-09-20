@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useI18n } from "@/i18n/provider";
 
 interface DoctorDisplay {
@@ -13,11 +13,29 @@ interface DoctorDisplay {
   waiting_count: number;
 }
 
+function playAlert() {
+  try {
+    const ctx = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 800;
+    osc.type = "sine";
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.5);
+  } catch { /* ignore */ }
+}
+
 export default function TokenDisplayPage() {
   const { t } = useI18n();
   const [displays, setDisplays] = useState<DoctorDisplay[]>([]);
   const [lastUpdated, setLastUpdated] = useState("");
   const [loading, setLoading] = useState(true);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const prevTokensRef = useRef<string>("");
 
   useEffect(() => {
     loadData();
@@ -30,7 +48,19 @@ export default function TokenDisplayPage() {
       const res = await fetch("/api/token-display");
       if (res.ok) {
         const data = await res.json();
-        setDisplays(data.doctors || []);
+        const newDisplays = data.doctors || [];
+
+        if (audioEnabled && prevTokensRef.current) {
+          const newTokens = newDisplays.map((d: DoctorDisplay) => d.current_token).join(",");
+          if (prevTokensRef.current && newTokens !== prevTokensRef.current) {
+            playAlert();
+          }
+          prevTokensRef.current = newTokens;
+        } else if (newDisplays.length > 0) {
+          prevTokensRef.current = newDisplays.map((d: DoctorDisplay) => d.current_token).join(",");
+        }
+
+        setDisplays(newDisplays);
         setLastUpdated(data.updated_at || "");
       }
     } catch { /* ignore */ }
@@ -44,9 +74,17 @@ export default function TokenDisplayPage() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2">OPD QUEUE BOARD</h1>
           <p className="text-blue-200 text-lg">Hospital Management System</p>
-          {lastUpdated && (
-            <p className="text-blue-300 text-sm mt-2">Last updated: {new Date(lastUpdated).toLocaleTimeString()}</p>
-          )}
+          <div className="flex items-center justify-center gap-4 mt-2">
+            {lastUpdated && (
+              <p className="text-blue-300 text-sm">Last updated: {new Date(lastUpdated).toLocaleTimeString()}</p>
+            )}
+            <button
+              onClick={() => setAudioEnabled(!audioEnabled)}
+              className={`text-sm px-3 py-1 rounded-lg border ${audioEnabled ? "bg-green-500/20 border-green-400/50 text-green-300" : "bg-white/10 border-white/20 text-blue-200"}`}
+            >
+              {audioEnabled ? "Sound ON" : "Sound OFF"}
+            </button>
+          </div>
         </div>
 
         {loading ? (
