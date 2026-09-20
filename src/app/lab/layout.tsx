@@ -5,12 +5,11 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, TestTube, UserCog } from "lucide-react";
+import { LayoutDashboard, TestTube } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/lab", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
   { href: "/lab/queue", labelKey: "nav.testQueue", icon: TestTube },
-  { href: "/profile", labelKey: "nav.profile", icon: UserCog },
 ];
 
 export default function LabLayout({ children }: { children: React.ReactNode }) {
