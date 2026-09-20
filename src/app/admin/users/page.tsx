@@ -12,7 +12,7 @@ import { PageContainer } from "@/components/ui/page";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Profile, UserRole } from "@/types/database";
-import { Shield, UserRound, Mail, Phone, Key, Power, Trash2, Edit3, Search } from "lucide-react";
+import { Shield, UserRound, Mail, Phone, Key, Power, Trash2, Edit3 } from "lucide-react";
 
 const allRoles: UserRole[] = ["admin", "doctor", "nurse", "lab", "staff", "patient"];
 const roleColors: Record<string, "info" | "success" | "warning" | "destructive"> = { doctor: "info", nurse: "success", lab: "warning", staff: "destructive", admin: "destructive", super_admin: "destructive", patient: "success" };
@@ -34,10 +34,10 @@ export default function AdminUsersPage() {
   async function loadUsers() {
     try {
       const res = await fetch("/api/admin/users");
-      if (!res.ok) throw new Error("Failed to load");
+      if (!res.ok) throw new Error(t("users.loadFailed"));
       const data = await res.json();
       setUsers(data);
-    } catch { addToast("error", "Failed to load users"); }
+    } catch { addToast("error", t("users.loadFailed")); }
     setLoading(false);
   }
 
@@ -48,7 +48,7 @@ export default function AdminUsersPage() {
       const res = await fetch(`/api/admin/users/${showResetModal}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ newPassword: resetPassword }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      addToast("success", "Password reset successfully");
+      addToast("success", t("users.passwordResetSuccess"));
       setShowResetModal(null);
       setResetPassword("");
       loadUsers();
@@ -61,9 +61,9 @@ export default function AdminUsersPage() {
     try {
       const res = await fetch(`/api/admin/users`, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id, role: nextRole }) });
       if (!res.ok) throw new Error("Failed to update role");
-      addToast("success", `Role updated to ${nextRole}`);
+      addToast("success", t("users.roleUpdated") + ` ${nextRole}`);
       loadUsers();
-    } catch { addToast("error", "Failed to update role"); }
+    } catch { addToast("error", t("users.updateFailed")); }
   }
 
   async function handleDelete(id: string) {
@@ -71,10 +71,10 @@ export default function AdminUsersPage() {
     try {
       const res = await fetch(`/api/admin/users/${deleting}`, { method: "DELETE" });
       if (!res.ok) throw new Error("Delete failed");
-      addToast("success", "User deleted");
+      addToast("success", t("users.deleted"));
       setDeleting(null);
       loadUsers();
-    } catch { addToast("error", "Delete failed"); }
+    } catch { addToast("error", t("users.deleteFailed")); }
   }
 
   const filtered = users.filter(u => {
@@ -85,28 +85,28 @@ export default function AdminUsersPage() {
 
   return (
     <PageContainer>
-      <PageHeader title="User Management" subtitle="View, manage, and reset passwords for all users" actions={<Button onClick={loadUsers} variant="ghost"><Power size={16} className="mr-1" />Refresh</Button>} />
+      <PageHeader title={t("users.title")} subtitle={t("users.subtitle")} actions={<Button onClick={loadUsers} variant="ghost"><Power size={16} className="mr-1" />{t("common.refresh")}</Button>} />
 
       <div className="mb-4 flex flex-wrap gap-3 items-center">
-        <SearchBar value={search} onChange={setSearch} placeholder="Search by name, email, or role..." />
+        <SearchBar value={search} onChange={setSearch} placeholder={t("users.searchPlaceholder")} />
         <select value={filterRole} onChange={(e) => setFilterRole(e.target.value as UserRole)} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
-          {allRoles.map(r => <option key={r} value={r}>{r.charAt(0).toUpperCase() + r.slice(1)}</option>)}
+          {allRoles.map(r => <option key={r} value={r}>{t(`roles.${r}`)}</option>)}
         </select>
       </div>
 
       {loading ? <Skeleton lines={5} /> : filtered.length === 0 ? (
-        <EmptyState title="No users found" description="No users match the current filters" />
+        <EmptyState title={t("users.noUsers")} description={t("users.noUsersDesc")} />
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium flex items-center gap-1"><UserRound size={14} />Name</th>
-                <th className="px-4 py-3 text-left font-medium flex items-center gap-1"><Mail size={14} />Email</th>
-                <th className="px-4 py-3 text-left font-medium">Phone</th>
-                <th className="px-4 py-3 text-left font-medium">Role</th>
-                <th className="px-4 py-3 text-left font-medium">Created</th>
-                <th className="px-4 py-3 text-right font-medium">Actions</th>
+                <th className="px-4 py-3 text-left font-medium flex items-center gap-1"><UserRound size={14} />{t("common.name")}</th>
+                <th className="px-4 py-3 text-left font-medium flex items-center gap-1"><Mail size={14} />{t("common.email")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("common.phone")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("common.role")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("common.created")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -119,9 +119,9 @@ export default function AdminUsersPage() {
                   <td className="px-4 py-3 text-muted-foreground text-xs">{u.created_at ? new Date(u.created_at).toLocaleDateString() : "—"}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
-                      <button onClick={() => handleToggleRole(u.id, u.role)} title="Cycle role" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted" disabled={u.role === "admin" || u.role === "super_admin"}><Shield size={14} /></button>
-                      <button onClick={() => { setShowResetModal(u.id); setResetPassword(""); }} title="Reset password" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Key size={14} /></button>
-                      <button onClick={() => setDeleting(u.id)} title="Delete" className="rounded-lg border border-destructive/50 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"><Trash2 size={14} /></button>
+                      <button onClick={() => handleToggleRole(u.id, u.role)} title={t("users.cycleRole")} className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted" disabled={u.role === "admin" || u.role === "super_admin"}><Shield size={14} /></button>
+                      <button onClick={() => { setShowResetModal(u.id); setResetPassword(""); }} title={t("users.resetPassword")} className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Key size={14} /></button>
+                      <button onClick={() => setDeleting(u.id)} title={t("users.deleteUser")} className="rounded-lg border border-destructive/50 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"><Trash2 size={14} /></button>
                     </div>
                   </td>
                 </tr>
@@ -131,25 +131,25 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      <Modal open={!!showResetModal} onOpenChange={() => setShowResetModal(null)} title="Reset Password" footer={
+      <Modal open={!!showResetModal} onOpenChange={() => setShowResetModal(null)} title={t("users.resetPasswordTitle")} footer={
         <>
           <Button variant="ghost" onClick={() => setShowResetModal(null)}>{t("common.cancel")}</Button>
-          <Button variant="destructive" onClick={handleResetPassword} disabled={resetting || !resetPassword}>{resetting ? "Resetting..." : "Reset"}</Button>
+          <Button variant="destructive" onClick={handleResetPassword} disabled={resetting || !resetPassword}>{resetting ? t("users.resetting") : t("users.reset")}</Button>
         </>
       }>
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Enter a new password (min 6 characters) for this user.</p>
-          <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="New password" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" minLength={6} autoFocus />
+          <p className="text-sm text-muted-foreground">{t("users.enterPassword")}</p>
+          <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={t("auth.newPassword")} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" minLength={6} autoFocus />
         </div>
       </Modal>
 
-      <Modal open={!!deleting} onOpenChange={() => setDeleting(null)} title="Delete User" footer={
+      <Modal open={!!deleting} onOpenChange={() => setDeleting(null)} title={t("users.deleteTitle")} footer={
         <>
           <Button variant="ghost" onClick={() => setDeleting(null)}>{t("common.cancel")}</Button>
           <Button variant="destructive" onClick={() => handleDelete(deleting!)}>{t("common.delete")}</Button>
         </>
       }>
-        <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+        <p>{t("users.deleteConfirm")}</p>
       </Modal>
     </PageContainer>
   );
