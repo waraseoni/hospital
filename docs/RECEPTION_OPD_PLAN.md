@@ -315,7 +315,7 @@ Patient goes to pharmacy/lab
 | 1 | Phase 1: Reception Desk | [x] Done (`cd79698`, `9f332cd`, `37299dc`, `9ca387b`) | 3-4 days |
 | 2 | Phase 2: Doctor OPD Enhancement | [x] Done (`1d96f78`, `bbb20d3`) | 2-3 days |
 | 3 | Phase 3: Token Display Board | [x] Done (`a95b41f`) | 1-2 days |
-| 4 | Phase 4: Patient History | [ ] Pending | 2-3 days |
+| 4 | Phase 4: Patient History | [x] Done (`649daf7`) | 2-3 days |
 | 5 | Phase 5: Walk-in Flow | [ ] Pending | 1-2 days |
 | 6 | Phase 6: Admin Integration | [ ] Pending | 1-2 days |
 
