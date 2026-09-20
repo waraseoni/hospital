@@ -12,7 +12,7 @@ import { SearchBar } from "@/components/ui/search-bar";
 import { PageHeader, PageContainer } from "@/components/ui/page";
 import type { Profile } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
-import { UserRound, Calendar, ClipboardList, Trash2 } from "lucide-react";
+import { UserRound, Calendar, ClipboardList, Trash2, Printer } from "lucide-react";
 
 export default function ReceptionPage() {
   const { t } = useI18n();
@@ -29,8 +29,9 @@ export default function ReceptionPage() {
   const [selectedDoctor, setSelectedDoctor] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedConsultationType, setSelectedConsultationType] = useState("opd");
-  const [appointments, setAppointments] = useState<Array<{ id: string; patient: { name: string; uhid: string }; doctor: { full_name: string }; token_no: number; status: string; date_slot: string }>>([]);
+  const [appointments, setAppointments] = useState<Array<{ id: string; patient: { name: string; uhid: string }; doctor: { full_name: string }; token_no: number; status: string; date_slot: string; consultation_type: string }>>([]);
   const [queueData, setQueueData] = useState<Array<{ doctor: { full_name: string; specialization: string }; total: number; current: number | null; appointments: any[] }>>([]);
+  const [counterNumber, setCounterNumber] = useState("1");
 
   const supabase = createClient();
 
@@ -214,26 +215,50 @@ export default function ReceptionPage() {
             </Button>
           </div>
 
+          <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Counter Setup</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">Counter #</span>
+                <Select value={counterNumber} onChange={(e) => setCounterNumber(e.target.value)} options={[
+                  { value: "1", label: "Counter 1" },
+                  { value: "2", label: "Counter 2" },
+                  { value: "3", label: "Counter 3" },
+                  { value: "4", label: "Counter 4" },
+                  { value: "5", label: "Counter 5" }
+                ]} />
+              </div>
+            </div>
+          </div>
+
           <div className="rounded-xl border border-border bg-card overflow-hidden">
             <div className="px-4 py-3 border-b border-border bg-muted/50 font-semibold flex items-center justify-between">
               <span className="flex items-center gap-2"><ClipboardList size={18} /> {t("reception.todayQueue")}</span>
-              <Badge variant="info">{appointments.length}</Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="warning">{appointments.filter(a => a.status === "scheduled").length} Waiting</Badge>
+                <Badge variant="success">{appointments.filter(a => a.status === "completed").length} Done</Badge>
+              </div>
             </div>
             {appointments.length === 0 ? (
               <EmptyState title={t("reception.noPatientsToday")} description="" />
             ) : (
               <div className="divide-y divide-border">
-                {appointments.map((apt) => (
-                  <div key={apt.id} className={`px-4 py-3 flex items-center justify-between ${apt.status === "in_progress" ? "bg-yellow-50 dark:bg-yellow-900/20" : apt.status === "completed" ? "bg-green-50 dark:bg-green-900/20" : ""}`}>
+                {appointments.sort((a, b) => {
+                  if (a.consultation_type === "emergency" && b.consultation_type !== "emergency") return -1;
+                  if (a.consultation_type !== "emergency" && b.consultation_type === "emergency") return 1;
+                  return a.token_no - b.token_no;
+                }).map((apt) => (
+                  <div key={apt.id} className={`px-4 py-3 flex items-center justify-between ${apt.status === "in_progress" ? "bg-yellow-50 dark:bg-yellow-900/20" : apt.status === "completed" ? "bg-green-50 dark:bg-green-900/20" : apt.consultation_type === "emergency" ? "bg-red-50 dark:bg-red-900/20" : ""}`}>
                     <div className="flex items-center gap-3">
-                      <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${apt.status === "in_progress" ? "bg-primary text-primary-foreground" : apt.status === "completed" ? "bg-green-500 text-white" : "bg-muted"}`}>#{apt.token_no}</span>
+                      <span className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${apt.status === "in_progress" ? "bg-primary text-primary-foreground" : apt.status === "completed" ? "bg-green-500 text-white" : apt.consultation_type === "emergency" ? "bg-red-500 text-white" : "bg-muted"}`}>#{apt.token_no}</span>
                       <div>
                         <p className="font-medium">{apt.patient?.name}</p>
-                        <p className="text-xs text-muted-foreground">{apt.patient?.uhid}</p>
+                        <p className="text-xs text-muted-foreground">{apt.patient?.uhid} | Counter {counterNumber}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <Badge variant={apt.status === "scheduled" ? "info" : apt.status === "in_progress" ? "warning" : apt.status === "completed" ? "success" : "destructive"}>{apt.status}</Badge>
+                      {apt.consultation_type === "emergency" && <Badge variant="destructive" className="ml-1">EMG</Badge>}
                       <p className="text-xs text-muted-foreground">Dr. {apt.doctor?.full_name}</p>
                     </div>
                   </div>
