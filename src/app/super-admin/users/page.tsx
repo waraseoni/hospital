@@ -87,10 +87,10 @@ export default function SuperAdminUsersPage() {
 
   return (
     <PageContainer>
-      <PageHeader title={t("superAdmin.allUsers")} subtitle="Manage all users across all roles" actions={<Button onClick={loadUsers} variant="ghost"><Power size={16} className="mr-1" />Refresh</Button>} />
+      <PageHeader title={t("superAdmin.allUsers")} subtitle={t("superAdmin.subtitle")} actions={<Button onClick={loadUsers} variant="ghost"><Power size={16} className="mr-1" />Refresh</Button>} />
 
       <div className="mb-4 flex flex-wrap gap-3 items-center">
-        <SearchBar value={search} onChange={setSearch} placeholder="Search by name, email, or role..." />
+        <SearchBar value={search} onChange={setSearch} placeholder={t("superAdmin.searchPlaceholder")} />
         <select value={filterRole} onChange={(e) => setFilterRole(e.target.value as UserRole | "all")} className="rounded-lg border border-input bg-background px-3 py-2 text-sm">
           <option value="all">All Roles</option>
           {allRoles.map(r => <option key={r} value={r}>{r.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}</option>)}
@@ -98,18 +98,18 @@ export default function SuperAdminUsersPage() {
       </div>
 
       {loading ? <Skeleton lines={5} /> : filtered.length === 0 ? (
-        <EmptyState title="No users found" description="No users match the current filters" />
+        <EmptyState title={t("superAdmin.noUsers")} description={t("superAdmin.noUsersDesc")} />
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium"><UserRound size={14} className="inline mr-1" />Name</th>
-                <th className="px-4 py-3 text-left font-medium"><Mail size={14} className="inline mr-1" />Email</th>
-                <th className="px-4 py-3 text-left font-medium">Phone</th>
-                <th className="px-4 py-3 text-left font-medium">Role</th>
-                <th className="px-4 py-3 text-left font-medium">Created</th>
-                <th className="px-4 py-3 text-right font-medium">Actions</th>
+                <th className="px-4 py-3 text-left font-medium"><UserRound size={14} className="inline mr-1" />{t("superAdmin.name")}</th>
+                <th className="px-4 py-3 text-left font-medium"><Mail size={14} className="inline mr-1" />{t("superAdmin.email")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("superAdmin.phone")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("superAdmin.role")}</th>
+                <th className="px-4 py-3 text-left font-medium">{t("superAdmin.created")}</th>
+                <th className="px-4 py-3 text-right font-medium">{t("superAdmin.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -135,7 +135,7 @@ export default function SuperAdminUsersPage() {
       )}
 
       {/* Role Edit Modal */}
-      <Modal open={!!editingUser} onOpenChange={() => setEditingUser(null)} title="Change Role" footer={
+      <Modal open={!!editingUser} onOpenChange={() => setEditingUser(null)} title={t("superAdmin.changeRole")} footer={
         <>
           <Button variant="ghost" onClick={() => setEditingUser(null)}>{t("common.cancel")}</Button>
           <Button onClick={handleUpdateRole}>{t("common.save")}</Button>
@@ -149,27 +149,26 @@ export default function SuperAdminUsersPage() {
         </div>
       </Modal>
 
-      {/* Password Reset Modal */}
-      <Modal open={!!showResetModal} onOpenChange={() => setShowResetModal(null)} title="Reset Password" footer={
+      <Modal open={!!showResetModal} onOpenChange={() => setShowResetModal(null)} title={t("superAdmin.resetPassword")} footer={
         <>
           <Button variant="ghost" onClick={() => setShowResetModal(null)}>{t("common.cancel")}</Button>
-          <Button variant="destructive" onClick={handleResetPassword} disabled={resetting || !resetPassword}>{resetting ? "Resetting..." : "Reset"}</Button>
+          <Button variant="destructive" onClick={handleResetPassword} disabled={resetting || !resetPassword}>{resetting ? t("superAdmin.resetting") : t("superAdmin.reset")}</Button>
         </>
       }>
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Enter a new password (min 6 characters).</p>
-          <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="New password" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" minLength={6} autoFocus />
+          <p className="text-sm text-muted-foreground">{t("superAdmin.enterNewPassword")}</p>
+          <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={t("superAdmin.newPassword")} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" minLength={6} autoFocus />
         </div>
       </Modal>
 
       {/* Delete Modal */}
-      <Modal open={!!deleting} onOpenChange={() => setDeleting(null)} title="Delete User" footer={
+      <Modal open={!!deleting} onOpenChange={() => setDeleting(null)} title={t("superAdmin.deleteUser")} footer={
         <>
           <Button variant="ghost" onClick={() => setDeleting(null)}>{t("common.cancel")}</Button>
           <Button variant="destructive" onClick={() => handleDelete(deleting!)}>{t("common.delete")}</Button>
         </>
       }>
-        <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+        <p>{t("superAdmin.deleteConfirm")}</p>
       </Modal>
     </PageContainer>
   );

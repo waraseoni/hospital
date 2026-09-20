@@ -35,7 +35,7 @@ export default function SuperAdminAdminsPage() {
       if (!res.ok) throw new Error("Failed to load");
       const data = await res.json();
       setAdmins(data.filter((u: Profile) => u.role === "admin" || u.role === "super_admin"));
-    } catch { addToast("error", "Failed to load admins"); }
+    } catch { addToast("error", t("common.notFound")); }
     setLoading(false);
   }
 
@@ -46,7 +46,7 @@ export default function SuperAdminAdminsPage() {
       const res = await fetch("/api/staff", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(form) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      addToast("success", "Admin account created successfully");
+      addToast("success", t("superAdmin.adminCreateSuccess"));
       setShowForm(false);
       setForm({ full_name: "", email: "", password: "", phone: "", role: "admin" });
       loadAdmins();
@@ -61,7 +61,7 @@ export default function SuperAdminAdminsPage() {
       const res = await fetch(`/api/admin/users/${showResetModal}`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ newPassword: resetPassword }) });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
-      addToast("success", "Password reset successfully");
+      addToast("success", t("superAdmin.passwordResetSuccess"));
       setShowResetModal(null);
       setResetPassword("");
       loadAdmins();
@@ -72,16 +72,16 @@ export default function SuperAdminAdminsPage() {
   async function handleDelete(id: string) {
     try {
       const res = await fetch(`/api/admin/users/${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Delete failed");
-      addToast("success", "Admin deleted");
+      if (!res.ok) throw new Error(t("common.notFound"));
+      addToast("success", t("superAdmin.adminDeleted"));
       setDeleting(null);
       loadAdmins();
-    } catch { addToast("error", "Delete failed"); }
+    } catch { addToast("error", t("common.notFound")); }
   }
 
   return (
     <PageContainer>
-      <PageHeader title={t("superAdmin.admins")} subtitle="Manage admin and super admin accounts" actions={
+      <PageHeader title={t("superAdmin.admins")} subtitle={t("superAdmin.subtitle")} actions={
         <Button onClick={() => setShowForm(!showForm)}><UserPlus size={16} className="mr-1" />{t("superAdmin.addAdmin")}</Button>
       } />
 
@@ -93,26 +93,26 @@ export default function SuperAdminAdminsPage() {
             <Input placeholder={t("staff.email")} type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
             <Input placeholder={t("staff.password")} type="password" value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} required minLength={6} />
             <Input placeholder={t("staff.phone")} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-            <Select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Profile["role"] })} options={[{ value: "admin", label: "Admin" }, { value: "super_admin", label: "Super Admin" }]} />
+            <Select value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value as Profile["role"] })} options={[{ value: "admin", label: t("roles.admin") }, { value: "super_admin", label: t("roles.superAdmin") }]} />
           </div>
           <div className="flex gap-2">
-            <Button type="submit" disabled={submitting}>{submitting ? "Creating..." : t("superAdmin.createAdmin")}</Button>
+            <Button type="submit" disabled={submitting}>{submitting ? t("common.saving") : t("superAdmin.createAdmin")}</Button>
             <Button type="button" variant="ghost" onClick={() => setShowForm(false)}>{t("common.cancel")}</Button>
           </div>
         </form>
       )}
 
       {loading ? <Skeleton lines={5} /> : admins.length === 0 ? (
-        <EmptyState title="No admin accounts found" description="Create the first admin account" />
+        <EmptyState title={t("superAdmin.noUsers")} description={t("ui.noData")} />
       ) : (
         <div className="rounded-xl border border-border bg-card overflow-hidden">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border bg-muted/50">
-                <th className="px-4 py-3 text-left font-medium">Name</th>
-                <th className="px-4 py-3 text-left font-medium">Email</th>
-                <th className="px-4 py-3 text-left font-medium">Role</th>
-                <th className="px-4 py-3 text-right font-medium">Actions</th>
+              <th className="px-4 py-3 text-left font-medium">{t("superAdmin.name")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("superAdmin.email")}</th>
+              <th className="px-4 py-3 text-left font-medium">{t("superAdmin.role")}</th>
+              <th className="px-4 py-3 text-right font-medium">{t("superAdmin.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -123,8 +123,8 @@ export default function SuperAdminAdminsPage() {
                   <td className="px-4 py-3"><Badge variant={a.role === "super_admin" ? "destructive" : "info"}>{a.role.replace("_", " ")}</Badge></td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
-                      <button onClick={() => { setShowResetModal(a.id); setResetPassword(""); }} title="Reset password" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Key size={14} /></button>
-                      <button onClick={() => setDeleting(a.id)} title="Delete" className="rounded-lg border border-destructive/50 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"><Trash2 size={14} /></button>
+<button onClick={() => { setShowResetModal(a.id); setResetPassword(""); }} title={t("superAdmin.resetPassword")} className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Key size={14} /></button>
+                       <button onClick={() => setDeleting(a.id)} title={t("common.delete")} className="rounded-lg border border-destructive/50 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"><Trash2 size={14} /></button>
                     </div>
                   </td>
                 </tr>
@@ -134,25 +134,25 @@ export default function SuperAdminAdminsPage() {
         </div>
       )}
 
-      <Modal open={!!showResetModal} onOpenChange={() => setShowResetModal(null)} title="Reset Password" footer={
+      <Modal open={!!showResetModal} onOpenChange={() => setShowResetModal(null)} title={t("superAdmin.resetPassword")} footer={
         <>
           <Button variant="ghost" onClick={() => setShowResetModal(null)}>{t("common.cancel")}</Button>
-          <Button variant="destructive" onClick={handleResetPassword} disabled={resetting || !resetPassword}>{resetting ? "Resetting..." : "Reset"}</Button>
+          <Button variant="destructive" onClick={handleResetPassword} disabled={resetting || !resetPassword}>{resetting ? t("superAdmin.resetting") : t("superAdmin.reset")}</Button>
         </>
       }>
         <div className="space-y-3">
-          <p className="text-sm text-muted-foreground">Enter a new password (min 6 characters).</p>
-          <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder="New password" className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" minLength={6} autoFocus />
+          <p className="text-sm text-muted-foreground">{t("superAdmin.enterNewPassword")}</p>
+          <input type="password" value={resetPassword} onChange={(e) => setResetPassword(e.target.value)} placeholder={t("superAdmin.newPassword")} className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm" minLength={6} autoFocus />
         </div>
       </Modal>
 
-      <Modal open={!!deleting} onOpenChange={() => setDeleting(null)} title="Delete Admin" footer={
+      <Modal open={!!deleting} onOpenChange={() => setDeleting(null)} title={t("superAdmin.deleteAdmin")} footer={
         <>
           <Button variant="ghost" onClick={() => setDeleting(null)}>{t("common.cancel")}</Button>
           <Button variant="destructive" onClick={() => handleDelete(deleting!)}>{t("common.delete")}</Button>
         </>
       }>
-        <p>Are you sure you want to delete this admin account? This action cannot be undone.</p>
+        <p>{t("superAdmin.deleteConfirm")}</p>
       </Modal>
     </PageContainer>
   );
