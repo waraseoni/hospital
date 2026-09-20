@@ -142,7 +142,7 @@ Patient goes to pharmacy/lab
 - [x] Each section: doctor name, specialization, queue count, current token
 - [x] Each appointment: token #, patient name, UHID, status badge, time
 - [x] Cancel appointment (with confirmation)
-- [ ] Auto-refresh every 30 seconds
+- [x] Auto-refresh every 30 seconds
 
 ---
 
@@ -163,7 +163,7 @@ Patient goes to pharmacy/lab
 
 **Modify:** `src/app/doctor/opd/page.tsx`
 
-**Create:** `src/app/api/doctors/patient-history/[patientId]/route.ts`
+**Create:** `src/app/api/doctors/patient-history/[id]/route.ts`
 
 **Features (shown when History button clicked):**
 - [x] Profile: name, age, gender, phone, UHID, blood group, allergies
@@ -186,13 +186,13 @@ Patient goes to pharmacy/lab
 - [x] "Next Patient" button (auto-advance)
 - [x] "Call Back" button (re-queue patient)
 - [x] Consultation time elapsed (e.g., "12 min ago")
-- [ ] Patient preview on hover
+- [x] Patient preview on hover
 
 ---
 
 ### Milestone 2.3: Vitals Display for Doctor
 
-**Created:** `src/app/api/doctors/patient-history/[patientId]/route.ts`
+**Created:** `src/app/api/doctors/patient-history/[id]/route.ts`
 
 **Features:**
 - [x] Show latest vitals in patient history panel
@@ -211,14 +211,14 @@ Patient goes to pharmacy/lab
 - `src/app/api/token-display/route.ts`
 
 **Features:**
-- [ ] No login required
-- [ ] Current token per doctor (large font)
-- [ ] Patient name + token number
-- [ ] Auto-refresh every 10 seconds
-- [ ] Audio alert on new token (optional)
-- [ ] Queue length per doctor
-- [ ] Mobile-responsive
-- [ ] Dark mode support
+- [x] No login required
+- [x] Current token per doctor (large font)
+- [x] Patient name + token number
+- [x] Auto-refresh every 10 seconds
+- [x] Audio alert on new token (optional)
+- [x] Queue length per doctor
+- [x] Mobile-responsive
+- [x] Dark mode support
 
 ---
 
@@ -229,12 +229,12 @@ Patient goes to pharmacy/lab
 **Modify:** `src/app/doctor/patients/[id]/page.tsx`
 
 **Tabs:**
-- [ ] Overview: demographics, blood group, allergies, medical history
-- [ ] Vitals: all records with charts
-- [ ] Prescriptions: all with medicines
-- [ ] Lab Reports: all with results
-- [ ] Appointments: all past appointments
-- [ ] Documents: scanned reports, PDFs
+- [x] Overview: demographics, blood group, allergies, medical history
+- [x] Vitals: all records with charts
+- [x] Prescriptions: all with medicines
+- [x] Lab Reports: all with results
+- [x] Appointments: all past appointments
+- [x] Documents: scanned reports, PDFs
 
 ---
 
@@ -243,9 +243,9 @@ Patient goes to pharmacy/lab
 **Modify:** `src/app/nurse/vitals/page.tsx`
 
 **Features:**
-- [ ] Show patient's current appointment
-- [ ] Auto-fill patient from OPD queue
-- [ ] Show previous vitals before recording
+- [x] Show patient's current appointment
+- [x] Auto-fill patient from OPD queue
+- [x] Show previous vitals before recording
 
 ---
 
@@ -266,7 +266,7 @@ Patient goes to pharmacy/lab
 - [x] Counter number display
 - [x] Queue management: assign queue position
 - [x] Priority queue for emergency patients
-- [ ] Print token slip
+- [x] Print token slip
 
 ---
 
