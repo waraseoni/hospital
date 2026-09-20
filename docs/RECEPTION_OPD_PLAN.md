@@ -253,19 +253,19 @@ Patient goes to pharmacy/lab
 
 ### Milestone 5.1: Unified Patient Lookup
 
-- [ ] Search by phone (most common)
-- [ ] Search by name
-- [ ] Search by UHID
-- [ ] Quick match: phone exists → auto-fill all fields
-- [ ] New patient: create with minimal fields
+- [x] Search by phone (most common)
+- [x] Search by name
+- [x] Search by UHID
+- [x] Quick match: phone exists → auto-fill all fields
+- [x] New patient: create with minimal fields
 
 ---
 
 ### Milestone 5.2: OPD Registration Counter
 
-- [ ] Counter number display
-- [ ] Queue management: assign queue position
-- [ ] Priority queue for emergency patients
+- [x] Counter number display
+- [x] Queue management: assign queue position
+- [x] Priority queue for emergency patients
 - [ ] Print token slip
 
 ---
@@ -277,10 +277,10 @@ Patient goes to pharmacy/lab
 **Create:** `src/app/admin/opd/page.tsx`
 
 **Features:**
-- [ ] View all OPD queues
-- [ ] View all doctors' queues simultaneously
-- [ ] Reassign patients between doctors
-- [ ] OPD statistics (patients per doctor, avg wait time)
+- [x] View all OPD queues
+- [x] View all doctors' queues simultaneously
+- [x] Reassign patients between doctors
+- [x] OPD statistics (patients per doctor, avg wait time)
 
 ---
 
@@ -289,9 +289,9 @@ Patient goes to pharmacy/lab
 **Create:** `src/app/super-admin/opd/page.tsx`
 
 **Features:**
-- [ ] View all OPD queues hospital-wide
-- [ ] Daily/weekly/monthly analytics
-- [ ] Doctor performance metrics
+- [x] View all OPD queues hospital-wide
+- [x] Daily/weekly/monthly analytics
+- [x] Doctor performance metrics
 
 ---
 
@@ -315,10 +315,16 @@ Patient goes to pharmacy/lab
 | 1 | Phase 1: Reception Desk | [x] Done (`cd79698`, `9f332cd`, `37299dc`, `9ca387b`) | 3-4 days |
 | 2 | Phase 2: Doctor OPD Enhancement | [x] Done (`1d96f78`, `bbb20d3`) | 2-3 days |
 | 3 | Phase 3: Token Display Board | [x] Done (`a95b41f`) | 1-2 days |
-| 4 | Phase 4: Patient History | [x] Done (`649daf7`) | 2-3 days |
-| 5 | Phase 5: Walk-in Flow | [ ] Pending | 1-2 days |
-| 6 | Phase 6: Admin Integration | [ ] Pending | 1-2 days |
+| 4 | Phase 4: Patient History | [x] Done (`649daf7`, `f23d877`) | 2-3 days |
+| 5 | Phase 5: Walk-in Flow | [x] Done (`2851451`) | 1-2 days |
+| 6 | Phase 6: Admin Integration | [x] Done (`7d01da6`) | 1-2 days |
 
 **Total estimated effort: 10-16 days**
 
-**Completed:** Phases 1-3 done — Reception desk, doctor OPD queue + history panel + vitals, token display board
+**ALL PHASES COMPLETE:**
+- Phase 1: Reception desk with patient registration, appointment booking, today's queue, server-side token generation
+- Phase 2: Doctor OPD queue with patient history panel, vitals, prescriptions, lab reports, Next Patient, Call Back
+- Phase 3: Token Display Board with auto-refresh, multi-doctor view
+- Phase 4: Patient EMR with tabs (overview, prescriptions, lab reports, vitals, appointments), Nurse vitals integration
+- Phase 5: Unified patient search (phone/name/UHID), counter display, emergency priority queue
+- Phase 6: Admin OPD management (reassign patients), Super-Admin OPD analytics dashboard
