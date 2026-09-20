@@ -3,11 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ patientId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const { patientId } = await params;
+    const { id: patientId } = await params;
 
     const { data: patient, error: patientError } = await supabase
       .from("patients")
