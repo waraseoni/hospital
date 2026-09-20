@@ -43,6 +43,7 @@ export const en = {
     beds: "Beds",
     inventory: "Inventory",
     auditLogs: "Audit Logs",
+    opd: "OPD Management",
     opdQueue: "OPD Queue",
     newPrescription: "New Prescription",
     recordVitals: "Record Vitals",

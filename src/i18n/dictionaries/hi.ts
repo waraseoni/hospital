@@ -45,6 +45,7 @@ export const hi: Dictionary = {
     beds: "बेड",
     inventory: "इन्वेंट्री",
     auditLogs: "ऑडिट लॉग",
+    opd: "ओपीडी प्रबंधन",
     opdQueue: "ओपीडी कतार",
     newPrescription: "नई पर्ची",
     recordVitals: "वाइटल्स दर्ज करें",
