@@ -59,7 +59,7 @@ export default function AdminStaffPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const body: Record<string, unknown> = { full_name: form.full_name, phone: form.phone, role: form.role, email: form.email, specialization: form.specialization };
+      const body: Record<string, unknown> = { full_name: form.full_name, phone: form.phone, role: form.role, email: form.email, password: form.password, specialization: form.specialization };
       const url = editingId ? `/api/staff/${editingId}` : "/api/staff";
       const method = editingId ? "PUT" : "POST";
       const res = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
