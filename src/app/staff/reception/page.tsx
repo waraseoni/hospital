@@ -101,23 +101,20 @@ export default function ReceptionPage() {
     if (!selectedPatient || !selectedDoctor || !selectedDate) return;
     setSubmitting(true);
     try {
-      const dateOnly = selectedDate.split("T")[0];
-      const { data: existing } = await supabase
-        .from("appointments")
-        .select("token_no")
-        .eq("doctor_id", selectedDoctor)
-        .gte("date_slot", `${dateOnly}T00:00`)
-        .lte("date_slot", `${dateOnly}T23:59`)
-        .order("token_no", { ascending: false })
-        .limit(1);
-      const tokenNo = existing && existing.length > 0 ? existing[0].token_no + 1 : 1;
-      const { error } = await supabase.from("appointments").insert({
-        patient_id: selectedPatient, doctor_id: selectedDoctor,
-        date_slot: selectedDate, token_no: tokenNo,
-        consultation_type: selectedConsultationType, notes: ""
+      const res = await fetch("/api/reception/book-appointment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patient_id: selectedPatient,
+          doctor_id: selectedDoctor,
+          date_slot: selectedDate,
+          consultation_type: selectedConsultationType,
+          notes: ""
+        })
       });
-      if (error) throw error;
-      addToast("success", `${t("reception.tokenAssigned")} #${tokenNo}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      addToast("success", `${t("reception.tokenAssigned")} #${data.token_no}`);
       setSelectedPatient("");
       setSelectedDoctor("");
       setSelectedDate("");
