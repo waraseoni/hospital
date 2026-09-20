@@ -52,7 +52,7 @@ Real hospital mein patient software access nahi karta. Patient hospital aata hai
 | 1.3 | Today's Queue View | [x] Done | `37299dc` |
 | 1.4 | Server-side Token Generation | [x] Done | `9ca387b` |
 | 2.1 | Patient History Panel | [x] Done | `1d96f78` |
-| 2.2 | Enhanced OPD Queue | [ ] Pending | — |
+| 2.2 | Enhanced OPD Queue | [x] Done | `bbb20d3` |
 | 2.3 | Vitals Display for Doctor | [x] Done | `1d96f78` |
 
 ---
@@ -181,11 +181,11 @@ Patient goes to pharmacy/lab
 **Modify:** `src/app/doctor/opd/page.tsx`
 
 **Features:**
-- [ ] Highlight current token (large, colored)
-- [ ] Show next 3 tokens (smaller, greyed)
-- [ ] "Next Patient" button (auto-advance)
-- [ ] "Call Back" button (re-queue patient)
-- [ ] Consultation time elapsed
+- [x] Highlight current token being served (larger, different color)
+- [x] Show next 3 tokens in queue (smaller, greyed)
+- [x] "Next Patient" button (auto-advance)
+- [x] "Call Back" button (re-queue patient)
+- [x] Consultation time elapsed (e.g., "12 min ago")
 - [ ] Patient preview on hover
 
 ---
