@@ -50,7 +50,10 @@ Real hospital mein patient software access nahi karta. Patient hospital aata hai
 | 1.1 | Walk-in Patient Registration | [x] Done | `cd79698` |
 | 1.2 | Appointment Booking API | [x] Done | `9f332cd` |
 | 1.3 | Today's Queue View | [x] Done | `37299dc` |
-| 1.4 | Server-side Token Generation | [ ] Pending | — |
+| 1.4 | Server-side Token Generation | [x] Done | `9ca387b` |
+| 2.1 | Patient History Panel | [x] Done | `1d96f78` |
+| 2.2 | Enhanced OPD Queue | [ ] Pending | — |
+| 2.3 | Vitals Display for Doctor | [x] Done | `1d96f78` |
 
 ---
 
@@ -145,16 +148,12 @@ Patient goes to pharmacy/lab
 
 ### Milestone 1.4: Server-side Token Generation
 
-**Create:**
-- `src/app/api/appointments/book/route.ts`
-
-**Modify:**
-- `src/app/patient/appointments/page.tsx` — Use new API
+**Create:** `src/app/api/reception/book-appointment/route.ts` (already created in 1.2)
 
 **Features:**
-- [ ] Database-level locking for token generation
-- [ ] Atomic insert with retry for UNIQUE constraint
-- [ ] Return generated token number
+- [x] Database-level locking for token generation
+- [x] Atomic insert with retry for UNIQUE constraint
+- [x] Return generated token number
 
 ---
 
@@ -164,13 +163,16 @@ Patient goes to pharmacy/lab
 
 **Modify:** `src/app/doctor/opd/page.tsx`
 
-**Features (shown when Start Consultation clicked):**
-- [ ] Profile: name, age, gender, phone, UHID, blood group, allergies
-- [ ] Medical history from patients.medical_history JSONB
-- [ ] Last 5 prescriptions: diagnosis, date, doctor
-- [ ] Last 5 lab reports: test name, status, date
-- [ ] Last 3 vitals: BP, pulse, SpO2, temperature
-- [ ] Current appointment: token, type, time
+**Create:** `src/app/api/doctors/patient-history/[patientId]/route.ts`
+
+**Features (shown when History button clicked):**
+- [x] Profile: name, age, gender, phone, UHID, blood group, allergies
+- [x] Medical history from patients.medical_history JSONB
+- [x] Last 5 prescriptions: diagnosis, date, doctor
+- [x] Last 5 lab reports: test name, status, date
+- [x] Last 3 vitals: BP, pulse, SpO2, temperature
+- [x] Abnormal values highlighted (BP, SpO2, Temp, Pulse)
+- [x] Current appointment: token, type, time
 
 ---
 
@@ -190,15 +192,13 @@ Patient goes to pharmacy/lab
 
 ### Milestone 2.3: Vitals Display for Doctor
 
-**Create:** `src/app/api/doctors/patient-vitals/[patientId]/route.ts`
-
-**Modify:** `src/app/doctor/opd/page.tsx`
+**Created:** `src/app/api/doctors/patient-history/[patientId]/route.ts`
 
 **Features:**
-- [ ] Show latest vitals in patient panel
-- [ ] Vitals trend (last 5 records)
-- [ ] Highlight abnormal values (BP>140/90, SpO2<95%, Temp>100.4F)
-- [ ] Show recorded by (nurse name)
+- [x] Show latest vitals in patient history panel
+- [x] Show vitals trend (last 3 records)
+- [x] Highlight abnormal values (BP>140/90, SpO2<95%, Temp>100.4F, Pulse>100 or <60)
+- [x] Show recorded by (nurse name)
 
 ---
 
