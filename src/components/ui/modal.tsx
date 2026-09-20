@@ -17,11 +17,8 @@ export function Modal({ open, onOpenChange, title, children, footer, size = "md"
   const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
+    if (open) document.body.style.overflow = "hidden";
+    else document.body.style.overflow = "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
 
@@ -35,28 +32,24 @@ export function Modal({ open, onOpenChange, title, children, footer, size = "md"
 
   if (!open) return null;
 
-  const sizeClasses = { sm: "max-w-md", md: "max-w-lg", lg: "max-w-2xl" };
+  const sizeClasses = { sm: "max-w-sm", md: "max-w-md", lg: "max-w-xl" };
 
   return (
     <div
       ref={overlayRef}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm"
       onClick={(e) => { if (e.target === overlayRef.current) onOpenChange(false); }}
     >
-      <div className={cn("w-full rounded-xl border border-border bg-card shadow-xl", sizeClasses[size])}>
-        <div className="flex items-center justify-between rounded-t-xl border-b border-border px-6 py-4">
-          <h3 className="text-lg font-semibold">{title}</h3>
-          <button
-            onClick={() => onOpenChange(false)}
-            className="rounded-lg p-1 hover:bg-muted"
-            aria-label="Close"
-          >
-            <X size={18} />
+      <div className={cn("w-full animate-in zoom-in-95 fade-in rounded-xl border border-border bg-card shadow-2xl", sizeClasses[size])}>
+        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+          <h3 className="text-sm font-semibold">{title}</h3>
+          <button onClick={() => onOpenChange(false)} className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground">
+            <X size={15} />
           </button>
         </div>
-        <div className="px-6 py-4">{children}</div>
+        <div className="px-4 py-3">{children}</div>
         {footer && (
-          <div className="flex justify-end gap-2 border-t border-border px-6 py-4">
+          <div className="flex justify-end gap-2 border-t border-border px-4 py-3">
             {footer}
           </div>
         )}

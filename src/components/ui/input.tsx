@@ -11,21 +11,21 @@ export function Input({ className, label, error, helperText, id, ...props }: Inp
   return (
     <div className="space-y-1">
       {label && (
-        <label htmlFor={inputId} className="text-sm font-medium text-foreground">
+        <label htmlFor={inputId} className="text-xs font-medium text-foreground">
           {label}
         </label>
       )}
       <input
         id={inputId}
         className={cn(
-          "flex h-9 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm outline-none transition-colors focus:ring-2 focus:ring-ring",
-          error && "border-destructive focus:ring-destructive",
+          "flex h-8 w-full rounded-lg border border-input bg-background px-2.5 py-1.5 text-sm outline-none transition-colors focus:ring-2 focus:ring-ring/30 focus:border-primary",
+          error && "border-destructive focus:ring-destructive/30",
           className
         )}
         {...props}
       />
-      {error && <p className="text-xs text-destructive">{error}</p>}
-      {helperText && !error && <p className="text-xs text-muted-foreground">{helperText}</p>}
+      {error && <p className="text-[11px] text-destructive">{error}</p>}
+      {helperText && !error && <p className="text-[11px] text-muted-foreground">{helperText}</p>}
     </div>
   );
 }

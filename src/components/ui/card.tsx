@@ -12,9 +12,9 @@ export function Card({ className, variant = "default", hoverable, clickable, onC
     <div
       className={cn(
         "rounded-xl border border-border bg-card",
-        variant === "stat" && "p-4 sm:p-6",
-        hoverable && "transition-shadow hover:shadow-md",
-        clickable && "cursor-pointer transition-shadow hover:shadow-md",
+        variant === "stat" && "p-3.5 sm:p-4",
+        hoverable && "stat-card",
+        clickable && "stat-card cursor-pointer",
         className
       )}
       onClick={onClick}
@@ -36,17 +36,17 @@ interface StatCardProps extends React.HTMLAttributes<HTMLDivElement> {
 
 export function StatCard({ icon, label, value, trend, className }: StatCardProps) {
   return (
-    <Card variant="stat" className={className}>
+    <Card variant="stat" className={cn("stat-card", className)}>
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
           {icon}
         </div>
-        <div>
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="text-2xl font-bold">{value}</p>
+        <div className="min-w-0">
+          <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
+          <p className="text-xl font-bold tracking-tight">{value}</p>
           {trend && (
-            <p className={`text-xs ${trend.positive ? "text-green-600" : "text-red-600"}`}>
-              {trend.positive ? "↑" : "↓"} {trend.value}
+            <p className={`text-[11px] font-medium ${trend.positive ? "text-green-600" : "text-red-600"}`}>
+              {trend.positive ? "\u2191" : "\u2193"} {trend.value}
             </p>
           )}
         </div>
