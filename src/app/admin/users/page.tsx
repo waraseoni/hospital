@@ -77,7 +77,7 @@ export default function AdminUsersPage() {
     } catch { addToast("error", t("users.deleteFailed")); }
   }
 
-  const filtered = users.filter(u => {
+  const filtered = users.filter(u => u.role !== "super_admin").filter(u => {
     const matchSearch = !search || u.full_name.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase()) || u.role.toLowerCase().includes(search.toLowerCase());
     const matchRole = filterRole === "admin" || u.role === filterRole;
     return matchSearch && matchRole;
