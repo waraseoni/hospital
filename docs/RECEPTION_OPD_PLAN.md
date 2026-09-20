@@ -312,13 +312,13 @@ Patient goes to pharmacy/lab
 
 | # | Phase | Status | Effort |
 |---|-------|--------|--------|
-| 1 | Phase 1: Reception Desk | [x] Milestone 1.1 Done (Reception page) | 3-4 days |
-| 2 | Phase 2: Doctor OPD Enhancement | [ ] Pending | 2-3 days |
-| 3 | Phase 3: Token Display Board | [ ] Pending | 1-2 days |
+| 1 | Phase 1: Reception Desk | [x] Done (`cd79698`, `9f332cd`, `37299dc`, `9ca387b`) | 3-4 days |
+| 2 | Phase 2: Doctor OPD Enhancement | [x] Done (`1d96f78`, `bbb20d3`) | 2-3 days |
+| 3 | Phase 3: Token Display Board | [x] Done (`a95b41f`) | 1-2 days |
 | 4 | Phase 4: Patient History | [ ] Pending | 2-3 days |
 | 5 | Phase 5: Walk-in Flow | [ ] Pending | 1-2 days |
 | 6 | Phase 6: Admin Integration | [ ] Pending | 1-2 days |
 
 **Total estimated effort: 10-16 days**
 
-**Completed:** Phase 1 Milestone 1.1 — Reception desk page with patient registration, appointment booking, and today's queue view
+**Completed:** Phases 1-3 done — Reception desk, doctor OPD queue + history panel + vitals, token display board
