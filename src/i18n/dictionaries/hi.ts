@@ -439,6 +439,10 @@ superAdmin: {
       adminCreateSuccess: "एडमिन खाता सफलतापूर्वक बनाया गया",
       deleteFailed: "हटाने में विफल",
       deleteConfirmMsg: "क्या आप इस एडमिन खाते को हटाना चाहते हैं? यह कार्रवाई वापस नहीं ली जा सकती।",
+      recentActivity: "हालिया गतिविधि",
+      activitySubtitle: "नवीनतम सिस्टम कार्रवाइयाँ और घटनाएँ",
+      viewAll: "सभी देखें",
+      noActivity: "कोई हालिया गतिविधि नहीं",
     },
    rooms: {
      title: "कमरा और बेड स्थिति",

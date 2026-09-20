@@ -412,7 +412,7 @@ export const en = {
    adminUsers: {
      title: "User Management",
    },
-    superAdmin: {
+superAdmin: {
       dashboard: "Super Admin Dashboard",
       dashboardSubtitle: "Complete system overview and management",
       allUsers: "All Users",
@@ -447,9 +447,13 @@ export const en = {
       reset: "Reset",
       passwordResetSuccess: "Password reset successfully",
       adminDeleted: "Admin deleted",
-adminCreateSuccess: "Admin account created successfully",
+      adminCreateSuccess: "Admin account created successfully",
       deleteFailed: "Delete failed",
       deleteConfirmMsg: "Are you sure you want to delete this admin account? This action cannot be undone.",
+      recentActivity: "Recent Activity",
+      activitySubtitle: "Latest system actions and events",
+      viewAll: "View All",
+      noActivity: "No recent activity",
     },
     rooms: {
      title: "Room & Bed Status",
