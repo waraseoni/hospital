@@ -13,7 +13,9 @@
     "version:build": "node scripts/version.mjs build",
     "version:patch": "node scripts/version.mjs patch",
     "version:minor": "node scripts/version.mjs minor",
-    "version:major": "node scripts/version.mjs major"
+    "version:major": "node scripts/version.mjs major",
+    "release": "node scripts/auto-tag.mjs",
+    "release:push": "node scripts/auto-tag.mjs --push"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",

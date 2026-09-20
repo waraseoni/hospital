@@ -125,6 +125,9 @@ export function AppShell({
             </div>
             <LogoutButton onLogout={onLogout} label={t("common.logout")} />
           </div>
+          <p className="text-[10px] text-muted-foreground text-center">
+            v{process.env.NEXT_PUBLIC_APP_VERSION || "0.0.0.0"}
+          </p>
         </div>
       </aside>
 
