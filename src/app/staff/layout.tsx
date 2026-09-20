@@ -5,10 +5,11 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, Folder, Users2 } from "lucide-react";
+import { LayoutDashboard, Folder, Users2, ClipboardList } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/staff", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
+  { href: "/staff/reception", labelKey: "nav.reception", icon: ClipboardList },
   { href: "/staff/rooms", labelKey: "nav.roomStatus", icon: Folder },
 ];
 
