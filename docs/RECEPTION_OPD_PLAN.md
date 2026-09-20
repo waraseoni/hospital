@@ -48,7 +48,7 @@ Real hospital mein patient software access nahi karta. Patient hospital aata hai
 | # | Milestone | Status | Commit |
 |---|-----------|--------|--------|
 | 1.1 | Walk-in Patient Registration | [x] Done | `cd79698` |
-| 1.2 | Appointment Booking API | [ ] Pending | — |
+| 1.2 | Appointment Booking API | [x] Done | `9f332cd` |
 | 1.3 | Today's Queue View | [ ] Pending | — |
 | 1.4 | Server-side Token Generation | [ ] Pending | — |
 
@@ -110,16 +110,21 @@ Patient goes to pharmacy/lab
 
 ### Milestone 1.2: Appointment Booking from Reception
 
-**Create:**
-- `src/app/api/reception/book-appointment/route.ts`
+**Create:** `src/app/api/reception/book-appointment/route.ts`
+
+**Modified:** `src/app/staff/reception/page.tsx` — Now uses server-side API
 
 **Features:**
-- [ ] Doctor dropdown (all doctors with specialization)
-- [ ] Date (today default, future dates allowed)
-- [ ] Consultation type (opd/emergency/follow_up)
-- [ ] Notes field (optional)
-- [ ] Auto token number (server-side with locking)
-- [ ] Token slip: token #, patient name, doctor, date, queue position, UHID
+- [x] Doctor dropdown (all doctors with specialization)
+- [x] Date (today default, future dates allowed)
+- [x] Consultation type (opd/emergency/follow_up)
+- [x] Notes field (optional)
+- [x] Server-side token generation (atomic, no race condition)
+- [x] Returns appointment data with token number
+- [x] Staff-only access check
+
+**Created files:**
+- `src/app/api/reception/book-appointment/route.ts`
 
 ---
 
