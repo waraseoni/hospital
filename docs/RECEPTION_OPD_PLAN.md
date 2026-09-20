@@ -43,6 +43,17 @@ Real hospital mein patient software access nahi karta. Patient hospital aata hai
 
 ---
 
+## Progress
+
+| # | Milestone | Status | Commit |
+|---|-----------|--------|--------|
+| 1.1 | Walk-in Patient Registration | [x] Done | `cd79698` |
+| 1.2 | Appointment Booking API | [ ] Pending | — |
+| 1.3 | Today's Queue View | [ ] Pending | — |
+| 1.4 | Server-side Token Generation | [ ] Pending | — |
+
+---
+
 ## Real-World OPD Flow (Target)
 
 ```
@@ -79,15 +90,21 @@ Patient goes to pharmacy/lab
 
 **i18n keys:** `reception.*` in en.ts and hi.ts
 
+**Created files:**
+- `src/app/staff/reception/page.tsx` — Reception desk page
+- `src/app/staff/layout.tsx` — Added "Reception" nav item
+- `src/i18n/dictionaries/en.ts` — Added `reception.*` keys
+- `src/i18n/dictionaries/hi.ts` — Added `reception.*` keys
+
 **Features:**
-- [ ] Quick patient search (by phone, name, or UHID)
-- [ ] Search results: name, UHID, phone, last visit
-- [ ] "New Patient" button → quick registration form
-- [ ] Form: name, phone, DOB, gender, address, blood group, allergies
-- [ ] Auto UHID generation (reuse generateUHID())
-- [ ] Duplicate check by phone before creating
-- [ ] Walk-in patients (no user_id) supported
-- [ ] After registration, auto-select for booking
+- [x] Quick patient search (by phone, name, or UHID)
+- [x] Search results: name, UHID, phone, last visit
+- [x] "New Patient" button → quick registration form
+- [x] Form: name, phone, DOB, gender, address, blood group, allergies
+- [x] Auto UHID generation (server-side, per-year sequence)
+- [x] Duplicate check by phone before creating
+- [x] Walk-in patients (no user_id) supported
+- [x] After registration, auto-select for booking
 
 ---
 
@@ -285,15 +302,17 @@ Patient goes to pharmacy/lab
 
 ---
 
-## Priority Order
+## Priority Order & Progress
 
-| # | Phase | Priority | Estimated Effort |
-|---|-------|----------|------------------|
-| 1 | Phase 1: Reception Desk | **P0 — Critical** | 3-4 days |
-| 2 | Phase 2: Doctor OPD Enhancement | **P0 — Critical** | 2-3 days |
-| 3 | Phase 3: Token Display Board | **P1 — Important** | 1-2 days |
-| 4 | Phase 4: Patient History | **P1 — Important** | 2-3 days |
-| 5 | Phase 5: Walk-in Flow | **P2 — Nice to have** | 1-2 days |
-| 6 | Phase 6: Admin Integration | **P2 — Nice to have** | 1-2 days |
+| # | Phase | Status | Effort |
+|---|-------|--------|--------|
+| 1 | Phase 1: Reception Desk | [x] Milestone 1.1 Done (Reception page) | 3-4 days |
+| 2 | Phase 2: Doctor OPD Enhancement | [ ] Pending | 2-3 days |
+| 3 | Phase 3: Token Display Board | [ ] Pending | 1-2 days |
+| 4 | Phase 4: Patient History | [ ] Pending | 2-3 days |
+| 5 | Phase 5: Walk-in Flow | [ ] Pending | 1-2 days |
+| 6 | Phase 6: Admin Integration | [ ] Pending | 1-2 days |
 
 **Total estimated effort: 10-16 days**
+
+**Completed:** Phase 1 Milestone 1.1 — Reception desk page with patient registration, appointment booking, and today's queue view
