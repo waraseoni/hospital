@@ -43,8 +43,31 @@ export default function DoctorOPDPage() {
   async function updateStatus(id: string, status: string) {
     const supabase = createClient();
     await supabase.from("appointments").update({ status }).eq("id", id);
-    addToast("success", status === "in_progress" ? "Consultation started" : status === "completed" ? "Completed" : "Cancelled");
+    addToast("success", status === "in_progress" ? "Consultation started" : status === "completed" ? "Completed" : status === "cancelled" ? "Cancelled" : "Re-queued");
     loadAppointments();
+  }
+
+  async function nextPatient() {
+    const current = appointments.find(a => a.status === "in_progress");
+    const next = appointments.find(a => a.status === "scheduled");
+    if (current) await updateStatus(current.id, "completed");
+    if (next) await updateStatus(next.id, "in_progress");
+  }
+
+  async function callBackPatient(id: string) {
+    const supabase = createClient();
+    await supabase.from("appointments").update({ status: "scheduled" }).eq("id", id);
+    addToast("success", "Patient re-queued");
+    loadAppointments();
+  }
+
+  function getTimeElapsed(dateSlot: string) {
+    const start = new Date(dateSlot);
+    const now = new Date();
+    const diff = Math.floor((now.getTime() - start.getTime()) / 60000);
+    if (diff < 1) return "Just now";
+    if (diff < 60) return `${diff}m ago`;
+    return `${Math.floor(diff / 60)}h ${diff % 60}m ago`;
   }
 
   async function showPatientHistory(patientId: string) {
@@ -94,35 +117,47 @@ export default function DoctorOPDPage() {
           {loading ? <Skeleton lines={5} /> : appointments.length === 0 ? (
             <EmptyState title={t("opd.noAppointments")} description={t("ui.noData")} />
           ) : (
-            <div className="space-y-3">
-              {appointments.map((apt) => (
-                <div key={apt.id} className={`rounded-xl border bg-card p-4 ${apt.status === "in_progress" ? "border-yellow-400 dark:border-yellow-600" : "border-border"}`}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${apt.status === "in_progress" ? "bg-yellow-500 text-white" : "bg-primary text-primary-foreground"}`}>#{apt.token_no}</div>
-                      <div>
-                        <p className="font-medium">{apt.patient?.name}</p>
-                        <p className="text-xs text-muted-foreground">UHID: {apt.patient?.uhid} | {apt.patient?.phone}</p>
+            <>
+              {appointments.some(a => a.status === "in_progress") && (
+                <div className="mb-4 flex items-center gap-3">
+                  <Button onClick={nextPatient} className="bg-green-600 text-white hover:bg-green-700">
+                    Next Patient →
+                  </Button>
+                  <span className="text-sm text-muted-foreground">{appointments.filter(a => a.status === "scheduled").length} patients waiting</span>
+                </div>
+              )}
+              <div className="space-y-3">
+                {appointments.map((apt) => (
+                  <div key={apt.id} className={`rounded-xl border bg-card p-4 ${apt.status === "in_progress" ? "border-yellow-400 dark:border-yellow-600" : "border-border"}`}>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className={`flex h-10 w-10 items-center justify-center rounded-full font-bold ${apt.status === "in_progress" ? "bg-yellow-500 text-white" : "bg-primary text-primary-foreground"}`}>#{apt.token_no}</div>
+                        <div>
+                          <p className="font-medium">{apt.patient?.name}</p>
+                          <p className="text-xs text-muted-foreground">UHID: {apt.patient?.uhid} | {apt.patient?.phone}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Badge variant={apt.status === "scheduled" ? "info" : "warning"}>{apt.status.replace("_", " ")}</Badge>
+                        {apt.status === "in_progress" && <span className="text-xs text-muted-foreground">{getTimeElapsed(apt.date_slot)}</span>}
+                        {apt.status === "scheduled" && <Button size="sm" onClick={() => updateStatus(apt.id, "in_progress")}>{t("opd.startConsultation")}</Button>}
+                        {apt.status === "in_progress" && (
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => showPatientHistory(apt.patient?.id)}>
+                              <UserRound size={14} className="mr-1" /> History
+                            </Button>
+                            <Link href={`/doctor/prescriptions/new?patient=${apt.patient_id}&appointment=${apt.id}`}><Button size="sm" variant="secondary">{t("opd.writePrescription")}</Button></Link>
+                            <Button size="sm" className="bg-green-600 text-white hover:bg-green-700" onClick={() => updateStatus(apt.id, "completed")}>{t("opd.complete")}</Button>
+                            <Button size="sm" variant="ghost" onClick={() => callBackPatient(apt.id)}>Call Back</Button>
+                            <Button size="sm" variant="ghost" onClick={() => updateStatus(apt.id, "cancelled")}>{t("opd.cancel")}</Button>
+                          </>
+                        )}
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={apt.status === "scheduled" ? "info" : "warning"}>{apt.status.replace("_", " ")}</Badge>
-                      {apt.status === "scheduled" && <Button size="sm" onClick={() => updateStatus(apt.id, "in_progress")}>{t("opd.startConsultation")}</Button>}
-                      {apt.status === "in_progress" && (
-                        <>
-                          <Button size="sm" variant="outline" onClick={() => showPatientHistory(apt.patient?.id)}>
-                            <UserRound size={14} className="mr-1" /> History
-                          </Button>
-                          <Link href={`/doctor/prescriptions/new?patient=${apt.patient_id}&appointment=${apt.id}`}><Button size="sm" variant="secondary">{t("opd.writePrescription")}</Button></Link>
-                          <Button size="sm" className="bg-green-600 text-white hover:bg-green-700" onClick={() => updateStatus(apt.id, "completed")}>{t("opd.complete")}</Button>
-                          <Button size="sm" variant="ghost" onClick={() => updateStatus(apt.id, "cancelled")}>{t("opd.cancel")}</Button>
-                        </>
-                      )}
-                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </>
           )}
         </div>
 
