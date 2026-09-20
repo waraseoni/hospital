@@ -69,6 +69,7 @@ export default function LoginPage() {
     }
 
     if (data.user) {
+      await supabase.auth.getUser();
       const { data: profile } = await supabase
         .from("profiles")
         .select("role")
