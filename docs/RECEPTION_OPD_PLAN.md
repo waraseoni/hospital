@@ -49,7 +49,7 @@ Real hospital mein patient software access nahi karta. Patient hospital aata hai
 |---|-----------|--------|--------|
 | 1.1 | Walk-in Patient Registration | [x] Done | `cd79698` |
 | 1.2 | Appointment Booking API | [x] Done | `9f332cd` |
-| 1.3 | Today's Queue View | [ ] Pending | — |
+| 1.3 | Today's Queue View | [x] Done | `37299dc` |
 | 1.4 | Server-side Token Generation | [ ] Pending | — |
 
 ---
@@ -130,14 +130,15 @@ Patient goes to pharmacy/lab
 
 ### Milestone 1.3: Today's Queue View
 
-**Create:**
-- `src/app/api/reception/today-queue/route.ts`
+**Create:** `src/app/api/reception/today-queue/route.ts`
+
+**Modified:** `src/app/staff/reception/page.tsx` — Now uses today-queue API
 
 **Features:**
-- [ ] Appointments grouped by doctor
-- [ ] Each section: doctor name, specialization, queue count, current token
-- [ ] Each appointment: token #, patient name, UHID, status badge, time
-- [ ] Cancel appointment (with confirmation)
+- [x] Appointments grouped by doctor
+- [x] Each section: doctor name, specialization, queue count, current token
+- [x] Each appointment: token #, patient name, UHID, status badge, time
+- [x] Cancel appointment (with confirmation)
 - [ ] Auto-refresh every 30 seconds
 
 ---
