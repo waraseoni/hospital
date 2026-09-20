@@ -30,6 +30,7 @@ export default function ReceptionPage() {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedConsultationType, setSelectedConsultationType] = useState("opd");
   const [appointments, setAppointments] = useState<Array<{ id: string; patient: { name: string; uhid: string }; doctor: { full_name: string }; token_no: number; status: string; date_slot: string }>>([]);
+  const [queueData, setQueueData] = useState<Array<{ doctor: { full_name: string; specialization: string }; total: number; current: number | null; appointments: any[] }>>([]);
 
   const supabase = createClient();
 
@@ -43,14 +44,13 @@ export default function ReceptionPage() {
       setDoctors((d as Profile[]) || []);
     } catch { /* ignore */ }
     try {
-      const today = new Date().toISOString().split("T")[0];
-      const { data } = await supabase
-        .from("appointments")
-        .select("*, patient:patients(name, uhid), doctor:profiles(full_name)")
-        .gte("date_slot", `${today}T00:00`)
-        .lte("date_slot", `${today}T23:59`)
-        .order("token_no");
-      setAppointments((data as any[]) || []);
+      const res = await fetch("/api/reception/today-queue");
+      if (res.ok) {
+        const data = await res.json();
+        setQueueData(data.doctors || []);
+        const allAppts = (data.doctors || []).flatMap((d: any) => (d.appointments || []));
+        setAppointments(allAppts);
+      }
     } catch { /* ignore */ }
     setLoading(false);
   }, []);
