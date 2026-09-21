@@ -59,6 +59,7 @@ export const en = {
     home: "Home",
     myPatients: "My Patients",
     schedule: "My Schedule",
+    progressNotes: "Progress Notes",
     profile: "Profile",
     myProfile: "My Profile",
   },
