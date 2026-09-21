@@ -27,6 +27,9 @@ function PrescriptionForm() {
   const [symptoms, setSymptoms] = useState("");
   const [notes, setNotes] = useState("");
   const [medicines, setMedicines] = useState<MedicineItem[]>([{ name: "", dosage: "", frequency: "", duration: "", instructions: "" }]);
+  const [labTests, setLabTests] = useState<{ name: string; category: string }[]>([]);
+  const [newTestName, setNewTestName] = useState("");
+  const [newTestCategory, setNewTestCategory] = useState("general");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
@@ -78,6 +81,16 @@ function PrescriptionForm() {
     setMedicines(medicines.filter((_, i) => i !== index));
   }
 
+  function addLabTest() {
+    if (!newTestName.trim()) return;
+    setLabTests([...labTests, { name: newTestName.trim(), category: newTestCategory }]);
+    setNewTestName("");
+  }
+
+  function removeLabTest(index: number) {
+    setLabTests(labTests.filter((_, i) => i !== index));
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!patient) { addToast("error", t("doctorPrescriptions.selectPatientFirst") || "Please select a patient first"); return; }
@@ -95,6 +108,17 @@ function PrescriptionForm() {
       medicines: medicines.filter(m => m.name.trim()),
     });
     if (!error) {
+      if (labTests.length > 0 && patient) {
+        const labInserts = labTests.map((test) => ({
+          patient_id: patient.id,
+          doctor_id: user.id,
+          ordered_by: user.id,
+          test_name: test.name,
+          test_category: test.category,
+          status: "pending" as const,
+        }));
+        await supabase.from("lab_reports").insert(labInserts);
+      }
       addToast("success", t("doctorPrescriptions.savedSuccess") || "Prescription saved");
       router.push("/doctor/opd");
     } else {
@@ -207,6 +231,31 @@ function PrescriptionForm() {
                 </div>
               </div>
             ))}
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+            <h2 className="font-semibold">Order Lab Tests</h2>
+            <div className="flex gap-2">
+              <Input placeholder="Test name (e.g. CBC, Blood Sugar)" value={newTestName} onChange={(e) => setNewTestName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), addLabTest())} />
+              <select value={newTestCategory} onChange={(e) => setNewTestCategory(e.target.value)} className="rounded-md border bg-background px-3 py-2 text-sm">
+                <option value="general">General</option>
+                <option value="blood">Blood</option>
+                <option value="urine">Urine</option>
+                <option value="imaging">Imaging</option>
+                <option value="other">Other</option>
+              </select>
+              <Button type="button" variant="outline" onClick={addLabTest}>Add</Button>
+            </div>
+            {labTests.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {labTests.map((test, i) => (
+                  <Badge key={i} variant="info" className="gap-1">
+                    {test.name}
+                    <button type="button" onClick={() => removeLabTest(i)} className="ml-1 hover:text-destructive">&times;</button>
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="rounded-xl border border-border bg-card p-6">
