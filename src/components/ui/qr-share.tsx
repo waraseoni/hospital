@@ -46,9 +46,11 @@ export function QRShare({ url, size = "sm" }: QRShareProps) {
 
   function handleDownload() {
     if (!qrDataUrl) return;
+    const path = typeof window !== "undefined" ? window.location.pathname : "";
+    const name = path && path !== "/" ? path.replace(/\//g, "-").replace(/^-/, "") : "home";
     const a = document.createElement("a");
     a.href = qrDataUrl;
-    a.download = `qr-${Date.now()}.png`;
+    a.download = `qr-${name}.png`;
     a.click();
   }
 
