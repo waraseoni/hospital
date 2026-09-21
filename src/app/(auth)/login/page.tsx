@@ -7,6 +7,7 @@ import Link from "next/link";
 import { Eye, EyeOff, Activity } from "lucide-react";
 import { useI18n } from "@/i18n/provider";
 import { LanguageSwitcher, ThemeSwitcher } from "@/components/theme/theme-controls";
+import { QRShare } from "@/components/ui/qr-share";
 
 export default function LoginPage() {
   const { t } = useI18n();
@@ -94,6 +95,7 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-sm rounded-xl border border-border bg-card p-6 shadow-lg sm:p-8">
         <div className="fixed right-4 top-4 z-50 flex items-center gap-2">
+          <QRShare url={typeof window !== "undefined" ? window.location.origin : ""} />
           <LanguageSwitcher />
           <ThemeSwitcher compact />
         </div>

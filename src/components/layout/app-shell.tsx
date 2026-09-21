@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Activity, LogOut, LayoutDashboard, Menu, X, Search, ChevronDown } from "lucide-react";
+import { QRShare } from "@/components/ui/qr-share";
 import type { Profile } from "@/types/database";
 import { cn } from "@/lib/utils/cn";
 import { useI18n, type I18nKey } from "@/i18n";
@@ -155,6 +156,7 @@ export function AppShell({ titleKey, subtitle, navItems, user, onLogout, childre
 
           {/* Right: Actions */}
           <div className="flex items-center gap-1">
+            <QRShare />
             <ThemeSwitcher />
             <LanguageSwitcher />
 
@@ -219,6 +221,7 @@ export function AppShell({ titleKey, subtitle, navItems, user, onLogout, childre
             <span className="text-xs font-bold">{t(titleKey)}</span>
           </div>
           <div className="flex items-center gap-1">
+            <QRShare />
             <ThemeSwitcher />
             <LanguageSwitcher />
           </div>

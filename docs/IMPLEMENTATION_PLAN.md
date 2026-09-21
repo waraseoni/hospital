@@ -75,22 +75,22 @@ Sabse pehle — foundation, kyunki iske bina baaki phases shaky hain.
 
 Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription hai.
 
-1. **Doctor Schedule & Slot Booking**
+1. **Doctor Schedule & Slot Booking** **DONE**
    - DB: `doctor_schedules` (doctor_id, weekday, start/end, slot_minutes, enabled); `appointments` mein `booked_at`, optional `slot_time`.
    - Patient booking: doctor page par day-wise free slots (availability query = appointments count vs capacity).
    - Doctor page: schedule editor (`/doctor/schedule`).
 2. **Revisit / Follow-up Automation**
    - Prescription ke `follow_up_date` par reminder entry (WhatsApp template `appointmentReminder` wiring) + auto-suggest booking.
-3. **Doctor → Lab Order Flow**
+3. **Doctor → Lab Order Flow** **DONE**
    - OPD "Write prescription" mein "Order Tests" section → `lab_reports` `pending` create with `ordered_by=doctor_id`.
    - Lab queue me doctor's orders visible (`ordered_by`).
-4. **IPD Admission + Discharge**
+4. **IPD Admission + Discharge** **DONE**
    - DB: `admissions` (patient, doctor, admission_date, ward_type, bed_id, status, discharge_date, remarks); `beds` w/ `admission_id`.
    - Nurse/admin "Admit Patient", bed assign, per-day charges auto-accrue → billing (Phase 3).
    - "Discharge" → discharge summary (template, `discharge_summaries` table or JSONB on admissions), auto billing of bed days + services.
 5. **Emergency / ER Triage**
    - `/er` route (role `staff`+): triage (stable → critical), `emergency` consultation type flow, quick patient registration, room/bed ICU suggestion.
-6. **Progress Notes / Case Sheet**
+6. **Progress Notes / Case Sheet** **DONE**
    - DB: `progress_notes` (patient, doc, note, vitals_snapshot JSONB, timestamp). Sheet view per admission/opd.
 7. **Radiology / Imaging**
    - DB: `imaging_requests` (patient, doc, modality xray/mri/ct/usg, part, report JSONB, status, images[]); `scans` storage bucket UI upload.
