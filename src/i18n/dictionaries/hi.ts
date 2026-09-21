@@ -57,6 +57,7 @@ export const hi: Dictionary = {
     labReports: "लैब रिपोर्ट",
     billing: "बिलिंग",
     roomStatus: "कमरा स्थिति",
+    ipd: "आईपीडी प्रबंधन",
     home: "होम",
     myPatients: "मेरे मरीज़",
     schedule: "मेरा शेड्यूल",

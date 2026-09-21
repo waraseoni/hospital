@@ -55,6 +55,7 @@ export const en = {
     labReports: "Lab Reports",
     billing: "Billing",
     roomStatus: "Room Status",
+    ipd: "IPD Management",
     home: "Home",
     myPatients: "My Patients",
     schedule: "My Schedule",
