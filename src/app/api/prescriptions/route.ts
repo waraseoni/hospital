@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { renderToBuffer } from "@react-pdf/renderer";
 import { PrescriptionPDF } from "@/lib/pdf/prescription";
+import { sendPrescriptionToPatient } from "@/lib/whatsapp/client";
 
 export async function POST(request: NextRequest) {
   try {
@@ -20,12 +21,16 @@ export async function POST(request: NextRequest) {
 
     if (!prescription) return NextResponse.json({ error: "Prescription not found" }, { status: 404 });
 
+    const { data: settings } = await supabase.from("settings").select("*").limit(1).single();
+    const hospitalName = settings?.hospital_name || "Hospital Management System";
+    const hospitalAddress = settings?.hospital_address || "Medical Center, City";
+
     const age = new Date().getFullYear() - new Date(prescription.patient.dob).getFullYear();
 
     const pdfBuffer = await renderToBuffer(
       PrescriptionPDF({
-        hospitalName: "Hospital Management System",
-        hospitalAddress: "Medical Center, City",
+        hospitalName,
+        hospitalAddress,
         patientName: prescription.patient.name,
         patientUHID: prescription.patient.uhid,
         patientAge: String(age),
@@ -53,6 +58,15 @@ export async function POST(request: NextRequest) {
       .from("prescriptions")
       .update({ pdf_url: urlData.publicUrl })
       .eq("id", prescription_id);
+
+    if (prescription.patient.phone && settings?.whatsapp_number) {
+      sendPrescriptionToPatient(
+        prescription.patient.phone,
+        prescription.patient.name,
+        prescription.doctor.full_name,
+        urlData.publicUrl
+      ).catch(() => {});
+    }
 
     return NextResponse.json({ pdf_url: urlData.publicUrl, success: true });
   } catch (error) {

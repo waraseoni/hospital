@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, Users, UserRound, BedDouble, Package, ScrollText, UserCheck, Activity } from "lucide-react";
+import { LayoutDashboard, Users, UserRound, BedDouble, Package, ScrollText, UserCheck, Activity, Settings } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/admin", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
@@ -16,6 +16,7 @@ const navItems: NavItem[] = [
   { href: "/admin/inventory", labelKey: "nav.inventory", icon: Package },
   { href: "/admin/opd", labelKey: "nav.opd", icon: Activity },
   { href: "/admin/audit", labelKey: "nav.auditLogs", icon: ScrollText },
+  { href: "/admin/settings", labelKey: "admin.settingsTitle", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

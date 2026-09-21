@@ -20,10 +20,14 @@ export async function POST(request: NextRequest) {
 
     if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
 
+    const { data: settings } = await supabase.from("settings").select("*").limit(1).single();
+    const hospitalName = settings?.hospital_name || "Hospital Management System";
+    const hospitalAddress = settings?.hospital_address || "Medical Center, City";
+
     const pdfBuffer = await renderToBuffer(
       InvoicePDF({
-        hospitalName: "Hospital Management System",
-        hospitalAddress: "Medical Center, City",
+        hospitalName,
+        hospitalAddress,
         invoiceNumber: invoice.invoice_number,
         patientName: invoice.patient.name,
         patientUHID: invoice.patient.uhid,

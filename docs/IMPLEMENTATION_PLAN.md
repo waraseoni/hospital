@@ -31,7 +31,7 @@ Rules:
 | 0.3 | Shared Components + Bug Fixes | `0.3.0.0` | [x] — UI library, bug fixes [DONE] |
 | 0.4 | Core Workflow Integration | `0.4.0.0` | [x] — PDF/WhatsApp, Profile page, User Management [DONE] |
 | 0.5 | Enhanced Pages | `0.5.0.0` | [x] — Admin user mgmt, Profile, all navs fixed [DONE] |
-| 0.6 | Settings + Polish | `0.6.0.0` | [ ] |
+| 0.6 | Settings + Polish | `0.6.0.0` | [x] — Settings module, PDF+WhatsApp wiring, invoices.created_by [DONE] |
 | 1 | Clinical Workflows | `0.7.0.0` | [ ] |
 | 2 | Pharmacy & Inventory | `0.8.0.0` | [ ] |
 | 3 | Billing & Finance | `0.9.0.0` | [ ] |
@@ -46,20 +46,20 @@ Sabse pehle — foundation, kyunki iske bina baaki phases shaky hain.
 
 ### Fixes (bugs from audit)
 - [ ] Inventory API wrong table name (`inventory` → `inventory_items`)
-- [ ] `invoices.created_by` missing column → migration `00014_invoices_created_by.sql`
-- [ ] Admin "Add Patient" UHID generate (`generateUHID()` call) + server double-check
-- [ ] Nurse "Allot Bed" actual patient assign (patient search → `current_patient_id`)
-- [ ] Wire PDF + WhatsApp calls into real UI workflow (see Features 1/2 below)
+- [x] `invoices.created_by` missing column → migration `00017_add_invoices_created_by.sql` **DONE**
+- [x] Admin "Add Patient" UHID generate (`generateUHID()` call) + server double-check **DONE**
+- [x] Nurse "Allot Bed" actual patient assign (patient search → `current_patient_id`) **DONE**
+- [x] Wire PDF + WhatsApp calls into real UI workflow (see Features 1/2 below) **DONE** — PDFs use settings from DB, WhatsApp auto-sends on prescription/lab-report creation
 - [x] Lega WhatsApp Free: refactor `src/lib/whatsapp/client.ts` — **Twilio REST → FREE Meta WhatsApp Business Cloud API** (`POST graph.facebook.com/v*/<phone-id>/messages`), webhook verify token ke saath; `twilio` npm package remove ho gaya — **DONE**
 - [ ] Dead deps cleanup: `zustand`, `react-hook-form`, `zod` — ya to adopt karo ya hatao
-- [ ] Org/settings groundwork (below) → PDFs, WhatsApp, billing sab yahi se data lein
+- [x] Org/settings groundwork (below) → PDFs, WhatsApp, billing sab yahi se data lein **DONE**
 
 ### New features in this phase
-1. **Settings / Hospital Profile module** (`/admin/settings`)
+1. **Settings / Hospital Profile module** (`/admin/settings`) **DONE**
    - DB: `settings` table (key-value JSONB, single org row): hospital name, address, phone, GSTIN, logo URL, tax default, receipt footer, WhatsApp number.
    - PDF templates (`src/lib/pdf/*`) aur WhatsApp templates ab hard-coded strings ke bajaye settings se render hote hain.
    - `src/lib/settings.ts` client + server getters (cached 60s).
-2. **PDF + WhatsApp auto-wiring**
+2. **PDF + WhatsApp auto-wiring** **DONE**
    - `/api/prescriptions`, `/api/lab-reports`, `/api/invoices` ko UI flows se jodo:
      - Doctor prescription save → PDF generate + upload + `pdf_url` + optional WhatsApp.
      - Lab finalize → PDF + WhatsApp.
