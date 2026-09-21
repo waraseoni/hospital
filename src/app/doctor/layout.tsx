@@ -5,12 +5,13 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, ClipboardList, SquarePen, UserRound } from "lucide-react";
+import { LayoutDashboard, ClipboardList, SquarePen, UserRound, Calendar } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/doctor", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
   { href: "/doctor/opd", labelKey: "nav.opdQueue", icon: ClipboardList },
   { href: "/doctor/prescriptions/new", labelKey: "nav.newPrescription", icon: SquarePen },
+  { href: "/doctor/schedule", labelKey: "nav.schedule", icon: Calendar },
   { href: "/doctor/patients", labelKey: "nav.myPatients", icon: UserRound },
 ];
 

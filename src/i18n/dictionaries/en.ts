@@ -57,6 +57,7 @@ export const en = {
     roomStatus: "Room Status",
     home: "Home",
     myPatients: "My Patients",
+    schedule: "My Schedule",
     profile: "Profile",
     myProfile: "My Profile",
   },

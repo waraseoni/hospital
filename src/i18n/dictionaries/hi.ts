@@ -59,6 +59,7 @@ export const hi: Dictionary = {
     roomStatus: "कमरा स्थिति",
     home: "होम",
     myPatients: "मेरे मरीज़",
+    schedule: "मेरा शेड्यूल",
     profile: "प्रोफ़ाइल",
     myProfile: "मेरी प्रोफ़ाइल",
   },
