@@ -5,14 +5,17 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, Calendar, Heart, FileText, CreditCard } from "lucide-react";
+import { LayoutDashboard, Calendar, Heart, FileText, CreditCard, FolderOpen, HeartPulse, MessageSquare } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/patient", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
   { href: "/patient/appointments", labelKey: "nav.bookAppointment", icon: Calendar },
   { href: "/patient/prescriptions", labelKey: "nav.myPrescriptions", icon: Heart },
   { href: "/patient/reports", labelKey: "nav.labReports", icon: FileText },
+  { href: "/patient/documents", labelKey: "nav.myDocuments", icon: FolderOpen },
+  { href: "/patient/vitals", labelKey: "nav.myVitals", icon: HeartPulse },
   { href: "/patient/billing", labelKey: "nav.billing", icon: CreditCard },
+  { href: "/patient/feedback", labelKey: "nav.feedback", icon: MessageSquare },
 ];
 
 export default function PatientLayout({ children }: { children: React.ReactNode }) {

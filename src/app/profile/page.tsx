@@ -10,7 +10,7 @@ import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { PageHeader, PageContainer } from "@/components/ui/page";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Activity, UserRound, Phone, Mail, MapPin, Stethoscope, Key, Shield } from "lucide-react";
+import { Activity, UserRound, Phone, Mail, MapPin, Stethoscope, Key, Shield, Camera } from "lucide-react";
 
 export default function ProfilePage() {
   const { t } = useI18n();
@@ -21,6 +21,7 @@ export default function ProfilePage() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwords, setPasswords] = useState({ new_password: "", confirm_password: "" });
   const [changingPassword, setChangingPassword] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const { addToast } = useToast();
 
   useEffect(() => { loadProfile(); }, []);
@@ -44,6 +45,30 @@ export default function ProfilePage() {
     const { error } = await supabase.from("profiles").update(form).eq("id", user.id);
     if (!error) { addToast("success", t("profile.savedSuccess")); setEditing(false); loadProfile(); }
     else addToast("error", "Failed to save");
+  }
+
+  async function handleAvatar(file: File) {
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+      addToast("error", "Please choose a JPEG, PNG or WebP image");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      addToast("error", "Image must be under 5MB");
+      return;
+    }
+    setUploadingAvatar(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setUploadingAvatar(false); return; }
+    const ext = file.type.split("/")[1].replace("jpeg", "jpg");
+    const path = `${user.id}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+    if (upErr) { addToast("error", upErr.message); setUploadingAvatar(false); return; }
+    const { data: urlData } = supabase.storage.from("avatars").getPublicUrl(path);
+    const { error } = await supabase.from("profiles").update({ avatar_url: urlData.publicUrl }).eq("id", user.id);
+    if (!error) { addToast("success", "Avatar updated"); loadProfile(); }
+    else addToast("error", error.message);
+    setUploadingAvatar(false);
   }
 
   async function handlePasswordChange() {
@@ -99,8 +124,25 @@ export default function ProfilePage() {
         {/* Profile Card */}
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex items-start gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-              <UserRound size={32} />
+            <div className="relative shrink-0">
+              {profile.avatar_url ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={profile.avatar_url} alt={profile.full_name} className="h-16 w-16 rounded-full object-cover" />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <UserRound size={32} />
+                </div>
+              )}
+              <label className="absolute -bottom-1 -right-1 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow">
+                <Camera size={11} />
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  disabled={uploadingAvatar}
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleAvatar(f); }}
+                />
+              </label>
             </div>
             <div>
               <h2 className="text-xl font-bold">{profile.full_name}</h2>

@@ -169,8 +169,13 @@ export function AppShell({ titleKey, subtitle, navItems, user, onLogout, childre
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
                 className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-left transition-colors hover:bg-muted"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary text-xs font-bold">
-                  {user?.full_name?.charAt(0)?.toUpperCase() || "U"}
+                <div className="flex h-7 w-7 items-center justify-center overflow-hidden rounded-full bg-primary/10 text-primary text-xs font-bold">
+                  {user?.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={user.avatar_url} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    user?.full_name?.charAt(0)?.toUpperCase() || "U"
+                  )}
                 </div>
                 <div className="hidden min-w-0 xl:block">
                   <p className="truncate text-xs font-medium leading-tight">{user?.full_name}</p>

@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Providers } from "@/components/providers";
+import { ServiceWorkerRegistration } from "@/components/service-worker";
 
 export const metadata: Metadata = {
   title: "Hospital Management System",
   description: "Clinic & Small Hospital Management Software",
+  manifest: "/manifest.webmanifest",
+  icons: { icon: "/icons/icon.svg" },
 };
 
 export default function RootLayout({
@@ -24,6 +27,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-background antialiased" suppressHydrationWarning>
         <Providers>{children}</Providers>
+        <ServiceWorkerRegistration />
       </body>
     </html>
   );

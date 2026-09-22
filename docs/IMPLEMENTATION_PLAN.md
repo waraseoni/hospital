@@ -37,6 +37,7 @@ Rules:
 | 3 | Billing & Finance | `0.9.0.0` | [x] — Receipts/PDF, Packages/Panels, Claims, Payments, UPI QR [DONE] |
 | 4 | Operations & Administration | `1.0.0.0` | [x] — Attendance/Leave/Roster, Housekeeping, Equipment, Ambulance, Blood Bank, Queue Display [DONE] |
 | 5 | Reporting & Analytics | `1.1.0.0` | [x] — Revenue/Doctor/Inventory/MIS reports, CSV export, dashboard charts [DONE] |
+| 6 | Patient Experience | `0.4.0.0` | [x] — Docs, Vitals, Feedback, Avatar, Reminders, Signup prefill, PWA [DONE] |
 
 > **Detailed UX/UI plan:** See `docs/UX_UI_PLAN.md` for per-page layouts, interconnections, mobile-first design rules, and component library roadmap.
 
@@ -178,19 +179,19 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
 
 ---
 
-## Phase 6 — Patient Experience (`0.8.0.0`)
+## Phase 6 — Patient Experience (`0.4.0.0`) **[DONE]**
 
-1. **Appointment Reminders (FREE WhatsApp)** — `appointmentReminder` template via **Meta WhatsApp Cloud API** (free conversations tier) cron (Supabase pg_cron ya Vercel Cron) 1 din pehle.
-2. **Scan/File Upload UI** — patient documents (prescriptions, reports, reports ke scans) → `scans` bucket, `/patient/documents`.
-3. **Vitals History View** — `/patient/vitals` (nurse ke records render karana).
-4. **Feedback Survey** — `feedback` table (satisfaction score, comments, catchment). Notification.
-5. **Profile / Avatar Management UI** — avatar upload (`avatars` bucket), update profile.
+1. **Appointment Reminders (FREE WhatsApp)** **DONE** — `appointmentReminder` template via **Meta WhatsApp Cloud API** (free conversations tier); cron `/api/cron/reminders` (Vercel Cron, `vercel.json`, 08:00 daily) 1 din pehle; `reminder_sent_at` se dedupe; optional `CRON_SECRET`.
+2. **Scan/File Upload UI** **DONE** — `/patient/documents` (`patient_documents` table) → `scans` bucket, category (prescription/lab/invoice/scan/other), delete, signed-URL preview.
+3. **Vitals History View** **DONE** — `/patient/vitals` (nurse ke records render karta he).
+4. **Feedback Survey** **DONE** — `feedback` table (rating 1–5, category, comments), `/patient/feedback` — post survey + pending submissions.
+5. **Profile / Avatar Management UI** **DONE** — avatar upload (`avatars` bucket, `profiles.avatar_url`) profile + AppShell display.
 6. **Multi-language UI** — [DONE] i18n (custom dictionary): en/hi first. RTL not needed for hi. Extensible architecture in `src/i18n/`.
-7. **Online Registration prefills** — signup flow extra fields.
-8. **PWA / Offline mode** — Next PWA setup: offline shell for queue/OPD.
-9. **Notifications backup (FREE + Open Source)** — **Telegram Bot API** (free protocol, open) as secondary channel: patient admin group ya patient se alert. SMS/Email paid/sendgrid nahi — koi paid gateway nahi.
+7. **Online Registration prefills** **DONE** — signup flow extra fields (dob, gender, blood_group, address) → `raw_user_meta_data` → patient row (trigger updated in 00038).
+8. **PWA / Offline mode** **DONE** — `app/manifest.ts` + `public/sw.js` offline shell cache (queue/OPD), `ServiceWorkerRegistration` in production.
+9. **Notifications backup (FREE + Open Source)** **DONE** — **Telegram Bot API** (`src/lib/telegram/client.ts`, open protocol) as secondary channel: cron summary alerts. SMS/Email paid nahi.
 
-**DB:** `feedback`, `patient_documents`. **Version:** minor → `0.8.0.0`.
+**DB:** `feedback`, `patient_documents`, `appointments.reminder_sent_at` (migration `00038`). **Version:** minor → `0.4.0.0`.
 
 ---
 
@@ -209,6 +210,7 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
 ## Cross-cutting Notes
 
 - **Types sync**: har migration ke baad `src/types/database.ts` update zaroori (DB schema mirror).
+- **Full schema**: har nayi migration file ke baad `npm run schema` → `supabase/schema.sql` (all migrations concatenated, idempotent full schema) regenerate karo. Check: `npm run schema:check`.
 - **RLS**: har nayi table ke liye RLS policies + roles matrix. Har sensitive data par row-level.
 - **Audit trigger**: sensitive new tables (`invoices`, `prescriptions`, `lab_reports`, `admissions`, `payments`) ko audit trigger se cover kare (Phase 0 mein generic trigger bana dena best).
 - **Env vars**: naye integrations ke liye `.env.example` update karna.

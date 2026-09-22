@@ -85,6 +85,24 @@ export async function sendWhatsAppMessage({
   }
 }
 
+export async function sendAppointmentReminder(
+  patientPhone: string,
+  patientName: string,
+  doctorName: string,
+  date: string
+) {
+  const message = whatsappTemplates.appointmentReminder({
+    patientName, doctorName, date,
+  });
+
+  return sendWhatsAppMessage({
+    to: patientPhone,
+    recipientName: patientName,
+    messageType: "appointment_reminder",
+    messageBody: message,
+  });
+}
+
 export async function sendAppointmentConfirmation(
   patientPhone: string,
   patientName: string,

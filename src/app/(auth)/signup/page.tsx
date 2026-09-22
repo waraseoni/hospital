@@ -10,7 +10,7 @@ import { LanguageSwitcher, ThemeSwitcher } from "@/components/theme/theme-contro
 export default function SignupPage() {
   const { t } = useI18n();
   const router = useRouter();
-  const [form, setForm] = useState({ full_name: "", email: "", password: "", phone: "", role: "patient" });
+  const [form, setForm] = useState({ full_name: "", email: "", password: "", phone: "", role: "patient", dob: "", gender: "other", blood_group: "", address: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -106,6 +106,54 @@ export default function SignupPage() {
                 <option value="staff">{t("roles.staff")}</option>
               </select>
             </div>
+
+            {form.role === "patient" && (
+              <>
+                <div className="rounded-lg border border-dashed border-border p-3 space-y-4">
+                  <p className="text-xs font-semibold text-muted-foreground">{t("auth.patientDetails")}</p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label htmlFor="dob" className="block text-sm font-medium mb-1">{t("auth.dob")}</label>
+                      <input id="dob" type="date" value={form.dob}
+                        onChange={(e) => setForm({ ...form, dob: e.target.value })}
+                        className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                    </div>
+                    <div>
+                      <label htmlFor="gender" className="block text-sm font-medium mb-1">{t("auth.gender")}</label>
+                      <select id="gender" value={form.gender}
+                        onChange={(e) => setForm({ ...form, gender: e.target.value })}
+                        className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring">
+                        <option value="male">{t("auth.male")}</option>
+                        <option value="female">{t("auth.female")}</option>
+                        <option value="other">{t("auth.other")}</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div>
+                    <label htmlFor="blood_group" className="block text-sm font-medium mb-1">{t("auth.bloodGroup")}</label>
+                    <select id="blood_group" value={form.blood_group}
+                      onChange={(e) => setForm({ ...form, blood_group: e.target.value })}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring">
+                      <option value="">--</option>
+                      <option value="A+">A+</option>
+                      <option value="A-">A-</option>
+                      <option value="B+">B+</option>
+                      <option value="B-">B-</option>
+                      <option value="AB+">AB+</option>
+                      <option value="AB-">AB-</option>
+                      <option value="O+">O+</option>
+                      <option value="O-">O-</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label htmlFor="address" className="block text-sm font-medium mb-1">{t("auth.address")}</label>
+                    <input id="address" type="text" value={form.address}
+                      onChange={(e) => setForm({ ...form, address: e.target.value })}
+                      className="w-full rounded-lg border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+                  </div>
+                </div>
+              </>
+            )}
 
             {error && <p className="text-sm text-destructive">{error}</p>}
 

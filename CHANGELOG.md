@@ -6,6 +6,18 @@ Versioning: `X.Y.Z.W` (policy: `docs/VERSIONING.md`).
 ## [Unreleased]
 
 ### Added
+- **Phase 6 — Patient Experience (`0.4.0.0`)**
+  - `/patient/documents` — scan/file upload UI (`scans` bucket) + new `patient_documents` table, categories, delete, signed-URL preview.
+  - `/patient/vitals` — patient vitals history view (nurse records rendered).
+  - `/patient/feedback` — feedback survey (rating 1–5, category, comments) + `feedback` table + own-submissions list.
+  - Profile avatar upload — `avatars` bucket, `profiles.avatar_url` set/update, shown in AppShell user menu.
+  - Appointment reminders — free **Meta WhatsApp Cloud API** cron `/api/cron/reminders` (Vercel Cron, 08:00) with `reminder_sent_at` dedupe + optional `CRON_SECRET`.
+  - Telegram backup notifier — `src/lib/telegram/client.ts` (free open Bot API), cron summary alerts; `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` env.
+  - Signup prefills — dob/gender/blood_group/address on registration → patient record (trigger updated in migration `00038`).
+  - PWA — `app/manifest.ts` + `public/sw.js` offline shell cache + production `ServiceWorkerRegistration`.
+  - Migration `00038_patient_experience.sql` (feedback, patient_documents, `appointments.reminder_sent_at`, updated `handle_new_user`).
+
+### Added
 - **Meta WhatsApp Business Cloud API integration** (free provider) — `src/lib/whatsapp/client.ts` ab Twilio ki jagah Graph API use karta hai; message ID (`wamid...`) `external_message_id` mein store hota hai.
 - **Meta-compatible webhook** `/api/webhooks/whatsapp` — GET `hub.verify_token` verification + POST `statuses[]` (sent/delivered/failed) handling. `WHATSAPP_PHONE_NUMBER_ID/ACCESS_TOKEN/VERIFY_TOKEN` env vars.
 - **Multi-language (i18n) system** — extensible `src/i18n/` architecture with English + Hindi (Devanagari) support, cookie/localStorage persistence, typed dictionaries for easy expansion.

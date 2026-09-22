@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 export async function POST(request: NextRequest) {
   try {
-    const { full_name, email, password, phone, role } = await request.json();
+    const { full_name, email, password, phone, role, dob, gender, blood_group, address } = await request.json();
 
     if (!full_name || !email || !password) {
       return NextResponse.json({ error: "Name, email and password are required" }, { status: 400 });
@@ -29,6 +29,10 @@ export async function POST(request: NextRequest) {
         full_name,
         role: role || "patient",
         phone: phone || "",
+        dob: dob || "",
+        gender: gender || "",
+        blood_group: blood_group || "",
+        address: address || "",
       },
     });
 

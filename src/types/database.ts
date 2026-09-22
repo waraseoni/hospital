@@ -40,6 +40,7 @@ export interface Appointment {
   status: "scheduled" | "in_progress" | "completed" | "cancelled";
   consultation_type: string;
   notes: string | null;
+  reminder_sent_at: string | null;
   created_at: string;
   updated_at: string;
   patient?: Patient;
@@ -523,4 +524,25 @@ export interface BloodRequest {
   created_at: string;
   updated_at: string;
   patient?: Patient;
+}
+
+export interface Feedback {
+  id: string;
+  patient_id: string;
+  rating: number;
+  category: "general" | "opd" | "ipd" | "lab" | "pharmacy" | "billing" | "facility" | "staff" | "other";
+  comments: string | null;
+  status: "new" | "acknowledged" | "resolved";
+  created_at: string;
+  patient?: Patient;
+}
+
+export interface PatientDocument {
+  id: string;
+  patient_id: string;
+  title: string;
+  category: "prescription" | "lab_report" | "invoice" | "scan" | "other";
+  file_url: string;
+  uploaded_by: string | null;
+  created_at: string;
 }
