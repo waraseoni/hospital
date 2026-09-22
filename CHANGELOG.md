@@ -6,6 +6,16 @@ Versioning: `X.Y.Z.W` (policy: `docs/VERSIONING.md`).
 ## [Unreleased]
 
 ### Added
+- **Phase 7 — Integration & Advanced (`0.5.0.0`)**
+  - e-Prescription digital signature — doctor signature upload (profile page), embedded in prescription PDF with **QR verification**.
+  - Public QR endpoint `/api/prescriptions/verify/[id]` — scans confirm e-prescription authenticity (patient/doctor/date/diagnosis).
+  - FHIR R4 interop — `/api/fhir` CapabilityStatement + `Patient`, `Prescription` (MedicationRequest bundle), `DiagnosticReport` (with Observations); `FHIR_API_TOKEN` optional machine auth.
+  - Multi-branch/org support — `branches` table + RLS, admin Branches UI, settings `branch_id` selector.
+  - Backup & restore — `docs/BACKUP_RESTORE.md`, `scripts/backup.ps1` / `restore.ps1`, `SUPABASE_DB_URL` env.
+  - API documentation — `public/openapi.json` (OpenAPI 3.0, saare endpoints), admin `/admin/api-docs` viewer.
+  - Migration `00039_integration_advanced.sql` (signature_url columns, signatures bucket, branches).
+
+### Added
 - **Phase 6 — Patient Experience (`0.4.0.0`)**
   - `/patient/documents` — scan/file upload UI (`scans` bucket) + new `patient_documents` table, categories, delete, signed-URL preview.
   - `/patient/vitals` — patient vitals history view (nurse records rendered).

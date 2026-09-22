@@ -79,6 +79,8 @@ export const en = {
     myDocuments: "My Documents",
     myVitals: "My Vitals",
     feedback: "Feedback",
+    branches: "Branches",
+    apiDocs: "API Docs",
   },
   roles: {
     superAdmin: "Super Admin Panel",

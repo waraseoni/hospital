@@ -1,0 +1,227 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Hospital HMS API",
+    "description": "Internal REST API for Hospital HMS (Next.js App Router + Supabase). Sab endpoints `/api/*` ke under hain. Auth: session cookie (Supabase SSO) ya specific endpoints par Bearer token / admin role.",
+    "version": "0.5.0.0"
+  },
+  "servers": [{ "url": "/" }],
+  "tags": [
+    { "name": "Auth", "description": "Authentication, signup, setup, profile" },
+    { "name": "Admin", "description": "Admin: users, staff, settings, beds" },
+    { "name": "Patients", "description": "Patient records, appointments" },
+    { "name": "Clinical", "description": "Prescriptions, lab reports, certificates, imaging" },
+    { "name": "Billing", "description": "Invoices, payments, claims, receipts, packages, UPI" },
+    { "name": "Inventory", "description": "Inventory, purchase orders, suppliers, requisitions, pharmacy POS" },
+    { "name": "Operations", "description": "Ambulance, blood bank, equipment, housekeeping, attendance, rosters, leaves" },
+    { "name": "Reports", "description": "Reports, token display, queue" },
+    { "name": "Integrations", "description": "WhatsApp, FHIR, cron, webhooks" }
+  ],
+  "paths": {
+    "/api/auth/signup": {
+      "post": { "tags": ["Auth"], "summary": "Public signup - creates auth user + profile + patient record", "operationId": "authSignup" }
+    },
+    "/api/setup": {
+      "post": { "tags": ["Auth"], "summary": "First-admin setup (super_admin)", "operationId": "setupFirstAdmin" }
+    },
+    "/api/profile": {
+      "get": { "tags": ["Auth"], "summary": "Get current user profile", "operationId": "getProfile" },
+      "put": { "tags": ["Auth"], "summary": "Update current user profile", "operationId": "updateProfile" }
+    },
+    "/api/profile/password": {
+      "post": { "tags": ["Auth"], "summary": "Change current user password", "operationId": "changePassword" }
+    },
+    "/api/admin/users": {
+      "get": { "tags": ["Admin"], "summary": "List users (admin)", "operationId": "adminListUsers" }
+    },
+    "/api/admin/users/{id}": {
+      "put": { "tags": ["Admin"], "summary": "Update user (admin)", "operationId": "adminUpdateUser" },
+      "delete": { "tags": ["Admin"], "summary": "Delete user (admin)", "operationId": "adminDeleteUser" },
+      "post": { "tags": ["Admin"], "summary": "Create user (admin)", "operationId": "adminCreateUser" }
+    },
+    "/api/staff": {
+      "post": { "tags": ["Admin"], "summary": "Create staff profile (admin)", "operationId": "createStaff" }
+    },
+    "/api/staff/{id}": {
+      "put": { "tags": ["Admin"], "summary": "Update staff profile", "operationId": "updateStaff" },
+      "delete": { "tags": ["Admin"], "summary": "Delete staff profile", "operationId": "deleteStaff" }
+    },
+    "/api/staff-directory": {
+      "get": { "tags": ["Admin"], "summary": "Staff directory (all roles)", "operationId": "staffDirectory" }
+    },
+    "/api/settings": {
+      "get": { "tags": ["Admin"], "summary": "Get hospital settings", "operationId": "getSettings" },
+      "put": { "tags": ["Admin"], "summary": "Update hospital settings (admin)", "operationId": "updateSettings" }
+    },
+    "/api/patients": {
+      "post": { "tags": ["Patients"], "summary": "Register patient (auto UHID)", "operationId": "createPatient" }
+    },
+    "/api/patients/{id}": {
+      "put": { "tags": ["Patients"], "summary": "Update patient", "operationId": "updatePatient" },
+      "delete": { "tags": ["Patients"], "summary": "Delete patient", "operationId": "deletePatient" }
+    },
+    "/api/reception/book-appointment": {
+      "post": { "tags": ["Patients"], "summary": "Book appointment (reception)", "operationId": "bookAppointment" }
+    },
+    "/api/reception/today-queue": {
+      "get": { "tags": ["Patients"], "summary": "Today's queue (reception)", "operationId": "todayQueue" }
+    },
+    "/api/doctors/slots": {
+      "get": { "tags": ["Clinical"], "summary": "Doctor available slots", "operationId": "doctorSlots" }
+    },
+    "/api/doctors/patient-history/{id}": {
+      "get": { "tags": ["Clinical"], "summary": "Full patient clinical history (prescriptions, labs, vitals)", "operationId": "patientHistory" }
+    },
+    "/api/prescriptions": {
+      "post": { "tags": ["Clinical"], "summary": "Generate prescription PDF + WhatsApp", "operationId": "generatePrescriptionPdf" }
+    },
+    "/api/prescriptions/verify/{id}": {
+      "get": { "tags": ["Clinical"], "summary": "Public QR verification of e-prescription", "operationId": "verifyPrescription" }
+    },
+    "/api/lab-reports": {
+      "post": { "tags": ["Clinical"], "summary": "Generate lab report PDF + WhatsApp", "operationId": "generateLabReportPdf" }
+    },
+    "/api/certificates": {
+      "post": { "tags": ["Clinical"], "summary": "Generate medical certificate PDF", "operationId": "generateCertificatePdf" }
+    },
+    "/api/billing": {
+      "post": { "tags": ["Billing"], "summary": "Create invoice", "operationId": "createInvoice" },
+      "get": { "tags": ["Billing"], "summary": "List invoices", "operationId": "listInvoices" }
+    },
+    "/api/billing/receipt": {
+      "post": { "tags": ["Billing"], "summary": "Generate receipt PDF", "operationId": "generateReceiptPdf" }
+    },
+    "/api/invoices": {
+      "post": { "tags": ["Billing"], "summary": "Finalize invoice (PDF)", "operationId": "finalizeInvoice" }
+    },
+    "/api/payments": {
+      "post": { "tags": ["Billing"], "summary": "Record payment", "operationId": "recordPayment" },
+      "get": { "tags": ["Billing"], "summary": "List payments", "operationId": "listPayments" }
+    },
+    "/api/claims": {
+      "post": { "tags": ["Billing"], "summary": "Create insurance claim", "operationId": "createClaim" },
+      "get": { "tags": ["Billing"], "summary": "List claims", "operationId": "listClaims" }
+    },
+    "/api/claims/{id}": {
+      "patch": { "tags": ["Billing"], "summary": "Update claim stage", "operationId": "updateClaim" }
+    },
+    "/api/packages": {
+      "post": { "tags": ["Billing"], "summary": "Create service package", "operationId": "createPackage" },
+      "get": { "tags": ["Billing"], "summary": "List packages", "operationId": "listPackages" }
+    },
+    "/api/upi": {
+      "get": { "tags": ["Billing"], "summary": "UPI intent QR payload", "operationId": "getUpi" }
+    },
+    "/api/inventory": {
+      "post": { "tags": ["Inventory"], "summary": "Create inventory item", "operationId": "createInventoryItem" }
+    },
+    "/api/inventory/{id}": {
+      "put": { "tags": ["Inventory"], "summary": "Update inventory item", "operationId": "updateInventoryItem" },
+      "delete": { "tags": ["Inventory"], "summary": "Delete inventory item", "operationId": "deleteInventoryItem" }
+    },
+    "/api/inventory/stock": {
+      "post": { "tags": ["Inventory"], "summary": "Stock adjust (in/out)", "operationId": "adjustStock" }
+    },
+    "/api/inventory/suppliers": {
+      "post": { "tags": ["Inventory"], "summary": "Create supplier", "operationId": "createSupplier" },
+      "get": { "tags": ["Inventory"], "summary": "List suppliers", "operationId": "listSuppliers" }
+    },
+    "/api/inventory/purchase-orders": {
+      "post": { "tags": ["Inventory"], "summary": "Create purchase order", "operationId": "createPurchaseOrder" },
+      "get": { "tags": ["Inventory"], "summary": "List purchase orders", "operationId": "listPurchaseOrders" }
+    },
+    "/api/inventory/purchase-orders/{id}": {
+      "patch": { "tags": ["Inventory"], "summary": "Update purchase order status (receive/approve)", "operationId": "updatePurchaseOrder" }
+    },
+    "/api/inventory/requisitions": {
+      "post": { "tags": ["Inventory"], "summary": "Create requisition", "operationId": "createRequisition" },
+      "get": { "tags": ["Inventory"], "summary": "List requisitions", "operationId": "listRequisitions" }
+    },
+    "/api/inventory/requisitions/{id}": {
+      "patch": { "tags": ["Inventory"], "summary": "Update requisition (approve/issue)", "operationId": "updateRequisition" }
+    },
+    "/api/pharmacy/pos": {
+      "post": { "tags": ["Inventory"], "summary": "POS sale + stock decrement", "operationId": "posSale" }
+    },
+    "/api/pharmacy/dispense": {
+      "post": { "tags": ["Inventory"], "summary": "Dispense medicines (prescription)", "operationId": "dispense" }
+    },
+    "/api/beds": {
+      "post": { "tags": ["Operations"], "summary": "Create bed", "operationId": "createBed" }
+    },
+    "/api/beds/simple": {
+      "get": { "tags": ["Operations"], "summary": "Beds list (simple)", "operationId": "listBedsSimple" }
+    },
+    "/api/beds/{id}": {
+      "put": { "tags": ["Operations"], "summary": "Update bed", "operationId": "updateBed" },
+      "delete": { "tags": ["Operations"], "summary": "Delete bed", "operationId": "deleteBed" }
+    },
+    "/api/ambulance": {
+      "get": { "tags": ["Operations"], "summary": "List ambulance vehicles", "operationId": "listAmbulances" },
+      "post": { "tags": ["Operations"], "summary": "Create ambulance", "operationId": "createAmbulance" },
+      "patch": { "tags": ["Operations"], "summary": "Update ambulance / calls", "operationId": "patchAmbulance" }
+    },
+    "/api/blood-bank": {
+      "get": { "tags": ["Operations"], "summary": "Blood bank overview", "operationId": "bloodBankOverview" },
+      "post": { "tags": ["Operations"], "summary": "Add donation / unit / request", "operationId": "bloodBankCreate" },
+      "patch": { "tags": ["Operations"], "summary": "Update blood unit / request", "operationId": "bloodBankPatch" }
+    },
+    "/api/equipment": {
+      "get": { "tags": ["Operations"], "summary": "List equipment", "operationId": "listEquipment" },
+      "post": { "tags": ["Operations"], "summary": "Create equipment", "operationId": "createEquipment" },
+      "put": { "tags": ["Operations"], "summary": "Update equipment", "operationId": "updateEquipment" }
+    },
+    "/api/housekeeping": {
+      "get": { "tags": ["Operations"], "summary": "List housekeeping tasks", "operationId": "listHousekeeping" },
+      "post": { "tags": ["Operations"], "summary": "Create housekeeping task", "operationId": "createHousekeeping" },
+      "patch": { "tags": ["Operations"], "summary": "Update housekeeping task", "operationId": "patchHousekeeping" }
+    },
+    "/api/attendance": {
+      "get": { "tags": ["Operations"], "summary": "List attendance", "operationId": "listAttendance" },
+      "post": { "tags": ["Operations"], "summary": "Mark attendance", "operationId": "markAttendance" },
+      "put": { "tags": ["Operations"], "summary": "Update attendance", "operationId": "updateAttendance" }
+    },
+    "/api/leaves": {
+      "get": { "tags": ["Operations"], "summary": "List leave requests", "operationId": "listLeaves" },
+      "post": { "tags": ["Operations"], "summary": "Apply for leave", "operationId": "applyLeave" }
+    },
+    "/api/leaves/{id}": {
+      "patch": { "tags": ["Operations"], "summary": "Approve/reject leave", "operationId": "updateLeave" }
+    },
+    "/api/rosters": {
+      "get": { "tags": ["Operations"], "summary": "List rosters", "operationId": "listRosters" },
+      "post": { "tags": ["Operations"], "summary": "Create roster", "operationId": "createRoster" }
+    },
+    "/api/reports": {
+      "get": { "tags": ["Reports"], "summary": "Reports (revenue/doctor/inventory/MIS) - admin only", "operationId": "getReports" }
+    },
+    "/api/token-display": {
+      "get": { "tags": ["Reports"], "summary": "OPD token monitor data", "operationId": "tokenDisplay" }
+    },
+    "/api/public/queue": {
+      "get": { "tags": ["Reports"], "summary": "Public queue display (no auth)", "operationId": "publicQueue" }
+    },
+    "/api/whatsapp": {
+      "post": { "tags": ["Integrations"], "summary": "Send WhatsApp message (internal)", "operationId": "sendWhatsApp" }
+    },
+    "/api/webhooks/whatsapp": {
+      "get": { "tags": ["Integrations"], "summary": "WhatsApp webhook verification (GET challenge)", "operationId": "whatsappWebhookVerify" },
+      "post": { "tags": ["Integrations"], "summary": "WhatsApp message/status webhook", "operationId": "whatsappWebhook" }
+    },
+    "/api/cron/reminders": {
+      "get": { "tags": ["Integrations"], "summary": "Vercel Cron - appointment reminders (WhatsApp + Telegram)", "operationId": "cronReminders" }
+    },
+    "/api/fhir": {
+      "get": { "tags": ["Integrations"], "summary": "FHIR R4 CapabilityStatement", "operationId": "fhirCapability" }
+    },
+    "/api/fhir/Patient/{id}": {
+      "get": { "tags": ["Integrations"], "summary": "FHIR R4 Patient resource", "operationId": "fhirPatient" }
+    },
+    "/api/fhir/Prescription/{id}": {
+      "get": { "tags": ["Integrations"], "summary": "FHIR R4 Bundle of MedicationRequest", "operationId": "fhirPrescription" }
+    },
+    "/api/fhir/DiagnosticReport/{id}": {
+      "get": { "tags": ["Integrations"], "summary": "FHIR R4 Bundle (DiagnosticReport + Observations)", "operationId": "fhirDiagnosticReport" }
+    }
+  }
+}

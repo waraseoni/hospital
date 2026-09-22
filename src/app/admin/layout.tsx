@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, Users, UserRound, BedDouble, Package, ScrollText, UserCheck, Activity, Settings, Hospital, Receipt, CalendarCheck, SprayCan, Wrench, Truck, Droplets, MonitorPlay, BarChart3 } from "lucide-react";
+import { LayoutDashboard, Users, UserRound, BedDouble, Package, ScrollText, UserCheck, Activity, Settings, Hospital, Receipt, CalendarCheck, SprayCan, Wrench, Truck, Droplets, MonitorPlay, BarChart3, BookOpen, Building2 } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/admin", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
@@ -23,8 +23,10 @@ const navItems: NavItem[] = [
   { href: "/admin/equipment", labelKey: "nav.equipment", icon: Wrench },
   { href: "/admin/ambulance", labelKey: "nav.ambulance", icon: Truck },
   { href: "/admin/blood-bank", labelKey: "nav.bloodBank", icon: Droplets },
+  { href: "/admin/branches", labelKey: "nav.branches", icon: Building2 },
   { href: "/public/queue", labelKey: "nav.queue", icon: MonitorPlay },
   { href: "/admin/audit", labelKey: "nav.auditLogs", icon: ScrollText },
+  { href: "/admin/api-docs", labelKey: "nav.apiDocs", icon: BookOpen },
   { href: "/admin/settings", labelKey: "admin.settingsTitle", icon: Settings },
 ];
 

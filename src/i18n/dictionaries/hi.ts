@@ -81,6 +81,8 @@ export const hi: Dictionary = {
     myDocuments: "मेरे दस्तावेज़",
     myVitals: "मेरे वाइटल्स",
     feedback: "फीडबैक",
+    branches: "शाखाएं",
+    apiDocs: "एपीआई दस्तावेज़",
   },
   roles: {
     superAdmin: "सुपर एडमिन पैनल",

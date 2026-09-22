@@ -1,8 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { renderToBuffer } from "@react-pdf/renderer";
+import QRCode from "qrcode";
 import { PrescriptionPDF } from "@/lib/pdf/prescription";
 import { sendPrescriptionToPatient } from "@/lib/whatsapp/client";
+
+async function toDataUrl(url: string | null | undefined): Promise<string | undefined> {
+  if (!url) return undefined;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return undefined;
+    const buf = Buffer.from(await res.arrayBuffer());
+    const mime = res.headers.get("content-type")?.split(";")[0] || "image/png";
+    return `data:${mime};base64,${buf.toString("base64")}`;
+  } catch {
+    return undefined;
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +29,7 @@ export async function POST(request: NextRequest) {
 
     const { data: prescription } = await supabase
       .from("prescriptions")
-      .select("*, patient:patients(name, uhid, dob, gender, phone), doctor:profiles(full_name, specialization)")
+      .select("*, patient:patients(name, uhid, dob, gender, phone), doctor:profiles(full_name, specialization, license_number, signature_url)")
       .eq("id", prescription_id)
       .single();
 
@@ -26,6 +40,14 @@ export async function POST(request: NextRequest) {
     const hospitalAddress = settings?.hospital_address || "Medical Center, City";
 
     const age = new Date().getFullYear() - new Date(prescription.patient.dob).getFullYear();
+
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.nextUrl.origin;
+    const verifyUrl = `${baseUrl}/api/prescriptions/verify/${prescription.id}`;
+
+    const [signatureDataUrl, qrDataUrl] = await Promise.all([
+      toDataUrl(prescription.doctor?.signature_url),
+      QRCode.toDataURL(verifyUrl, { width: 160, margin: 1 }).catch(() => undefined),
+    ]);
 
     const pdfBuffer = await renderToBuffer(
       PrescriptionPDF({
@@ -42,6 +64,9 @@ export async function POST(request: NextRequest) {
         medicines: prescription.medicines,
         notes: prescription.notes || "",
         date: new Date(prescription.created_at).toLocaleDateString("en-IN"),
+        signatureDataUrl,
+        qrDataUrl,
+        licenseNumber: prescription.doctor?.license_number || undefined,
       })
     );
 
@@ -56,7 +81,7 @@ export async function POST(request: NextRequest) {
 
     await supabase
       .from("prescriptions")
-      .update({ pdf_url: urlData.publicUrl })
+      .update({ pdf_url: urlData.publicUrl, signature_url: prescription.doctor?.signature_url || null })
       .eq("id", prescription_id);
 
     if (prescription.patient.phone && settings?.whatsapp_number) {
@@ -69,7 +94,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ pdf_url: urlData.publicUrl, success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

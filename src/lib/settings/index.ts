@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/client";
+import type { Branch } from "@/types/database";
 
 export interface Settings {
   id: string;
@@ -13,7 +14,9 @@ export interface Settings {
   whatsapp_number: string;
   upi_id: string;
   currency: string;
+  branch_id: string | null;
   updated_at: string;
+  branch?: Branch | null;
 }
 
 let cachedSettings: Settings | null = null;

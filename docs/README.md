@@ -15,6 +15,8 @@ Ek systematic documentation & version control system jo har feature/change ko tr
 | `scripts/version.mjs` | Version bump script (npm scripts se chalata hai) |
 | `supabase/migrations/00001..N.sql` | Har DB change ek numbered migration file |
 | `supabase/schema.sql` | Auto-generated full schema (`npm run schema`) — DO NOT hand-edit |
+| `docs/BACKUP_RESTORE.md` | DB backup & restore process (pg_dump/psql scripts) |
+| `public/openapi.json` | OpenAPI 3.0 spec — sabhi `/api/*` endpoints |
 
 ## Conventions (MUST follow)
 

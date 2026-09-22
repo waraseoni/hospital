@@ -1,4 +1,4 @@
-import { Document, Page, Text, View, StyleSheet } from "@react-pdf/renderer";
+import { Document, Page, Text, View, StyleSheet, Image } from "@react-pdf/renderer";
 
 const styles = StyleSheet.create({
   page: { padding: 40, fontSize: 10, fontFamily: "Helvetica" },
@@ -19,6 +19,10 @@ const styles = StyleSheet.create({
   note: { fontSize: 9, color: "#64748b", fontStyle: "italic", marginTop: 10 },
   footer: { position: "absolute", bottom: 40, left: 40, right: 40, borderTopWidth: 1, borderTopColor: "#e2e8f0", paddingTop: 10, flexDirection: "row", justifyContent: "space-between", fontSize: 8, color: "#64748b" },
   signature: { textAlign: "right", marginTop: 40 },
+  signatureBlock: { flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end", marginTop: 30 },
+  signatureImg: { width: 90, height: 40, objectFit: "contain", marginLeft: "auto", marginBottom: 2 },
+  qr: { width: 64, height: 64 },
+  verificationNote: { fontSize: 7, color: "#94a3b8", marginTop: 2, width: 64 },
 });
 
 interface PrescriptionPDFProps {
@@ -35,11 +39,15 @@ interface PrescriptionPDFProps {
   medicines: { name: string; dosage: string; frequency: string; duration: string; instructions: string }[];
   notes: string;
   date: string;
+  signatureDataUrl?: string;
+  qrDataUrl?: string;
+  licenseNumber?: string;
 }
 
 export function PrescriptionPDF({
   hospitalName, hospitalAddress, patientName, patientUHID, patientAge, patientGender,
   doctorName, doctorSpecialization, diagnosis, symptoms, medicines, notes, date,
+  signatureDataUrl, qrDataUrl, licenseNumber,
 }: PrescriptionPDFProps) {
   return (
     <Document>
@@ -103,9 +111,21 @@ export function PrescriptionPDF({
 
         {notes && <Text style={styles.note}>Note: {notes}</Text>}
 
-        <View style={styles.signature}>
-          <Text style={{ fontWeight: "bold" }}>Dr. {doctorName}</Text>
-          <Text style={{ fontSize: 8, color: "#64748b" }}>{doctorSpecialization}</Text>
+        <View style={styles.signatureBlock}>
+          {qrDataUrl && (
+            <View>
+              {/* eslint-disable-next-line jsx-a11y/alt-text */}
+              <Image src={qrDataUrl} style={styles.qr} />
+              <Text style={styles.verificationNote}>Scan to verify authenticity</Text>
+            </View>
+          )}
+          <View style={styles.signature}>
+            {/* eslint-disable-next-line jsx-a11y/alt-text */}
+            {signatureDataUrl && <Image src={signatureDataUrl} style={styles.signatureImg} />}
+            <Text style={{ fontWeight: "bold" }}>Dr. {doctorName}</Text>
+            <Text style={{ fontSize: 8, color: "#64748b" }}>{doctorSpecialization}</Text>
+            {licenseNumber && <Text style={{ fontSize: 7, color: "#64748b" }}>Reg. {licenseNumber}</Text>}
+          </View>
         </View>
 
         <View style={styles.footer}>

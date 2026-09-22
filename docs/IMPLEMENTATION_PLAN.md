@@ -38,6 +38,7 @@ Rules:
 | 4 | Operations & Administration | `1.0.0.0` | [x] — Attendance/Leave/Roster, Housekeeping, Equipment, Ambulance, Blood Bank, Queue Display [DONE] |
 | 5 | Reporting & Analytics | `1.1.0.0` | [x] — Revenue/Doctor/Inventory/MIS reports, CSV export, dashboard charts [DONE] |
 | 6 | Patient Experience | `0.4.0.0` | [x] — Docs, Vitals, Feedback, Avatar, Reminders, Signup prefill, PWA [DONE] |
+| 7 | Integration & Advanced | `0.5.0.0` | [x] — e-Prescription digital signature + QR verify, FHIR R4 export, Backup/Restore, OpenAPI docs, Branches [DONE] |
 
 > **Detailed UX/UI plan:** See `docs/UX_UI_PLAN.md` for per-page layouts, interconnections, mobile-first design rules, and component library roadmap.
 
@@ -195,15 +196,15 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
 
 ---
 
-## Phase 7 — Integration & Advanced (`0.9.0.0`)
+## Phase 7 — Integration & Advanced (`0.5.0.0`) **[DONE]**
 
-1. **e-Prescription Digital Signature** — signature image in PDF + `prescription.signature_url`, QR verification endpoint.
-2. **HL7 / FHIR Interop (optional, enterprise)** — export patient/prescription/lab via FHIR JSON endpoints.
-3. **Backup & Restore process doc** — Supabase CLI / pg_dump scripts + env of secrets.
-4. **API Documentation** — every `/api/*` endpoint in OpenAPI doc + doc page.
-5. **Multi-branch/Org support (optional)** — `organization_id` on tables; multi settings row.
+1. **e-Prescription Digital Signature** [DONE] — signature image (doctor profile upload → `signatures` bucket) in prescription PDF + `prescription.signature_url`, QR verification endpoint `/api/prescriptions/verify/[id]`.
+2. **HL7 / FHIR Interop (optional, enterprise)** [DONE] — FHIR R4 export endpoints: `Patient`, `Prescription` (MedicationRequest Bundle), `DiagnosticReport` (+ Observations), CapabilityStatement; optional `FHIR_API_TOKEN` machine auth.
+3. **Backup & Restore process doc** [DONE] — `docs/BACKUP_RESTORE.md` + `scripts/backup.ps1` / `restore.ps1` (pg_dump + gzip, 14-day retention), `SUPABASE_DB_URL` env secret.
+4. **API Documentation** [DONE] — `public/openapi.json` (OpenAPI 3.0 — sabhi `/api/*` endpoints) + admin `/admin/api-docs` viewer page.
+5. **Multi-branch/Org support (optional)** [DONE] — foundation: `branches` table + RLS, admin Branches UI, `settings.branch_id`. Note: full row-level `organization_id` scoping across tables is the documented future extension.
 
-**Version:** minor → `0.9.0.0`.
+**Version:** minor → `0.5.0.0`.
 
 ---
 

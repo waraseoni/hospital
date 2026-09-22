@@ -10,6 +10,7 @@ export interface Profile {
   specialization: string | null;
   qualification: string | null;
   license_number: string | null;
+  signature_url: string | null;
   consultation_fee: number;
   created_at: string;
   updated_at: string;
@@ -58,6 +59,7 @@ export interface Prescription {
   medicines: MedicineItem[];
   follow_up_date: string | null;
   pdf_url: string | null;
+  signature_url: string | null;
   created_at: string;
   updated_at: string;
   patient?: Patient;
@@ -545,4 +547,34 @@ export interface PatientDocument {
   file_url: string;
   uploaded_by: string | null;
   created_at: string;
+}
+
+export interface Settings {
+  id: string;
+  hospital_name: string;
+  hospital_address: string | null;
+  hospital_phone: string | null;
+  hospital_email: string | null;
+  hospital_gstin: string | null;
+  logo_url: string | null;
+  tax_rate: number;
+  receipt_footer: string | null;
+  whatsapp_number: string | null;
+  upi_id: string | null;
+  currency: string;
+  branch_id: string | null;
+  updated_at: string;
+  branch?: Branch | null;
+}
+
+export interface Branch {
+  id: string;
+  name: string;
+  code: string | null;
+  address: string | null;
+  phone: string | null;
+  email: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }

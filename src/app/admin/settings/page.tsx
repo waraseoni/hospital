@@ -27,6 +27,7 @@ const defaultSettings: Partial<Settings> = {
 export default function AdminSettingsPage() {
   const { t } = useI18n();
   const [settings, setSettings] = useState<Partial<Settings>>(defaultSettings);
+  const [branches, setBranches] = useState<{ id: string; name: string; is_active: boolean }[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const { addToast } = useToast();
@@ -37,8 +38,13 @@ export default function AdminSettingsPage() {
 
   async function loadSettings() {
     const supabase = createClient();
-    const { data } = await supabase.from("settings").select("*").limit(1).single();
+    const [settingsRes, branchesRes] = await Promise.all([
+      supabase.from("settings").select("*").limit(1).single(),
+      supabase.from("branches").select("id, name, is_active").order("created_at", { ascending: true }),
+    ]);
+    const { data } = settingsRes;
     if (data) setSettings(data);
+    setBranches((branchesRes.data as { id: string; name: string; is_active: boolean }[]) || []);
     setLoading(false);
   }
 
@@ -130,6 +136,22 @@ export default function AdminSettingsPage() {
               <label className="text-xs font-medium mb-1 block">{t("admin.settingsLogoUrl")}</label>
               <Input value={settings.logo_url || ""} onChange={(e) => update("logo_url", e.target.value)} placeholder="https://..." />
             </div>
+          </div>
+        </div>
+
+        <div className="rounded-lg border bg-card p-4 space-y-3">
+          <h3 className="text-sm font-semibold">Branch</h3>
+          <div>
+            <label className="text-xs font-medium mb-1 block">Active Branch</label>
+            <select
+              value={settings.branch_id || ""}
+              onChange={(e) => update("branch_id", e.target.value || null)}
+              className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="">—</option>
+              {branches.filter(b => b.is_active).map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+            </select>
+            <p className="mt-1 text-xs text-muted-foreground">Branches manage karein: Admin → Branches</p>
           </div>
         </div>
 

@@ -10,7 +10,7 @@ import { Modal } from "@/components/ui/modal";
 import { useToast } from "@/components/ui/toast";
 import { PageHeader, PageContainer } from "@/components/ui/page";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Activity, UserRound, Phone, Mail, MapPin, Stethoscope, Key, Shield, Camera } from "lucide-react";
+import { Activity, UserRound, Phone, Mail, MapPin, Stethoscope, Key, Shield, Camera, PenLine } from "lucide-react";
 
 export default function ProfilePage() {
   const { t } = useI18n();
@@ -22,6 +22,7 @@ export default function ProfilePage() {
   const [passwords, setPasswords] = useState({ new_password: "", confirm_password: "" });
   const [changingPassword, setChangingPassword] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [uploadingSignature, setUploadingSignature] = useState(false);
   const { addToast } = useToast();
 
   useEffect(() => { loadProfile(); }, []);
@@ -69,6 +70,30 @@ export default function ProfilePage() {
     if (!error) { addToast("success", "Avatar updated"); loadProfile(); }
     else addToast("error", error.message);
     setUploadingAvatar(false);
+  }
+
+  async function handleSignature(file: File) {
+    if (!/^image\/(jpeg|png|webp)$/.test(file.type)) {
+      addToast("error", "Please choose a JPEG, PNG or WebP image");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      addToast("error", "Image must be under 5MB");
+      return;
+    }
+    setUploadingSignature(true);
+    const supabase = createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setUploadingSignature(false); return; }
+    const ext = file.type.split("/")[1].replace("jpeg", "jpg");
+    const path = `signatures/${user.id}-${Date.now()}.${ext}`;
+    const { error: upErr } = await supabase.storage.from("signatures").upload(path, file, { upsert: true });
+    if (upErr) { addToast("error", upErr.message); setUploadingSignature(false); return; }
+    const { data: urlData } = supabase.storage.from("signatures").getPublicUrl(path);
+    const { error } = await supabase.from("profiles").update({ signature_url: urlData.publicUrl }).eq("id", user.id);
+    if (!error) { addToast("success", "Signature updated"); loadProfile(); }
+    else addToast("error", error.message);
+    setUploadingSignature(false);
   }
 
   async function handlePasswordChange() {
@@ -154,6 +179,42 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
+
+        {/* Doctor Signature */}
+        {profile.role === "doctor" && (
+          <div className="rounded-xl border border-border bg-card p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="flex items-center gap-2 font-semibold"><PenLine size={16} className="text-primary" />Digital Signature</h3>
+                <p className="mt-1 text-sm text-muted-foreground">This signature is stamped on your prescriptions (e-prescription).</p>
+              </div>
+              <label className="flex cursor-pointer items-center gap-2 rounded-lg bg-primary/10 px-3 py-2 text-sm text-primary hover:bg-primary/20">
+                <Camera size={14} />
+                {uploadingSignature ? "Uploading..." : "Upload Signature"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  disabled={uploadingSignature}
+                  onChange={(e) => { const f = e.target.files?.[0]; if (f) handleSignature(f); }}
+                />
+              </label>
+            </div>
+            {profile.signature_url && (
+              <div className="mt-4 rounded-lg border border-border bg-muted/40 p-4">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={profile.signature_url}
+                  alt="Doctor signature"
+                  className="h-14 w-auto max-w-[200px] object-contain"
+                />
+              </div>
+            )}
+            {profile.license_number && (
+              <p className="mt-3 text-xs text-muted-foreground">Registration No: {profile.license_number}</p>
+            )}
+          </div>
+        )}
 
         {/* Edit Form */}
         {editing ? (
