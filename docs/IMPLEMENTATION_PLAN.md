@@ -35,6 +35,7 @@ Rules:
 | 1 | Clinical Workflows | `0.7.0.0` | [x] — Schedule, Lab Order, IPD, Notes, Follow-up, ER, Certificates, Vaccination, Imaging [DONE] |
 | 2 | Pharmacy & Inventory | `0.8.0.0` | [x] — Dispensing, PO/Suppliers, Expiry/Batch, Requisitions, POS [DONE] |
 | 3 | Billing & Finance | `0.9.0.0` | [x] — Receipts/PDF, Packages/Panels, Claims, Payments, UPI QR [DONE] |
+| 4 | Operations & Administration | `1.0.0.0` | [x] — Attendance/Leave/Roster, Housekeeping, Equipment, Ambulance, Blood Bank, Queue Display [DONE] |
 
 > **Detailed UX/UI plan:** See `docs/UX_UI_PLAN.md` for per-page layouts, interconnections, mobile-first design rules, and component library roadmap.
 
@@ -145,20 +146,20 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
 
 ## Phase 4 — Operations & Administration (`0.6.0.0`)
 
-1. **Staff Attendance, Leave & Duty Roster**
+1. **Staff Attendance, Leave & Duty Roster** **DONE**
    - DB: `attendance`, `leaves`, `rosters`. Admin UI: mark daily attendance, leave approval, roster per shift.
-2. **Housekeeping Workflow**
+2. **Housekeeping Workflow** **DONE**
    - `housekeeping_tasks` (room/bed, type deep|regular, assigned_staff, status) — staff "Assign", housekeeper "Complete" → `beds.is_ready`.
-3. **Equipment / Asset Tracking**
+3. **Equipment / Asset Tracking** **DONE**
    - DB: `equipment` (name, category, hospital dept, tag, purchase_info, warranty, status, last_service). Maintenance log table.
-4. **Ambulance Module**
+4. **Ambulance Module** **DONE**
    - DB: `ambulances` (vehicle no, type BLS/ALS, driver, ready); `ambulance_calls` (patient/address/condition/trip, status). Admin assign + call log.
-5. **Blood Bank**
+5. **Blood Bank** **DONE**
    - DB: `blood_donations`, `blood_inventory` (group, component, unit, expiry, status), `blood_requests` (patient, group, qty, status). Cross-match vs patients blood_group.
-6. **Queue/TV Display Monitor**
+6. **Queue/TV Display Monitor** **DONE**
    - `/public/queue` route: token-wise next-up per doctor (live realtime via supabase channel) — TV ne screen ke liye.
 
-**DB:** migrations `00032`–`00037`. **Version:** minor → `0.6.0.0`.
+**DB:** migrations `00033`–`00037`. **Version:** minor → `0.6.0.0`.
 
 ---
 

@@ -338,3 +338,189 @@ export interface Claim {
   invoice?: Invoice;
   panel?: InsurancePanel;
 }
+
+export interface Attendance {
+  id: string;
+  staff_id: string;
+  work_date: string;
+  status: "present" | "absent" | "late" | "half_day" | "leave";
+  check_in: string | null;
+  check_out: string | null;
+  notes: string | null;
+  marked_by: string | null;
+  created_at: string;
+  updated_at: string;
+  staff?: Profile;
+}
+
+export interface Leave {
+  id: string;
+  staff_id: string;
+  leave_type: "sick" | "casual" | "earned" | "maternity" | "unpaid" | "other";
+  from_date: string;
+  to_date: string;
+  reason: string;
+  status: "pending" | "approved" | "rejected" | "cancelled";
+  approved_by: string | null;
+  approval_notes: string | null;
+  created_at: string;
+  updated_at: string;
+  staff?: Profile;
+}
+
+export interface Roster {
+  id: string;
+  staff_id: string;
+  roster_date: string;
+  shift: "morning" | "evening" | "night" | "general";
+  department: string;
+  notes: string | null;
+  assigned_by: string | null;
+  created_at: string;
+  updated_at: string;
+  staff?: Profile;
+}
+
+export interface HousekeepingTask {
+  id: string;
+  bed_id: string | null;
+  room_label: string;
+  task_type: "deep" | "regular" | "discharge" | "spill";
+  status: "pending" | "assigned" | "in_progress" | "completed" | "cancelled";
+  priority: "low" | "normal" | "high" | "urgent";
+  assigned_to: string | null;
+  notes: string | null;
+  requested_by: string | null;
+  completed_at: string | null;
+  created_at: string;
+  updated_at: string;
+  bed?: Bed;
+  assigned_to_profile?: Profile;
+}
+
+export interface Equipment {
+  id: string;
+  name: string;
+  category: string;
+  department: string;
+  asset_tag: string | null;
+  manufacturer: string;
+  model: string;
+  serial_number: string;
+  purchase_date: string | null;
+  purchase_cost: number;
+  warranty_until: string | null;
+  location: string;
+  status: "operational" | "maintenance" | "repair" | "retired" | "reserved";
+  notes: string | null;
+  last_service_at: string | null;
+  next_service_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MaintenanceLog {
+  id: string;
+  equipment_id: string;
+  maintenance_type: "service" | "repair" | "calibration" | "inspection";
+  description: string;
+  cost: number;
+  performed_by: string;
+  performed_at: string;
+  next_due: string | null;
+  created_by: string | null;
+  created_at: string;
+  equipment?: Equipment;
+}
+
+export interface Ambulance {
+  id: string;
+  vehicle_no: string;
+  ambulance_type: "BLS" | "ALS" | "patient_transport" | "neonatal";
+  driver_name: string;
+  driver_phone: string;
+  status: "available" | "on_trip" | "maintenance" | "offline";
+  base_location: string;
+  notes: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AmbulanceCall {
+  id: string;
+  call_number: string;
+  patient_id: string | null;
+  patient_name: string;
+  patient_phone: string;
+  pickup_address: string;
+  drop_address: string;
+  condition_notes: string;
+  trip_type: "emergency" | "transfer" | "discharge" | "routine";
+  status: "received" | "assigned" | "en_route" | "arrived" | "completed" | "cancelled";
+  ambulance_id: string | null;
+  assigned_by: string | null;
+  started_at: string | null;
+  arrived_at: string | null;
+  completed_at: string | null;
+  distance_km: number;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+  ambulance?: Ambulance;
+  patient?: Patient;
+}
+
+export interface BloodDonation {
+  id: string;
+  donor_name: string;
+  donor_phone: string | null;
+  donor_age: number | null;
+  donor_gender: string | null;
+  blood_group: string;
+  volume_ml: number;
+  collected_at: string;
+  screened: boolean;
+  screening_notes: string | null;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface BloodUnit {
+  id: string;
+  donation_id: string | null;
+  blood_group: string;
+  component: "whole" | "prbc" | "ffp" | "platelets" | "cryo" | "plasma";
+  unit_code: string;
+  volume_ml: number;
+  expiry_date: string;
+  status: "available" | "reserved" | "issued" | "expired" | "discarded" | "quarantined";
+  location: string;
+  reserved_for: string | null;
+  issued_at: string | null;
+  notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BloodRequest {
+  id: string;
+  request_number: string;
+  patient_id: string | null;
+  patient_name: string;
+  blood_group: string;
+  component: "whole" | "prbc" | "ffp" | "platelets" | "cryo" | "plasma";
+  quantity: number;
+  urgency: "routine" | "urgent" | "emergency";
+  requested_by: string | null;
+  department: string;
+  status: "pending" | "approved" | "issued" | "rejected" | "cancelled";
+  crossmatch: "compatible" | "incompatible" | "pending";
+  notes: string | null;
+  issued_unit_ids: string[];
+  approved_by: string | null;
+  issued_at: string | null;
+  created_at: string;
+  updated_at: string;
+  patient?: Patient;
+}
