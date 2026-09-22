@@ -193,3 +193,81 @@ export interface AuditLog {
   created_at: string;
   user?: Profile;
 }
+
+export interface StockTransaction {
+  id: string;
+  item_id: string;
+  type: "in" | "out";
+  quantity: number;
+  ref_type: "manual" | "purchase_order" | "dispense" | "requisition" | "pos" | "adjustment";
+  ref_id: string | null;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+  item?: InventoryItem;
+  created_by_profile?: Profile;
+}
+
+export interface Supplier {
+  id: string;
+  name: string;
+  contact_person: string;
+  phone: string;
+  email: string;
+  address: string;
+  gstin: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PurchaseOrderItem {
+  id: string;
+  po_id: string;
+  item_id: string;
+  quantity: number;
+  unit_price: number;
+  received_qty: number;
+  created_at: string;
+  item?: InventoryItem;
+}
+
+export interface PurchaseOrder {
+  id: string;
+  po_number: string;
+  supplier_id: string | null;
+  status: "draft" | "ordered" | "received" | "cancelled";
+  total_amount: number;
+  notes: string | null;
+  ordered_by: string | null;
+  received_at: string | null;
+  created_at: string;
+  updated_at: string;
+  supplier?: Supplier;
+  items?: PurchaseOrderItem[];
+}
+
+export interface RequisitionItem {
+  id: string;
+  req_id: string;
+  item_id: string;
+  quantity: number;
+  issued_qty: number;
+  created_at: string;
+  item?: InventoryItem;
+}
+
+export interface Requisition {
+  id: string;
+  req_number: string;
+  department: string;
+  requested_by: string | null;
+  status: "pending" | "approved" | "issued" | "rejected";
+  notes: string | null;
+  approved_by: string | null;
+  issued_at: string | null;
+  created_at: string;
+  updated_at: string;
+  requested_by_profile?: Profile;
+  items?: RequisitionItem[];
+}

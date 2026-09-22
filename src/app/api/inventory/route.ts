@@ -8,7 +8,8 @@ export async function POST(request: NextRequest) {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    const { name, category, quantity, unit, price_per_unit, minimum_stock } = await request.json();
+    const body = await request.json();
+    const { name, category, quantity, unit, price_per_unit, minimum_stock, supplier, expiry_date, batch_number } = body;
 
     if (!name || !category || quantity === undefined || !unit || price_per_unit === undefined || minimum_stock === undefined) {
       return NextResponse.json({ error: "name, category, quantity, unit, price_per_unit, and minimum_stock are required" }, { status: 400 });
@@ -23,14 +24,28 @@ export async function POST(request: NextRequest) {
       unit,
       price_per_unit,
       minimum_stock,
+      supplier: supplier || null,
+      expiry_date: expiry_date || null,
+      batch_number: batch_number || null,
     }).select().single();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
+    if (Number(quantity) > 0) {
+      await admin.from("stock_transactions").insert({
+        item_id: data.id,
+        type: "in",
+        quantity: Number(quantity),
+        ref_type: "manual",
+        notes: "Initial stock",
+        created_by: user.id,
+      });
+    }
+
     return NextResponse.json({ success: true, message: "Inventory item created successfully", item: data });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

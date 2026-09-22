@@ -33,7 +33,7 @@ Rules:
 | 0.5 | Enhanced Pages | `0.5.0.0` | [x] — Admin user mgmt, Profile, all navs fixed [DONE] |
 | 0.6 | Settings + Polish | `0.6.0.0` | [x] — Settings module, PDF+WhatsApp wiring, invoices.created_by [DONE] |
 | 1 | Clinical Workflows | `0.7.0.0` | [x] — Schedule, Lab Order, IPD, Notes, Follow-up, ER, Certificates, Vaccination, Imaging [DONE] |
-| 2 | Pharmacy & Inventory | `0.8.0.0` | [ ] |
+| 2 | Pharmacy & Inventory | `0.8.0.0` | [x] — Dispensing, PO/Suppliers, Expiry/Batch, Requisitions, POS [DONE] |
 | 3 | Billing & Finance | `0.9.0.0` | [ ] |
 
 > **Detailed UX/UI plan:** See `docs/UX_UI_PLAN.md` for per-page layouts, interconnections, mobile-first design rules, and component library roadmap.
@@ -106,19 +106,19 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
 
 ## Phase 2 — Pharmacy & Inventory (`0.4.0.0`)
 
-1. **Pharmacy Dispensing**
+1. **Pharmacy Dispensing** **DONE**
    - "Write prescription" se medicines → `prescription_medicine_items` (joined) ya JSONB normalise; dispensing screen: qty issue → `inventory_items.quantity` deduct + `stock_transactions`.
    - DB: `stock_transactions` (item, type in/out, qty, ref prescription/bill, user, ts).
-2. **Purchase Orders / Suppliers / Procurement**
+2. **Purchase Orders / Suppliers / Procurement** **DONE**
    - DB: `suppliers`, `purchase_orders`, `purchase_order_items`. Admin UI: create PO, receive + stock in.
-3. **Expiry / Batch tracking UI**
+3. **Expiry / Batch tracking UI** **DONE**
    - `inventory_items` ka expiry_date/batch_number UI form + alerts (30/7 days) + batch-wise stock views.
-4. **Department Requisitions**
+4. **Department Requisitions** **DONE**
    - `requisitions` (from dept, items[], status); pharmacy approve → issue → stock out.
-5. **Pharmacy POS**
+5. **Pharmacy POS** **DONE**
    - `/staff/pharmacy` counter: add medicines (from inventory), discount %, bill → invoice `line_items` + consume stock + receipt PDF.
 
-**DB:** migrations `00023`–`00027`. **Version:** minor → `0.4.0.0`.
+**DB:** migrations `00026`–`00029` (00023–00025 used by Phase 1). **Version:** minor → `0.4.0.0`.
 
 ---
 
