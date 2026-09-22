@@ -32,7 +32,7 @@ Rules:
 | 0.4 | Core Workflow Integration | `0.4.0.0` | [x] — PDF/WhatsApp, Profile page, User Management [DONE] |
 | 0.5 | Enhanced Pages | `0.5.0.0` | [x] — Admin user mgmt, Profile, all navs fixed [DONE] |
 | 0.6 | Settings + Polish | `0.6.0.0` | [x] — Settings module, PDF+WhatsApp wiring, invoices.created_by [DONE] |
-| 1 | Clinical Workflows | `0.7.0.0` | [ ] |
+| 1 | Clinical Workflows | `0.7.0.0` | [x] — Schedule, Lab Order, IPD, Notes, Follow-up, ER, Certificates, Vaccination, Imaging [DONE] |
 | 2 | Pharmacy & Inventory | `0.8.0.0` | [ ] |
 | 3 | Billing & Finance | `0.9.0.0` | [ ] |
 
@@ -79,7 +79,7 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
    - DB: `doctor_schedules` (doctor_id, weekday, start/end, slot_minutes, enabled); `appointments` mein `booked_at`, optional `slot_time`.
    - Patient booking: doctor page par day-wise free slots (availability query = appointments count vs capacity).
    - Doctor page: schedule editor (`/doctor/schedule`).
-2. **Revisit / Follow-up Automation**
+2. **Revisit / Follow-up Automation** **DONE**
    - Prescription ke `follow_up_date` par reminder entry (WhatsApp template `appointmentReminder` wiring) + auto-suggest booking.
 3. **Doctor → Lab Order Flow** **DONE**
    - OPD "Write prescription" mein "Order Tests" section → `lab_reports` `pending` create with `ordered_by=doctor_id`.
@@ -88,16 +88,16 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
    - DB: `admissions` (patient, doctor, admission_date, ward_type, bed_id, status, discharge_date, remarks); `beds` w/ `admission_id`.
    - Nurse/admin "Admit Patient", bed assign, per-day charges auto-accrue → billing (Phase 3).
    - "Discharge" → discharge summary (template, `discharge_summaries` table or JSONB on admissions), auto billing of bed days + services.
-5. **Emergency / ER Triage**
+5. **Emergency / ER Triage** **DONE**
    - `/er` route (role `staff`+): triage (stable → critical), `emergency` consultation type flow, quick patient registration, room/bed ICU suggestion.
 6. **Progress Notes / Case Sheet** **DONE**
    - DB: `progress_notes` (patient, doc, note, vitals_snapshot JSONB, timestamp). Sheet view per admission/opd.
-7. **Radiology / Imaging**
+7. **Radiology / Imaging** **DONE**
    - DB: `imaging_requests` (patient, doc, modality xray/mri/ct/usg, part, report JSONB, status, images[]); `scans` storage bucket UI upload.
    - Lab role extended ya naya `radiologist` role (optional enums; default lab).
-8. **Medical Certificates**
+8. **Medical Certificates** **DONE**
    - `/doctor/certificates` → JSONB certificate types (discharge, fitness, sick-leave) rendered as PDF via react-pdf.
-9. **Vaccination Records**
+9. **Vaccination Records** **DONE**
    - DB: `vaccinations` (patient, vaccine, dose, administered_by, date, next_due). Schedule reminders (WhatsApp).
 
 **DB:** migrations `00014`–`00022`. **API:** lab-order, admissions, imaging, certificates. **Version:** minor → `0.3.0.0` (feature-by-feature minor bumps `0.2.x.0` se).
