@@ -121,7 +121,7 @@ function makeIdempotent(sql) {
   // --- seed: storage.buckets
   out = out.replace(
     /(INSERT INTO storage\.buckets\b[\s\S]*?);/i,
-    (_m, stmt) => `${stmt} ON CONFLICT (id) DO NOTHING;`
+    (_m, stmt) => /ON CONFLICT/i.test(stmt) ? `${stmt};` : `${stmt} ON CONFLICT (id) DO NOTHING;`
   );
 
   // --- seed: settings default row (single-row table)
