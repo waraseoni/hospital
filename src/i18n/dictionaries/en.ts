@@ -56,6 +56,7 @@ export const en = {
     billing: "Billing",
     roomStatus: "Room Status",
     ipd: "IPD Management",
+    emergency: "Emergency",
     home: "Home",
     myPatients: "My Patients",
     schedule: "My Schedule",

@@ -58,6 +58,7 @@ export const hi: Dictionary = {
     billing: "बिलिंग",
     roomStatus: "कमरा स्थिति",
     ipd: "आईपीडी प्रबंधन",
+    emergency: "आपातकालीन",
     home: "होम",
     myPatients: "मेरे मरीज़",
     schedule: "मेरा शेड्यूल",
