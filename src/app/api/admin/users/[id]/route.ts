@@ -2,17 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 
-async function getAdminOr403() {
+async function getSuperAdminOr403() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return { error: NextResponse.json({ error: "Unauthorized" }, { status: 401 }) };
   const { data: profile } = await supabase.from("profiles").select("role").eq("id", user.id).single();
-  if (!profile || !["admin", "super_admin"].includes(profile.role)) return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
+  if (!profile || profile.role !== "super_admin") return { error: NextResponse.json({ error: "Forbidden" }, { status: 403 }) };
   return { error: null };
 }
 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const check = await getAdminOr403();
+  const check = await getSuperAdminOr403();
   if (check.error) return check.error;
   const { id } = await params;
   const { role, is_active } = await request.json();
@@ -27,7 +27,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const check = await getAdminOr403();
+  const check = await getSuperAdminOr403();
   if (check.error) return check.error;
   const { id } = await params;
   const admin = createAdminClient();
@@ -37,7 +37,7 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
 }
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const check = await getAdminOr403();
+  const check = await getSuperAdminOr403();
   if (check.error) return check.error;
   const { id } = await params;
   const { newPassword } = await request.json();

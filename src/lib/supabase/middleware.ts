@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { readImpersonationCookies, resolveEffectiveRole } from "@/lib/auth/role";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -53,7 +54,8 @@ export async function updateSession(request: NextRequest) {
       .single();
 
     if (profile) {
-      const role = profile.role;
+      const imp = readImpersonationCookies((name) => request.cookies.get(name)?.value);
+      const role = resolveEffectiveRole(profile.role, imp.from, imp.role);
       const pathname = request.nextUrl.pathname;
 
       const roleRoutes: Record<string, string[]> = {

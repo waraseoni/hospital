@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
+import { effectiveRoleOf, fetchImpersonation } from "@/lib/auth/impersonation-client";
 import { LayoutDashboard, HeartPulse, BedDouble, Syringe } from "lucide-react";
 
 const navItems: NavItem[] = [
@@ -23,8 +24,11 @@ export default function NurseLayout({ children }: { children: React.ReactNode })
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
-      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
-      if (!data || data.role !== "nurse") { router.push("/login"); return; }
+      const [{ data }, imp] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", user.id).single(),
+        fetchImpersonation(),
+      ]);
+      if (!data || effectiveRoleOf(data.role, imp) !== "nurse") { router.push("/login"); return; }
       setProfile(data);
     }
     loadProfile();

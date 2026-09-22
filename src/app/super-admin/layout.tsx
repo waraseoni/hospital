@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
+import { fetchImpersonation } from "@/lib/auth/impersonation-client";
 import { LayoutDashboard, Users, UserRound, BedDouble, Package, ScrollText, UserCheck, Activity } from "lucide-react";
 
 const navItems: NavItem[] = [
@@ -28,8 +29,12 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
     async function loadProfile() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { router.push("/login"); return; }
-      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+      const [{ data }, imp] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", user.id).single(),
+        fetchImpersonation(),
+      ]);
       if (!data || data.role !== "super_admin") { router.push("/login"); return; }
+      if (imp.active && imp.role) { router.push(`/${imp.role}`); return; }
       setProfile(data);
     }
     loadProfile();

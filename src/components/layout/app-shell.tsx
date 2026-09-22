@@ -14,6 +14,7 @@ import {
   ThemeSwitcher,
   AccentSwitcher,
 } from "@/components/theme/theme-controls";
+import { ImpersonationBanner } from "./impersonation-banner";
 
 export interface NavItem {
   href: string;
@@ -129,6 +130,7 @@ export function AppShell({ titleKey, subtitle, navItems, user, onLogout, childre
 
       {/* Main Content */}
       <div className="flex min-w-0 flex-1 flex-col">
+        <ImpersonationBanner />
         {/* ===== DESKTOP TOPBAR ===== */}
         <header className="sticky top-0 z-40 hidden h-12 items-center justify-between border-b border-border bg-card/80 px-4 backdrop-blur-md lg:flex">
           {/* Left: Brand (hidden on desktop, sidebar has it) */}

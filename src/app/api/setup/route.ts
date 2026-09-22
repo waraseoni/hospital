@@ -15,6 +15,15 @@ export async function POST(request: NextRequest) {
 
     const admin = createAdminClient();
 
+    // Only bootstrap when no super_admin exists yet
+    const { count } = await admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("role", "super_admin");
+    if ((count ?? 0) > 0) {
+      return NextResponse.json({ error: "Setup is locked: a super admin already exists" }, { status: 403 });
+    }
+
     // Create user with super_admin role
     const { data, error: createError } = await admin.auth.admin.createUser({
       email,

@@ -12,6 +12,7 @@ export interface Profile {
   license_number: string | null;
   signature_url: string | null;
   consultation_fee: number;
+  is_active: boolean;
   created_at: string;
   updated_at: string;
 }

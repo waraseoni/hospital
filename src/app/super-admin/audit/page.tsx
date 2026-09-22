@@ -43,7 +43,7 @@ export default function SuperAdminAuditPage() {
                   <td className="px-4 py-3 text-muted-foreground">{formatDateTime(log.created_at as string)}</td>
                   <td className="px-4 py-3">{(log.user as Record<string, unknown>)?.full_name as string || t("audit.system")}</td>
                   <td className="px-4 py-3">
-                    <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${log.action === "DELETE" ? "bg-red-100 text-red-800" : log.action === "INSERT" ? "bg-green-100 text-green-800" : "bg-blue-100 text-blue-800"}`}>
+                    <span className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${log.action === "DELETE" ? "bg-red-100 text-red-800" : log.action === "INSERT" ? "bg-green-100 text-green-800" : String(log.action).startsWith("IMPERSONATE") ? "bg-amber-100 text-amber-800" : "bg-blue-100 text-blue-800"}`}>
                       {log.action as string}
                     </span>
                   </td>

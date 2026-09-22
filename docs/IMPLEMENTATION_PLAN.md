@@ -39,6 +39,7 @@ Rules:
 | 5 | Reporting & Analytics | `1.1.0.0` | [x] — Revenue/Doctor/Inventory/MIS reports, CSV export, dashboard charts [DONE] |
 | 6 | Patient Experience | `0.4.0.0` | [x] — Docs, Vitals, Feedback, Avatar, Reminders, Signup prefill, PWA [DONE] |
 | 7 | Integration & Advanced | `0.5.0.0` | [x] — e-Prescription digital signature + QR verify, FHIR R4 export, Backup/Restore, OpenAPI docs, Branches [DONE] |
+| 8 | Security, Audit & Testing | `0.6.0.0` | [ ] — Uniform API auth guard, DB audit triggers, Audit UI filters/CSV, vitest + API auth tests, error/loading routes, admin/leaves page |
 
 > **Detailed UX/UI plan:** See `docs/UX_UI_PLAN.md` for per-page layouts, interconnections, mobile-first design rules, and component library roadmap.
 
@@ -205,6 +206,32 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
 5. **Multi-branch/Org support (optional)** [DONE] — foundation: `branches` table + RLS, admin Branches UI, `settings.branch_id`. Note: full row-level `organization_id` scoping across tables is the documented future extension.
 
 **Version:** minor → `0.5.0.0`.
+
+---
+
+## Phase 8 — Security, Audit & Testing (`0.6.0.0`)
+
+> **Priority P0** — healthcare data par security + audit + automated tests. Exploration se mile concrete gaps (`file:line` evidence).
+
+1. **Uniform API auth guard** — `src/middleware.ts` `/api` ko login-redirect se exempt karta hai, isliye har route ko apna role check chahiye — pattern inconsistent hai.
+   - Add `requireRole(...roles)` / `requireAuth()` helper (reuse `src/lib/fhir/auth.ts` session pattern) and apply to **every** `src/app/api/**` route.
+   - Fix known gaps: `src/app/api/patients/route.ts` POST (**no auth check at all**), `src/app/api/profile/route.ts` PUT (field-whitelist to prevent mass-assignment), `src/app/api/setup/route.ts` (one-time-only setup lock — abhi super_admin repeatedly create ho sakta hai).
+   - Tighten storage-bucket read policies (`00011_create_storage_buckets.sql`) so cross-tenant reads are impossible once multi-branch lands.
+2. **DB audit triggers** — `audit_logs` table (`old_data`/`new_data`) exists (`00010_create_inventory_and_audit.sql`) but **koi trigger populate nahi karta** (plan line 216 unfinished).
+   - Generic `set_updated_at`-style `audit_trigger()` function + triggers on `invoices`, `prescriptions`, `lab_reports`, `admissions`, `payments` (INSERT/UPDATE/DELETE, capture `old`/`new` JSONB + `auth.uid()` actor).
+   - Migration `00040_audit_triggers.sql` + regenerate `schema.sql`.
+3. **Audit UI filters + CSV export** — `src/app/admin/audit/page.tsx` aur `src/app/super-admin/audit/page.tsx` sirf last-100 read-only rows dikhate hain.
+   - Filter by actor / table / action / date-range; CSV export button (Phase 5 pattern reuse).
+4. **Testing infrastructure (FOSS)** — abhi **zero** tests hain (`package.json` mein `test` script nahi, koi `*.test.*` file nahi) — healthcare codebase ke liye risk.
+   - Add **vitest** (MIT) + `"test"` script in `package.json`.
+   - Unit tests: token/settings/version utils (plan line 218).
+   - Integration tests: critical API auth behavior — patients POST, profile PUT whitelist, setup lock, prescriptions verify (public), FHIR token gate.
+   - Per-phase manual test checklist doc (`docs/TESTING.md`).
+5. **UX resilience + missing admin surface** — `src/app/**` mein **zero** `loading.tsx` / `error.tsx` / `not-found.tsx`; `src/app/admin/leaves/` folder **empty** (API `/api/leaves` Phase 4 se exist karta hai, UI nahi).
+   - Branded `loading.tsx` + `error.tsx` (auth-error aware) + `not-found.tsx` on key route groups (admin, staff, doctor, patient).
+   - Build `/admin/leaves` page: leave list + approve/reject (wire `/api/leaves`).
+
+**DB:** migration `00040`. **Version:** minor → `0.6.0.0`.
 
 ---
 
