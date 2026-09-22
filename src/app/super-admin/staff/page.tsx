@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { SearchBar } from "@/components/ui/search-bar";
 import { PageHeader } from "@/components/ui/page";
 import { Plus } from "lucide-react";
+import { ImpersonateStarter } from "@/components/layout/impersonate-starter";
 
 const roleMap: Record<string, "info" | "success" | "warning" | "destructive"> = {
   doctor: "info",
@@ -144,6 +145,7 @@ export default function SuperAdminStaffPage() {
                   <td className="px-4 py-3 text-muted-foreground">{s.specialization || "—"}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
+                      <ImpersonateStarter userId={s.id} role={s.role} onDone={loadStaff} />
                       <button onClick={() => startEdit(s)} className="rounded-lg border border-border px-3 py-1 text-xs hover:bg-muted">{t("common.edit")}</button>
                       <button onClick={() => setDeleteId(s.id)} className="rounded-lg border border-destructive/50 px-3 py-1 text-xs text-destructive hover:bg-destructive/10">{t("common.delete")}</button>
                     </div>

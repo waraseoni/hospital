@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
 import { fetchImpersonation } from "@/lib/auth/impersonation-client";
-import { LayoutDashboard, Users, UserRound, BedDouble, Package, ScrollText, UserCheck, Activity } from "lucide-react";
+import { LayoutDashboard, Users, UserRound, BedDouble, Package, ScrollText, UserCheck, Activity, History } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/super-admin", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
@@ -17,6 +17,7 @@ const navItems: NavItem[] = [
   { href: "/super-admin/beds", labelKey: "nav.beds", icon: BedDouble },
   { href: "/super-admin/inventory", labelKey: "nav.inventory", icon: Package },
   { href: "/super-admin/opd", labelKey: "nav.opd", icon: Activity },
+  { href: "/super-admin/impersonation", labelKey: "nav.impersonation", icon: History },
   { href: "/super-admin/audit", labelKey: "nav.auditLogs", icon: ScrollText },
 ];
 

@@ -83,6 +83,7 @@ export const hi: Dictionary = {
     feedback: "फीडबैक",
     branches: "शाखाएं",
     apiDocs: "एपीआई दस्तावेज़",
+    impersonation: "इम्पर्सोनेशन",
   },
   roles: {
     superAdmin: "सुपर एडमिन पैनल",

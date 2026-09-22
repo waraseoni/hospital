@@ -81,6 +81,7 @@ export const en = {
     feedback: "Feedback",
     branches: "Branches",
     apiDocs: "API Docs",
+    impersonation: "Impersonation",
   },
   roles: {
     superAdmin: "Super Admin Panel",

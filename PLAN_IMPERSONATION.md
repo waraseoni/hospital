@@ -1,5 +1,7 @@
 # Plan: Super Admin Audited Impersonation
 
+> **Status: COMPLETE — Phases 1–10 implemented.** Phase 10 enhancements (history page, timer auto-expire, view-as everywhere, role switcher, dashboard widget, reason prompt, target context, read-only mode, toasts, Esc shortcut, dark mode) are done. Known limitation: per-user session sign-out requires the target JWT which the service-role SDK cannot obtain — request is still audited (<"IMPERSONATE_END" new_data.signed_out_target>).
+
 ## Goal
 
 Super admin can view/edit any role's dashboard while impersonating, with a persistent banner, audit trail, and secure start/stop. Plus fix 3 pre-existing security holes.
@@ -159,20 +161,18 @@ Start with A; convert target-role-specific APIs (reception checks `admin/super_a
 | 11 | **Esc shortcut** | Banner mounted → `keydown Escape` triggers exit (confirm-free for speed, audit still logs). |
 | 12 | **Dark-mode banner** | Amber palette with `dark:` variants — verify contrast in dark theme. |
 
-### Phase 10 file changes
+**Phase 10 file changes** (all DONE — commit `impersonation phase 10`):
 
-| Action | File |
-|---|---|
-| New | `src/app/super-admin/impersonation/page.tsx` (history) |
-| New | `src/app/api/admin/impersonation-history/route.ts` (GET list) or reuse audit_logs query client-side |
-| Edit | `src/app/api/admin/impersonate/route.ts` — reason body, target name in GET, mode=ro handling, switch-target |
-| Edit | `src/lib/auth/role.ts` — `imp_mode` cookie const |
-| Edit | `src/lib/supabase/middleware.ts` — block mutations when `imp_mode=ro` |
-| Edit | `src/components/layout/impersonation-banner.tsx` — countdown, switcher, lock, target name, Esc, toast, dark colors |
-| Edit | `src/app/super-admin/page.tsx` — widget |
-| Edit | `staff/admins/patients` pages — Eye button |
-| Edit | `super-admin/layout.tsx` — nav item "Impersonation" |
-| Edit | users page — reason modal before POST |
+| Action | File | Status |
+|---|---|---|
+| New | `src/app/super-admin/impersonation/page.tsx` (history) | Done |
+| Edit | `src/app/api/admin/impersonate/route.ts` — reason body, target name in GET, mode=ro handling, switch-target (POST `targetRole`), PATCH mode toggle | Done |
+| Edit | `src/lib/auth/role.ts` — `imp_uid`/`imp_mode` cookies + `isReadOnlyImpersonation`/`isMutatingMethod` | Done |
+| Edit | `src/lib/supabase/middleware.ts` — block mutations when `imp_mode=ro` | Done |
+| Edit | `src/components/layout/impersonation-banner.tsx` — countdown, switcher, lock, target name, Esc, toast, dark colors | Done |
+| Edit | `src/app/super-admin/page.tsx` — active count + last-5 widget | Done |
+| Edit | `super-admin/layout.tsx` — nav item "Impersonation" | Done |
+| Edit | super-admin users/admins/staff pages — reason modal (reusable `ImpersonateStarter`) + Eye button | Done |
 
 ---
 

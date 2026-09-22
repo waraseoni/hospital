@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Profile } from "@/types/database";
 import { UserRound, Mail, Key, Trash2, UserPlus } from "lucide-react";
+import { ImpersonateStarter } from "@/components/layout/impersonate-starter";
 
 export default function SuperAdminAdminsPage() {
   const { t } = useI18n();
@@ -123,6 +124,7 @@ export default function SuperAdminAdminsPage() {
                   <td className="px-4 py-3"><Badge variant={a.role === "super_admin" ? "destructive" : "info"}>{a.role.replace("_", " ")}</Badge></td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
+                      {a.role !== "super_admin" && <ImpersonateStarter userId={a.id} role={a.role} onDone={loadAdmins} />}
 <button onClick={() => { setShowResetModal(a.id); setResetPassword(""); }} title={t("superAdmin.resetPassword")} className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Key size={14} /></button>
                        <button onClick={() => setDeleting(a.id)} title={t("common.delete")} className="rounded-lg border border-destructive/50 px-2 py-1 text-xs text-destructive hover:bg-destructive/10"><Trash2 size={14} /></button>
                     </div>

@@ -11,8 +11,8 @@ import { PageHeader, PageContainer } from "@/components/ui/page";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import type { Profile, UserRole } from "@/types/database";
-import { useRouter } from "next/navigation";
-import { Shield, UserRound, Mail, Phone, Key, Power, Trash2, Search, Eye } from "lucide-react";
+import { Shield, UserRound, Mail, Phone, Key, Power, Trash2 } from "lucide-react";
+import { ImpersonateStarter } from "@/components/layout/impersonate-starter";
 
 const allRoles: UserRole[] = ["super_admin", "admin", "doctor", "nurse", "lab", "staff", "patient"];
 const roleColors: Record<string, "info" | "success" | "warning" | "destructive"> = {
@@ -21,7 +21,6 @@ const roleColors: Record<string, "info" | "success" | "warning" | "destructive">
 
 export default function SuperAdminUsersPage() {
   const { t } = useI18n();
-  const router = useRouter();
   const [users, setUsers] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -32,7 +31,6 @@ export default function SuperAdminUsersPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [editingUser, setEditingUser] = useState<Profile | null>(null);
   const [editRole, setEditRole] = useState<UserRole>("doctor");
-  const [impersonatingId, setImpersonatingId] = useState<string | null>(null);
   const { addToast } = useToast();
 
   useEffect(() => { loadUsers(); }, []);
@@ -82,26 +80,6 @@ export default function SuperAdminUsersPage() {
     } catch { addToast("error", "Delete failed"); }
   }
 
-  async function handleImpersonate(id: string) {
-    setImpersonatingId(id);
-    try {
-      const res = await fetch("/api/admin/impersonate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ targetUserId: id }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to start impersonation");
-      addToast("success", `Now viewing as ${data.impersonating?.role}`);
-      router.push(data.redirectTo);
-      router.refresh();
-    } catch (err: unknown) {
-      addToast("error", (err as Error).message);
-    } finally {
-      setImpersonatingId(null);
-    }
-  }
-
   const filtered = users.filter(u => {
     const matchSearch = !search || u.full_name.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase()) || u.role.toLowerCase().includes(search.toLowerCase());
     const matchRole = filterRole === "all" || u.role === filterRole;
@@ -146,7 +124,7 @@ export default function SuperAdminUsersPage() {
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
                       {u.role !== "super_admin" && (
-                        <button onClick={() => handleImpersonate(u.id)} disabled={impersonatingId === u.id} title="View as this role" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted disabled:opacity-50"><Eye size={14} /></button>
+                        <ImpersonateStarter userId={u.id} role={u.role} />
                       )}
                       <button onClick={() => { setEditingUser(u); setEditRole(u.role); }} title="Edit role" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Shield size={14} /></button>
                       <button onClick={() => { setShowResetModal(u.id); setResetPassword(""); }} title="Reset password" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted"><Key size={14} /></button>

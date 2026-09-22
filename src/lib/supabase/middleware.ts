@@ -1,6 +1,11 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { readImpersonationCookies, resolveEffectiveRole } from "@/lib/auth/role";
+import {
+  isMutatingMethod,
+  isReadOnlyImpersonation,
+  readImpersonationCookies,
+  resolveEffectiveRole,
+} from "@/lib/auth/role";
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -57,6 +62,18 @@ export async function updateSession(request: NextRequest) {
       const imp = readImpersonationCookies((name) => request.cookies.get(name)?.value);
       const role = resolveEffectiveRole(profile.role, imp.from, imp.role);
       const pathname = request.nextUrl.pathname;
+
+      if (
+        isReadOnlyImpersonation(imp.mode) &&
+        pathname.startsWith("/api") &&
+        !pathname.startsWith("/api/admin/impersonate") &&
+        isMutatingMethod(request.method)
+      ) {
+        return NextResponse.json(
+          { error: "Read-only impersonation: mutating requests are blocked" },
+          { status: 403 }
+        );
+      }
 
       const roleRoutes: Record<string, string[]> = {
         super_admin: ["/super-admin"],
