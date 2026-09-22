@@ -5,12 +5,13 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, HeartPulse, BedDouble } from "lucide-react";
+import { LayoutDashboard, HeartPulse, BedDouble, Syringe } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/nurse", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
   { href: "/nurse/vitals", labelKey: "nav.recordVitals", icon: HeartPulse },
   { href: "/nurse/beds", labelKey: "nav.bedManagement", icon: BedDouble },
+  { href: "/nurse/vaccinations", labelKey: "nav.vaccinations", icon: Syringe },
 ];
 
 export default function NurseLayout({ children }: { children: React.ReactNode }) {

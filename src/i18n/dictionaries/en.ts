@@ -48,6 +48,7 @@ export const en = {
     newPrescription: "New Prescription",
     recordVitals: "Record Vitals",
     bedManagement: "Bed Management",
+    vaccinations: "Vaccinations",
     testQueue: "Test Queue",
     bookAppointment: "Book Appointment",
     reception: "Reception",

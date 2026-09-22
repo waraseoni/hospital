@@ -50,6 +50,7 @@ export const hi: Dictionary = {
     newPrescription: "नई पर्ची",
     recordVitals: "वाइटल्स दर्ज करें",
     bedManagement: "बेड प्रबंधन",
+    vaccinations: "टीकाकरण",
     testQueue: "जांच कतार",
     bookAppointment: "अपॉइंटमेंट बुक करें",
     reception: "रिसेप्शन",
