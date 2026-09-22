@@ -63,6 +63,7 @@ export const hi: Dictionary = {
     myPatients: "मेरे मरीज़",
     schedule: "मेरा शेड्यूल",
     progressNotes: "प्रगति नोट्स",
+    certificates: "प्रमाणपत्र",
     profile: "प्रोफ़ाइल",
     myProfile: "मेरी प्रोफ़ाइल",
   },

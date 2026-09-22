@@ -61,6 +61,7 @@ export const en = {
     myPatients: "My Patients",
     schedule: "My Schedule",
     progressNotes: "Progress Notes",
+    certificates: "Certificates",
     profile: "Profile",
     myProfile: "My Profile",
   },
