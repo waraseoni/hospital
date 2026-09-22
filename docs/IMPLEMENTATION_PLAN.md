@@ -36,6 +36,7 @@ Rules:
 | 2 | Pharmacy & Inventory | `0.8.0.0` | [x] — Dispensing, PO/Suppliers, Expiry/Batch, Requisitions, POS [DONE] |
 | 3 | Billing & Finance | `0.9.0.0` | [x] — Receipts/PDF, Packages/Panels, Claims, Payments, UPI QR [DONE] |
 | 4 | Operations & Administration | `1.0.0.0` | [x] — Attendance/Leave/Roster, Housekeeping, Equipment, Ambulance, Blood Bank, Queue Display [DONE] |
+| 5 | Reporting & Analytics | `1.1.0.0` | [x] — Revenue/Doctor/Inventory/MIS reports, CSV export, dashboard charts [DONE] |
 
 > **Detailed UX/UI plan:** See `docs/UX_UI_PLAN.md` for per-page layouts, interconnections, mobile-first design rules, and component library roadmap.
 
@@ -163,17 +164,17 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
 
 ---
 
-## Phase 5 — Reporting & Analytics (`0.7.0.0`)
+## Phase 5 — Reporting & Analytics (`1.1.0.0`) **[DONE]**
 
-1. **Revenue Reports** — /admin/reports/revenue (OPD/IPD/Lab/Pharmacy, date range, chart).
-2. **Doctor-wise Collections** — per-doctor billing summary.
-3. **Inventory Valuation & Reorder Alerts** — current stock value, low-stock list, expiring batches.
-4. **Daily/Monthly MIS Reports** — admissions, discharges, OP/IP census, avg stay, compliance counts.
-5. **Enhanced Dashboard + Charts** — reuse `lucide`/`recharts` (optional) on admin/doctor dashboards.
-6. **CSV/Excel Export** — every report download button.
+1. **Revenue Reports** **DONE** — `/admin/reports` Revenue tab (OPD/IPD/Lab/Pharmacy, date range, CSS bar chart).
+2. **Doctor-wise Collections** **DONE** — per-doctor billing summary table + chart.
+3. **Inventory Valuation & Reorder Alerts** **DONE** — stock value, low-stock list, expiring ≤30d batches.
+4. **Daily/Monthly MIS Reports** **DONE** — admissions, discharges, OP/IP census, avg stay, bed occupancy, lab pending.
+5. **Enhanced Dashboard + Charts** **DONE** — pure CSS bars (FOSS, no recharts) on reports page; lucide icons.
+6. **CSV/Excel Export** **DONE** — Export CSV button on every report tab.
 
-**DB:** koi naya table nahi (aggregation queries). Add `reports` view set (migration) for heavy ones.
-**Version:** minor → `0.7.0.0`.
+**DB:** koi naya table nahi — `/api/reports` aggregation queries only.
+**Version:** minor → `1.1.0.0`.
 
 ---
 
