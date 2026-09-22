@@ -30,6 +30,8 @@ function PrescriptionForm() {
   const [labTests, setLabTests] = useState<{ name: string; category: string }[]>([]);
   const [newTestName, setNewTestName] = useState("");
   const [newTestCategory, setNewTestCategory] = useState("general");
+  const [imagingOrders, setImagingOrders] = useState<{ modality: string; body_part: string; indication: string }[]>([]);
+  const [newImaging, setNewImaging] = useState({ modality: "xray", body_part: "", indication: "" });
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
   const { addToast } = useToast();
@@ -91,6 +93,16 @@ function PrescriptionForm() {
     setLabTests(labTests.filter((_, i) => i !== index));
   }
 
+  function addImagingOrder() {
+    if (!newImaging.body_part.trim()) return;
+    setImagingOrders([...imagingOrders, { ...newImaging }]);
+    setNewImaging({ modality: "xray", body_part: "", indication: "" });
+  }
+
+  function removeImagingOrder(index: number) {
+    setImagingOrders(imagingOrders.filter((_, i) => i !== index));
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!patient) { addToast("error", t("doctorPrescriptions.selectPatientFirst") || "Please select a patient first"); return; }
@@ -118,6 +130,17 @@ function PrescriptionForm() {
           status: "pending" as const,
         }));
         await supabase.from("lab_reports").insert(labInserts);
+      }
+      if (imagingOrders.length > 0 && patient) {
+        const imagingInserts = imagingOrders.map((img) => ({
+          patient_id: patient.id,
+          ordered_by: user.id,
+          modality: img.modality,
+          body_part: img.body_part,
+          clinical_indication: img.indication,
+          status: "ordered" as const,
+        }));
+        await supabase.from("imaging_requests").insert(imagingInserts);
       }
       addToast("success", t("doctorPrescriptions.savedSuccess") || "Prescription saved");
       router.push("/doctor/opd");
@@ -253,6 +276,36 @@ function PrescriptionForm() {
                     {test.name}
                     <button type="button" onClick={() => removeLabTest(i)} className="ml-1 hover:text-destructive">&times;</button>
                   </Badge>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+            <h2 className="font-semibold">Order Imaging</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
+              <select value={newImaging.modality} onChange={(e) => setNewImaging({ ...newImaging, modality: e.target.value })}
+                className="rounded-md border bg-background px-3 py-2 text-sm">
+                <option value="xray">X-Ray</option>
+                <option value="mri">MRI</option>
+                <option value="ct">CT Scan</option>
+                <option value="ultrasound">Ultrasound</option>
+                <option value="mammography">Mammography</option>
+                <option value="other">Other</option>
+              </select>
+              <Input placeholder="Body part (e.g. Chest)" value={newImaging.body_part}
+                onChange={(e) => setNewImaging({ ...newImaging, body_part: e.target.value })} />
+              <Input placeholder="Indication (optional)" value={newImaging.indication}
+                onChange={(e) => setNewImaging({ ...newImaging, indication: e.target.value })} />
+              <Button type="button" variant="outline" onClick={addImagingOrder}>Add</Button>
+            </div>
+            {imagingOrders.length > 0 && (
+              <div className="space-y-1.5">
+                {imagingOrders.map((img, i) => (
+                  <div key={i} className="flex items-center justify-between rounded-md bg-muted/40 px-3 py-2 text-sm">
+                    <span>{img.modality.toUpperCase()} — {img.body_part} {img.indication && `(${img.indication})`}</span>
+                    <button type="button" onClick={() => removeImagingOrder(i)} className="text-muted-foreground hover:text-destructive">&times;</button>
+                  </div>
                 ))}
               </div>
             )}

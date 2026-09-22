@@ -50,6 +50,7 @@ export const en = {
     bedManagement: "Bed Management",
     vaccinations: "Vaccinations",
     testQueue: "Test Queue",
+    imaging: "Radiology",
     bookAppointment: "Book Appointment",
     reception: "Reception",
     myPrescriptions: "My Prescriptions",
