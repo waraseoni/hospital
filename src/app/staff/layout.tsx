@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/types/database";
 import { AppShell, type NavItem } from "@/components/layout/app-shell";
-import { LayoutDashboard, Folder, Users2, ClipboardList, AlertTriangle, Pill, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, Folder, Users2, ClipboardList, AlertTriangle, Pill, ClipboardCheck, FileStack } from "lucide-react";
 
 const navItems: NavItem[] = [
   { href: "/staff", labelKey: "nav.dashboard", icon: LayoutDashboard, exact: true },
@@ -15,6 +15,7 @@ const navItems: NavItem[] = [
   { href: "/staff/pharmacy", labelKey: "nav.pharmacy", icon: Pill },
   { href: "/staff/pharmacy/dispense", labelKey: "pharmacy.dispenseTitle", icon: ClipboardCheck },
   { href: "/staff/pharmacy/requisitions", labelKey: "nav.requisitions", icon: Users2 },
+  { href: "/staff/claims", labelKey: "nav.claims", icon: FileStack },
 ];
 
 export default function StaffLayout({ children }: { children: React.ReactNode }) {

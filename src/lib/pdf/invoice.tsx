@@ -33,11 +33,16 @@ interface InvoicePDFProps {
   tax: number;
   netAmount: number;
   paymentStatus: string;
+  paymentMethod?: string;
+  upiId?: string;
+  receiptFooter?: string;
+  kind?: "invoice" | "receipt";
 }
 
 export function InvoicePDF({
   hospitalName, hospitalAddress, invoiceNumber, patientName, patientUHID, date,
   lineItems, totalAmount, discount, tax, netAmount, paymentStatus,
+  paymentMethod = "", upiId = "", receiptFooter = "", kind = "invoice",
 }: InvoicePDFProps) {
   return (
     <Document>
@@ -45,7 +50,7 @@ export function InvoicePDF({
         <View style={styles.header}>
           <Text style={styles.hospitalName}>{hospitalName}</Text>
           <Text style={styles.subtitle}>{hospitalAddress}</Text>
-          <Text style={styles.subtitle}>Invoice / Receipt</Text>
+          <Text style={styles.subtitle}>{kind === "receipt" ? "Payment Receipt" : "Invoice / Receipt"}</Text>
         </View>
 
         <View style={styles.patientRow}>
@@ -111,12 +116,16 @@ export function InvoicePDF({
         <View style={{ marginTop: 15, padding: 10, backgroundColor: paymentStatus === "paid" ? "#f0fdf4" : "#fef3c7", borderRadius: 4 }}>
           <Text style={{ fontWeight: "bold", color: paymentStatus === "paid" ? "#16a34a" : "#d97706" }}>
             Payment Status: {paymentStatus.toUpperCase()}
+            {paymentMethod ? ` · Method: ${paymentMethod.toUpperCase()}` : ""}
           </Text>
+          {upiId && kind === "receipt" && (
+            <Text style={{ marginTop: 4, fontSize: 9 }}>UPI: {upiId}</Text>
+          )}
         </View>
 
         <View style={styles.footer}>
-          <Text>Thank you for choosing {hospitalName}</Text>
-          <Text>This is a computer-generated invoice</Text>
+          <Text>{receiptFooter || `Thank you for choosing ${hospitalName}`}</Text>
+          <Text>This is a computer-generated {kind === "receipt" ? "receipt" : "invoice"}</Text>
         </View>
       </Page>
     </Document>

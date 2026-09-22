@@ -13,7 +13,8 @@ import { Modal } from "@/components/ui/modal";
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageHeader } from "@/components/ui/page";
 import { PageContainer } from "@/components/ui/page";
-import { BedDouble, Trash2 } from "lucide-react";
+import { BedDouble, Trash2, Download, Printer, QrCode, CreditCard } from "lucide-react";
+import { UpiQrModal } from "@/components/ui/upi-qr";
 
 interface LineItemDraft {
   description: string;
@@ -33,6 +34,8 @@ export default function StaffDashboardPage() {
   const [taxRate, setTaxRate] = useState("18");
   const [creating, setCreating] = useState(false);
   const [deleteInvoiceId, setDeleteInvoiceId] = useState<string | null>(null);
+  const [payInvoiceId, setPayInvoiceId] = useState<string | null>(null);
+  const [qrInvoice, setQrInvoice] = useState<Invoice | null>(null);
   const { addToast } = useToast();
 
   useEffect(() => { loadAll(); }, []);
@@ -90,9 +93,45 @@ export default function StaffDashboardPage() {
 
   async function markPaid(id: string) {
     const supabase = createClient();
-    await supabase.from("invoices").update({ payment_status: "paid", paid_at: new Date().toISOString() }).eq("id", id);
+    const { data: inv } = await supabase.from("invoices").select("net_amount").eq("id", id).single();
+    await fetch("/api/payments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ invoice_id: id, amount: Number(inv?.net_amount) || 0, method: "cash" }),
+    }).catch(() => null);
     addToast("success", "Invoice marked as paid");
+    setPayInvoiceId(null);
     loadAll();
+  }
+
+  async function downloadInvoicePdf(inv: Invoice, kind: "invoice" | "receipt" = "invoice") {
+    try {
+      const res = await fetch("/api/billing/receipt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoice_id: inv.id, kind }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "PDF failed");
+      window.open(data.pdf_url, "_blank");
+    } catch (err) {
+      addToast("error", (err as Error).message);
+    }
+  }
+
+  async function printInvoice(inv: Invoice) {
+    try {
+      const res = await fetch("/api/billing/receipt", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ invoice_id: inv.id, kind: inv.payment_status === "paid" ? "receipt" : "invoice" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Print failed");
+      window.open(data.pdf_url, "_blank");
+    } catch (err) {
+      addToast("error", (err as Error).message);
+    }
   }
 
   const statusColor: Record<string, string> = { pending: "text-orange-600", paid: "text-green-600", partial: "text-blue-600", cancelled: "text-muted-foreground" };
@@ -177,9 +216,27 @@ export default function StaffDashboardPage() {
                     <td className="py-3">₹{inv.net_amount.toFixed(2)}</td>
                     <td className={`py-3 font-medium capitalize ${statusColor[inv.payment_status] || ""}`}>{inv.payment_status}</td>
                     <td className="py-3">
-                      {inv.payment_status === "pending" && (
-                        <button onClick={() => markPaid(inv.id)} className="rounded-lg bg-green-600 px-3 py-1 text-xs text-white hover:bg-green-700">Mark Paid</button>
-                      )}
+                      <div className="flex flex-wrap gap-1.5">
+                        <button onClick={() => downloadInvoicePdf(inv, "invoice")} title="Download PDF" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted">
+                          <Download size={12} />
+                        </button>
+                        <button onClick={() => printInvoice(inv)} title="Print" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted">
+                          <Printer size={12} />
+                        </button>
+                        <button onClick={() => setQrInvoice(inv)} title="UPI QR" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted">
+                          <QrCode size={12} />
+                        </button>
+                        {inv.payment_status !== "paid" && (
+                          <button onClick={() => setPayInvoiceId(inv.id)} className="rounded-lg bg-green-600 px-2 py-1 text-xs text-white hover:bg-green-700">
+                            <CreditCard size={12} className="inline mr-1" />Mark Paid
+                          </button>
+                        )}
+                        {inv.payment_status === "paid" && (
+                          <button onClick={() => downloadInvoicePdf(inv, "receipt")} title="Receipt" className="rounded-lg border border-border px-2 py-1 text-xs hover:bg-muted">
+                            {t("billing.receipt")}
+                          </button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -197,6 +254,22 @@ export default function StaffDashboardPage() {
         }>
           <p>{t("common.confirmDelete")}</p>
         </Modal>
+
+        <Modal open={!!payInvoiceId} onOpenChange={() => setPayInvoiceId(null)} title={t("billing.recordPayment")} footer={
+          <>
+            <Button variant="ghost" onClick={() => setPayInvoiceId(null)}>{t("common.cancel")}</Button>
+            <Button onClick={() => payInvoiceId && markPaid(payInvoiceId)}>{t("billing.confirmPayment")}</Button>
+          </>
+        }>
+          <p className="text-sm text-muted-foreground">{t("billing.confirmPayment")} — Cash / manual reconciliation</p>
+        </Modal>
+
+        <UpiQrModal
+          open={!!qrInvoice}
+          onOpenChange={() => setQrInvoice(null)}
+          invoiceId={qrInvoice?.id}
+          amount={qrInvoice?.net_amount || 0}
+        />
       </div>
     </PageContainer>
   );

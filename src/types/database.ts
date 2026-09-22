@@ -122,6 +122,8 @@ export interface Invoice {
   created_at: string;
   updated_at: string;
   patient?: Patient;
+  created_by?: string | null;
+  payments?: { amount: number; method: string; paid_at: string }[];
 }
 
 export interface InvoiceLineItem {
@@ -270,4 +272,69 @@ export interface Requisition {
   updated_at: string;
   requested_by_profile?: Profile;
   items?: RequisitionItem[];
+}
+
+export interface Payment {
+  id: string;
+  invoice_id: string;
+  amount: number;
+  method: "cash" | "card" | "upi" | "insurance" | "other";
+  reference: string | null;
+  notes: string | null;
+  paid_at: string;
+  received_by: string | null;
+  created_at: string;
+  invoice?: Invoice;
+}
+
+export interface InsurancePanel {
+  id: string;
+  code: string;
+  name: string;
+  contact: string;
+  notes: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PackageService {
+  description: string;
+  category: "opd" | "ipd" | "lab" | "pharmacy" | "other";
+  amount: number;
+  quantity: number;
+}
+
+export interface ServicePackage {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  base_amount: number;
+  discount_percent: number;
+  panel_id: string | null;
+  services: PackageService[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+  panel?: InsurancePanel;
+}
+
+export interface Claim {
+  id: string;
+  claim_number: string;
+  invoice_id: string;
+  panel_id: string | null;
+  insurer_code: string;
+  policy_no: string | null;
+  approval_no: string | null;
+  stage: "intimation" | "preauth" | "claim" | "settled" | "rejected";
+  status: "draft" | "submitted" | "approved" | "paid" | "rejected";
+  amount: number;
+  notes: string | null;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  invoice?: Invoice;
+  panel?: InsurancePanel;
 }

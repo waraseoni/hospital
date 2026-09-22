@@ -34,7 +34,7 @@ Rules:
 | 0.6 | Settings + Polish | `0.6.0.0` | [x] — Settings module, PDF+WhatsApp wiring, invoices.created_by [DONE] |
 | 1 | Clinical Workflows | `0.7.0.0` | [x] — Schedule, Lab Order, IPD, Notes, Follow-up, ER, Certificates, Vaccination, Imaging [DONE] |
 | 2 | Pharmacy & Inventory | `0.8.0.0` | [x] — Dispensing, PO/Suppliers, Expiry/Batch, Requisitions, POS [DONE] |
-| 3 | Billing & Finance | `0.9.0.0` | [ ] |
+| 3 | Billing & Finance | `0.9.0.0` | [x] — Receipts/PDF, Packages/Panels, Claims, Payments, UPI QR [DONE] |
 
 > **Detailed UX/UI plan:** See `docs/UX_UI_PLAN.md` for per-page layouts, interconnections, mobile-first design rules, and component library roadmap.
 
@@ -124,22 +124,22 @@ Doctor ka core workflow — abhi OPD sirf token queue + free-form prescription h
 
 ## Phase 3 — Billing & Finance (`0.5.0.0`)
 
-1. **Receipt Printing & PDF Download UI**
-   - Invoice list (`/staff` and `/admin/billing`) mein "Download PDF" + "Print receipt" buttons; wire existing `/api/invoices`.
-2. **Discount & Package/Panel Policies**
+1. **Receipt Printing & PDF Download UI** **DONE**
+   - Invoice list (`/staff` and `/admin/billing`) mein "Download PDF" + "Print receipt" buttons; wire existing `/api/invoices` + `/api/billing/receipt`.
+2. **Discount & Package/Panel Policies** **DONE**
    - `insurance_panels`/`packages` tables (package → services + rate + discount%); invoice par apply.
-3. **Insurance / TPA Claims**
+3. **Insurance / TPA Claims** **DONE**
    - DB: `claims` (invoice_id, insurer_code, policy_no, approval_no, stage intimation|preauth|claim, amount, status).
    - `/staff/claims` UI: create claim from invoice, track stages.
-4. **Payment Receipts**
-   - `payments` table (invoice, amount, method, reference, at, by) — partial payments track (abhi sirf `paid_at`).
-   - Receipt PDF template.
-5. **UPI QR Payment (FREE — no gateway)**
-   - Koi payment gateway nahi. **UPI Intent/QR** (`upi://pay?pa=UPI_ID&pn=HOSPITAL&am=amount`) generate karo (`qrcode` npm pkg, MIT) — ye UPI ka free, official deep-link protocol hai, koi txn fee nahi.
-   - Invoice print par UPI QR; payment verify manual reconciliation (staff "Confirm payment" record) — `payments` table update.
+4. **Payment Receipts** **DONE**
+   - `payments` table (invoice, amount, method, reference, at, by) — partial payments track.
+   - Receipt PDF template (InvoicePDF kind=receipt).
+5. **UPI QR Payment (FREE — no gateway)** **DONE**
+   - Koi payment gateway nahi. **UPI Intent/QR** (`upi://pay?pa=UPI_ID&pn=HOSPITAL&am=amount`) generate hota hai (`qrcode` npm pkg, MIT).
+   - Invoice print par UPI QR; payment verify manual reconciliation (staff "Confirm payment") — `payments` table update.
    - No gateway account, no API fees.
 
-**DB:** migrations `00028`–`00031`. **Version:** minor → `0.5.0.0`.
+**DB:** migrations `00030`–`00032` (00026–00029 used by Phase 2). **Version:** minor → `0.5.0.0`.
 
 ---
 
