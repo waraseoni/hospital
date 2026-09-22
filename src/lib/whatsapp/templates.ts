@@ -49,4 +49,20 @@ export const whatsappTemplates = {
     `Status: ${params.paymentStatus}\n\n` +
     `🔗 View/Download Receipt: ${params.pdfLink}\n\n` +
     `Thank you for choosing ${params.hospitalName}! 🙏`,
+
+  followUpReminder: (params: WhatsAppTemplateParams) =>
+    `📋 *Follow-up Reminder*\n\n` +
+    `Dear *${params.patientName}*,\n\n` +
+    `This is a reminder for your follow-up visit:\n\n` +
+    `📅 Date: ${params.date}\n` +
+    `👨‍⚕️ Doctor: Dr. ${params.doctorName}\n\n` +
+    `Please visit us for your review. See you soon! 🙏`,
+
+  vaccinationReminder: (params: WhatsAppTemplateParams) =>
+    `💉 *Vaccination Reminder*\n\n` +
+    `Dear *${params.patientName}*,\n\n` +
+    `Your next vaccination is due:\n\n` +
+    `💉 Vaccine: ${params.vaccine}\n` +
+    `📅 Due Date: ${params.date}\n\n` +
+    `Please visit the hospital for your dose. 🙏`,
 };

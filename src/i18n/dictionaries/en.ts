@@ -118,6 +118,7 @@ export const en = {
     welcomeStaff: "Welcome, Staff",
     todayAppointments: "Today's Appointments",
     pendingLabOrders: "Pending Lab Orders",
+    followUps: "Follow-ups",
     occupiedBeds: "Occupied Beds",
     totalPatients: "Total Patients",
     pendingTests: "Pending Tests",

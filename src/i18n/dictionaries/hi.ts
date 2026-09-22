@@ -120,6 +120,7 @@ export const hi: Dictionary = {
     welcomeStaff: "वेलकम, स्टाफ़",
     todayAppointments: "आज की अपॉइंटमेंट्स",
     pendingLabOrders: "लंबित लैब ऑर्डर्स",
+    followUps: "फॉलो-अप",
     occupiedBeds: "कब्ज़े में बेड्स",
     totalPatients: "कुल मरीज़",
     pendingTests: "लंबित टेस्ट्स",
