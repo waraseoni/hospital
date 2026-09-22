@@ -11,6 +11,7 @@ Har change is process se guzarta hai. Isse har naya feature traceable, documente
 
 - Code + migration + types (`src/types/database.ts` sync karo).
 - Migration file naming: `NNNN_snake_case.sql` (next highest number).
+- Nayi migration ke baad full schema regenerate karo: `npm run schema` → `supabase/schema.sql` update hota hai.
 - New UI route inline `docs/IMPLEMENTATION_PLAN.md` mein phase ke under note karo.
 
 ## 3. Document
@@ -74,6 +75,7 @@ Commit message convention:
 
 - [ ] Feature implemented
 - [ ] Migration added (agar DB change)
+- [ ] `npm run schema` (full schema `supabase/schema.sql` refresh)
 - [ ] Types updated
 - [ ] Docs updated (`docs/` + `docs/README.md` index)
 - [ ] `CHANGELOG.md` entry added

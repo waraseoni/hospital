@@ -14,11 +14,12 @@ Ek systematic documentation & version control system jo har feature/change ko tr
 | `docs/IMPLEMENTATION_PLAN.md` | Roadmap — saare future features phase-wise |
 | `scripts/version.mjs` | Version bump script (npm scripts se chalata hai) |
 | `supabase/migrations/00001..N.sql` | Har DB change ek numbered migration file |
+| `supabase/schema.sql` | Auto-generated full schema (`npm run schema`) — DO NOT hand-edit |
 
 ## Conventions (MUST follow)
 
 1. **FREE & OPEN SOURCE only** — koi paid service/SDK/saas nahi. Har naya integration free + OSS hona chahiye (see `docs/IMPLEMENTATION_PLAN.md` → Free & Open Source Policy).
-2. **Har DB change** → naya numbered migration file (`supabase/migrations/`), purani kabhi edit nahi karte.
+2. **Har DB change** → naya numbered migration file (`supabase/migrations/`), purani kabhi edit nahi karte → phir `npm run schema` se `supabase/schema.sql` refresh karo.
 3. **Har release** → `CHANGELOG.md` mein entry, version bump, git tag `vX.Y.Z.W`.
 4. **Har feature** (agr UI/API/PDF/WhatsApp involve kare) → docs ka relevant section update karo ya nayi doc file banao.
 5. **Breaking change** → naya doc entry + changelog mein note + minor demo.
