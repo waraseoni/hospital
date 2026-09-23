@@ -40,6 +40,8 @@ Rules:
 | 6 | Patient Experience | `0.4.0.0` | [x] — Docs, Vitals, Feedback, Avatar, Reminders, Signup prefill, PWA [DONE] |
 | 7 | Integration & Advanced | `0.5.0.0` | [x] — e-Prescription digital signature + QR verify, FHIR R4 export, Backup/Restore, OpenAPI docs, Branches [DONE] |
 | 8 | Security, Audit & Testing | `0.6.0.0` | [ ] — Uniform API auth guard, DB audit triggers, Audit UI filters/CSV, vitest + API auth tests, error/loading routes, admin/leaves page |
+| 9 | Super Admin Impersonation | `0.6.0.0` | [x] — Audited impersonation, read-only lock, role switcher, countdown timer, history page, dashboard widget [DONE] |
+| 10 | Impersonation UX Polish | `0.6.0.0` | [x] — Reason prompt, view-as on staff/admins, read-only lock, countdown timer, history page [DONE] |
 
 > **Detailed UX/UI plan:** See `docs/UX_UI_PLAN.md` for per-page layouts, interconnections, mobile-first design rules, and component library roadmap.
 
