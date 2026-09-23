@@ -169,7 +169,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleForgotPassword}
-              disabled={!mounted || forgotLoading || !email}
+              disabled={forgotLoading || !email}
               className="text-sm text-primary hover:underline disabled:opacity-50"
             >
               {forgotLoading ? t("auth.sending") : t("auth.forgotPassword")}
