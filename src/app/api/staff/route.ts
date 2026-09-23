@@ -39,8 +39,14 @@ export async function POST(request: NextRequest) {
       },
     });
 
+    console.error("staff route createUser error:", {
+      code: createError.code,
+      message: createError.message,
+      email,
+      role,
+    });
     if (createError) {
-      return NextResponse.json({ error: createError.message }, { status: 400 });
+      return NextResponse.json({ error: createError.message, code: createError.code }, { status: 400 });
     }
 
     // Create profile record (trigger was removed, so we do it manually)
