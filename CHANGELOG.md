@@ -5,6 +5,12 @@ Versioning: `X.Y.Z.W` (policy: `docs/VERSIONING.md`).
 
 ## [Unreleased]
 
+### Fixed
+- **"Database error creating new user"** on creating a second admin — `profiles.phone` had a `UNIQUE` constraint; the `handle_new_user()` trigger inserted `phone=''` for every admin without a phone, so the second admin hit a duplicate-key violation. Dropped the UNIQUE constraint via migration `00040_fix_profiles_phone_unique.sql`.
+- **`next.config.ts` auto-bumped `VERSION` on every `next build`/`next dev`** — removed the `bumpBuild` call so VERSION is only bumped via `npm run version:minor/patch/build`.
+- **Login hydration mismatch** — `disabled={!mounted || ...}` used a client-only `mounted` state, causing server/client mismatch; removed `!mounted` from the guard.
+- **`/api/staff` error response** now includes the Supabase `code` alongside `message` for easier debugging.
+
 ### Added
 - **Phase 7 — Integration & Advanced (`0.5.0.0`)**
   - e-Prescription digital signature — doctor signature upload (profile page), embedded in prescription PDF with **QR verification**.
