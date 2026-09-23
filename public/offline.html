@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0f766e" />
+    <title>Star Hospital — Offline</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #f8fafc;
+        color: #0f172a;
+        padding: 24px;
+      }
+      .card {
+        max-width: 400px;
+        text-align: center;
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 40px 32px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+      }
+      .icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 20px;
+        border-radius: 16px;
+        display: block;
+      }
+      h1 { font-size: 1.35rem; margin-bottom: 8px; }
+      p { color: #64748b; font-size: 0.95rem; line-height: 1.5; margin-bottom: 24px; }
+      button {
+        background: #0f766e;
+        color: #fff;
+        border: 0;
+        border-radius: 10px;
+        padding: 12px 24px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      button:hover { background: #115e59; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="icon" src="/icons/icon-192.png" alt="" />
+      <h1>You&apos;re offline</h1>
+      <p>Star Hospital needs a connection for live data. Check your network and try again.</p>
+      <button onclick="location.reload()">Retry</button>
+    </div>
+  </body>
+</html>

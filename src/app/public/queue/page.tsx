@@ -108,7 +108,7 @@ export default function PublicQueuePage() {
       </main>
 
       <footer className="border-t border-slate-800 px-8 py-4 text-center text-xs text-slate-600">
-        Hospital Management System — Queue Display (TV mode)
+        Star Hospital — Queue Display (TV mode)
       </footer>
     </div>
   );

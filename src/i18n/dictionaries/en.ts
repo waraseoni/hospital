@@ -1,7 +1,7 @@
 export const en = {
   app: {
-    name: "HMS",
-    fullName: "Hospital Management System",
+    name: "Star Hospital",
+    fullName: "Star Hospital",
     tagline: "Clinic & Small Hospital Management Software",
   },
   common: {
@@ -94,7 +94,7 @@ export const en = {
     patient: "Patient Portal",
   },
   landing: {
-    title: "Hospital Management System",
+    title: "Star Hospital",
     subtitle: "Clinic & Small Hospital Management Software",
     login: "Login to Dashboard",
     createAccount: "Create Account",

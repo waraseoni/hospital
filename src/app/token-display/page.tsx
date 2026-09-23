@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useI18n } from "@/i18n/provider";
 
 interface DoctorDisplay {
   doctor_name: string;
@@ -30,18 +29,11 @@ function playAlert() {
 }
 
 export default function TokenDisplayPage() {
-  const { t } = useI18n();
   const [displays, setDisplays] = useState<DoctorDisplay[]>([]);
   const [lastUpdated, setLastUpdated] = useState("");
   const [loading, setLoading] = useState(true);
   const [audioEnabled, setAudioEnabled] = useState(false);
   const prevTokensRef = useRef<string>("");
-
-  useEffect(() => {
-    loadData();
-    const interval = setInterval(loadData, 10000);
-    return () => clearInterval(interval);
-  }, []);
 
   async function loadData() {
     try {
@@ -67,13 +59,20 @@ export default function TokenDisplayPage() {
     setLoading(false);
   }
 
+  useEffect(() => {
+    loadData();
+    const interval = setInterval(loadData, 10000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-blue-900 text-white p-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-2">OPD QUEUE BOARD</h1>
-          <p className="text-blue-200 text-lg">Hospital Management System</p>
+          <p className="text-blue-200 text-lg">Star Hospital</p>
           <div className="flex items-center justify-center gap-4 mt-2">
             {lastUpdated && (
               <p className="text-blue-300 text-sm">Last updated: {new Date(lastUpdated).toLocaleTimeString()}</p>

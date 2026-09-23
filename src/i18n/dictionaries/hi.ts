@@ -2,8 +2,8 @@ import type { Dictionary } from "./en";
 
 export const hi: Dictionary = {
   app: {
-    name: "हॉस्पिटल एमएस",
-    fullName: "अस्पताल प्रबंधन प्रणाली",
+    name: "Star Hospital",
+    fullName: "Star Hospital",
     tagline: "क्लिनिक और छोटे अस्पताल प्रबंधन सॉफ्टवेयर",
   },
   common: {
@@ -96,7 +96,7 @@ export const hi: Dictionary = {
     patient: "मरीज़ पोर्टल",
   },
   landing: {
-    title: "अस्पताल प्रबंधन प्रणाली",
+    title: "Star Hospital",
     subtitle: "क्लिनिक और छोटे अस्पताल प्रबंधन सॉफ्टवेयर",
     login: "डैशबोर्ड में लॉगिन करें",
     createAccount: "खाता बनाएं",

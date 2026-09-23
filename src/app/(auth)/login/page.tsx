@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import Link from "next/link";
-import { Eye, EyeOff, Activity } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import { useI18n } from "@/i18n/provider";
 import { LanguageSwitcher, ThemeSwitcher } from "@/components/theme/theme-controls";
 import { QRShare } from "@/components/ui/qr-share";
@@ -15,12 +15,10 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [remember, setRemember] = useState(false);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setEmail(localStorage.getItem("hms_remembered_email") || "");
     setRemember(localStorage.getItem("hms_remember") === "1");
-    setMounted(true);
   }, []);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -101,9 +99,8 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Activity size={24} />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/icon.svg" alt="" className="mx-auto mb-3 h-12 w-12 rounded-xl" />
           <h1 className="text-xl font-bold text-primary sm:text-2xl">
             {t("app.name")}
           </h1>

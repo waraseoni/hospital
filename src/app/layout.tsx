@@ -4,10 +4,27 @@ import { Providers } from "@/components/providers";
 import { ServiceWorkerRegistration } from "@/components/service-worker";
 
 export const metadata: Metadata = {
-  title: "Hospital Management System",
-  description: "Clinic & Small Hospital Management Software",
+  title: "Star Hospital",
+  description: "Star Hospital — Clinic & Hospital Management Software",
+  applicationName: "Star Hospital",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icons/icon.svg" },
+  icons: {
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: "/icons/apple-touch-icon.png",
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Star Hospital",
+  },
+};
+
+export const viewport = {
+  themeColor: "#0f766e",
 };
 
 export default function RootLayout({

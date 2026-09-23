@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Activity, LogOut, LayoutDashboard, Menu, X, Search, ChevronDown } from "lucide-react";
+import { LogOut, LayoutDashboard, Menu, X, Search, ChevronDown } from "lucide-react";
 import { QRShare } from "@/components/ui/qr-share";
 import type { Profile } from "@/types/database";
 import { cn } from "@/lib/utils/cn";
@@ -64,7 +64,7 @@ function NavLinks({ navItems, pathname, t, onNavClick }: { navItems: NavItem[]; 
   );
 }
 
-export function AppShell({ titleKey, subtitle, navItems, user, onLogout, children }: AppShellProps) {
+export function AppShell({ navItems, user, onLogout, children }: AppShellProps) {
   const { t } = useI18n();
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -76,10 +76,9 @@ export function AppShell({ titleKey, subtitle, navItems, user, onLogout, childre
       <aside className="sticky top-0 hidden h-screen w-[var(--sidebar-w)] shrink-0 flex-col border-r border-border bg-card lg:flex">
         {/* Brand */}
         <div className="flex h-12 items-center gap-2.5 border-b border-border px-4">
-          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Activity size={14} />
-          </span>
-          <span className="truncate text-[13px] font-bold text-foreground">HMS</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/icon.svg" alt="" className="h-7 w-7 shrink-0 rounded-lg" />
+          <span className="truncate text-[13px] font-bold text-foreground">Star Hospital</span>
         </div>
 
         {/* Nav */}
@@ -106,10 +105,9 @@ export function AppShell({ titleKey, subtitle, navItems, user, onLogout, childre
       )}>
         <div className="flex h-12 items-center justify-between border-b border-border px-4">
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Activity size={14} />
-            </span>
-            <span className="text-[13px] font-bold">{t(titleKey)}</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/icon.svg" alt="" className="h-7 w-7 shrink-0 rounded-lg" />
+            <span className="text-[13px] font-bold">Star Hospital</span>
           </div>
           <button onClick={() => setMobileOpen(false)} className="flex h-7 w-7 items-center justify-center rounded-md hover:bg-muted">
             <X size={15} />
@@ -135,9 +133,8 @@ export function AppShell({ titleKey, subtitle, navItems, user, onLogout, childre
         <header className="sticky top-0 z-40 hidden h-12 items-center justify-between border-b border-border bg-card/80 px-4 backdrop-blur-md lg:flex">
           {/* Left: Brand (hidden on desktop, sidebar has it) */}
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground lg:hidden">
-              <Activity size={14} />
-            </span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/icon.svg" alt="" className="h-7 w-7 rounded-lg lg:hidden" />
           </div>
 
           {/* Center: Universal Search */}
@@ -222,10 +219,9 @@ export function AppShell({ titleKey, subtitle, navItems, user, onLogout, childre
             <Menu size={18} />
           </button>
           <div className="flex items-center gap-1.5">
-            <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
-              <Activity size={12} />
-            </span>
-            <span className="text-xs font-bold">{t(titleKey)}</span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/icons/icon.svg" alt="" className="h-6 w-6 rounded-md" />
+            <span className="text-xs font-bold">Star Hospital</span>
           </div>
           <div className="flex items-center gap-1">
             <QRShare />

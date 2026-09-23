@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Activity } from "lucide-react";
 import { useI18n } from "@/i18n/provider";
 import { LanguageSwitcher, ThemeSwitcher } from "@/components/theme/theme-controls";
 
@@ -48,9 +47,8 @@ export default function SignupPage() {
         </div>
 
         <div className="mb-6 text-center">
-          <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-            <Activity size={24} />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/icons/icon.svg" alt="" className="mx-auto mb-3 h-12 w-12 rounded-xl" />
           <h1 className="text-xl font-bold text-primary sm:text-2xl">
             {t("app.name")}
           </h1>

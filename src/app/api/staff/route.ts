@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       message: `${role} account created successfully`,
       user_id: data.user.id,
     });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }
