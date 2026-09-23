@@ -14,13 +14,6 @@ function readVersion(): string {
   return readFileSync(VERSION_FILE, "utf8").trim();
 }
 
-function bumpBuild(version: string): string {
-  const parts = version.split(".").map(Number);
-  if (parts.length !== 4) return version;
-  parts[3] += 1;
-  return parts.join(".");
-}
-
 function syncPackageJson(v: string) {
   const mmp = v.split(".").slice(0, 3).join(".");
   try {
@@ -47,7 +40,7 @@ const nextConfig: NextConfig = {
     ],
   },
   env: {
-    NEXT_PUBLIC_APP_VERSION: next,
+    NEXT_PUBLIC_APP_VERSION: current,
     NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
   },
 };
