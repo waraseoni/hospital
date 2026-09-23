@@ -33,11 +33,9 @@ function syncPackageJson(v: string) {
 }
 
 const current = readVersion();
-const next = bumpBuild(current);
-writeFileSync(VERSION_FILE, `${next}\n`);
-syncPackageJson(next);
+syncPackageJson(current.split(".").slice(0, 3).join("."));
 
-console.log(`[version] ${current} -> ${next}`);
+console.log(`[version] ${current}`);
 
 const nextConfig: NextConfig = {
   images: {
