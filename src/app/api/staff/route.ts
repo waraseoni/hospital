@@ -39,13 +39,13 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.error("staff route createUser error:", {
-      code: createError.code,
-      message: createError.message,
-      email,
-      role,
-    });
     if (createError) {
+      console.error("staff route createUser error:", {
+        code: createError.code,
+        message: createError.message,
+        email,
+        role,
+      });
       return NextResponse.json({ error: createError.message, code: createError.code }, { status: 400 });
     }
 
